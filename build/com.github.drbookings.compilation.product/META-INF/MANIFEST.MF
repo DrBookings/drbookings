@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dr.Bookings Product
+Bundle-SymbolicName: com.github.drbookings.compilation.product
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: SILICOSCIENCES
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

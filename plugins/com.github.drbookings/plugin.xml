@@ -9,11 +9,15 @@
             application="org.eclipse.e4.ui.workbench.swt.E4Application">
          <property
                name="lifeCycleURI"
-               value="bundleclass://com.github.drbookings/com.github.drbookings.E4LifeCycle">
+               value="bundleclass://com.github.drbookings.ui.app/com.github.drbookings.E4LifeCycle">
          </property>
          <property
                name="applicationCSS"
-               value="platform:/plugin/com.github.drbookings/css/default.css">
+               value="platform:/plugin/com.github.drbookings.ui.app/css/default.css">
+         </property>
+         <property
+               name="appName"
+               value="com.github.drbookings">
          </property>
       </product>
    </extension>
