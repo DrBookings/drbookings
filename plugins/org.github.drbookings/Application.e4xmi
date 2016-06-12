@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_7gOgkDB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ide.application" bindingContexts="_7gOgmTB5EeaDws2coGZpfA">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_7gOgkTB5EeaDws2coGZpfA" label="drbook" width="500" height="400">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_7gOgsDB5EeaDws2coGZpfA">
+      <children xsi:type="advanced:Perspective" xmi:id="_7gOgsTB5EeaDws2coGZpfA">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_7gOgsjB5EeaDws2coGZpfA">
+          <children xsi:type="basic:PartStack" xmi:id="_7gOgszB5EeaDws2coGZpfA">
+            <children xsi:type="basic:Part" xmi:id="_7gOgtDB5EeaDws2coGZpfA" contributionURI="bundleclass://com.github.drbookings/com.github.drbookings.parts.SamplePart" label="Sample Part"/>
+          </children>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="_7gOgqTB5EeaDws2coGZpfA" elementId="menu:org.eclipse.ui.main.menu">
+      <children xsi:type="menu:Menu" xmi:id="_7gOgqjB5EeaDws2coGZpfA" label="File">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7gOgqzB5EeaDws2coGZpfA" label="Open" iconURI="platform:/plugin/com.github.drbookings/icons/sample.png" command="_7gOgoDB5EeaDws2coGZpfA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7gOgrDB5EeaDws2coGZpfA" label="Save" iconURI="platform:/plugin/com.github.drbookings/icons/save_edit.png" command="_7gOgozB5EeaDws2coGZpfA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7gOgrTB5EeaDws2coGZpfA" label="Quit" command="_7gOgnDB5EeaDws2coGZpfA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_7gOgrjB5EeaDws2coGZpfA" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7gOgrzB5EeaDws2coGZpfA" label="About" command="_7gOgpjB5EeaDws2coGZpfA"/>
+      </children>
+    </mainMenu>
+    <trimBars xmi:id="_7gOgtTB5EeaDws2coGZpfA">
+      <children xsi:type="menu:ToolBar" xmi:id="_7gOgtjB5EeaDws2coGZpfA" elementId="toolbar:org.eclipse.ui.main.toolbar">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_7gOgtzB5EeaDws2coGZpfA" iconURI="platform:/plugin/com.github.drbookings/icons/sample.png" command="_7gOgoDB5EeaDws2coGZpfA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_7gOguDB5EeaDws2coGZpfA" iconURI="platform:/plugin/com.github.drbookings/icons/save_edit.png" command="_7gOgozB5EeaDws2coGZpfA"/>
+      </children>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_7gOgnTB5EeaDws2coGZpfA" elementId="drbook.handler.quitCommand" contributionURI="bundleclass://com.github.drbookings/com.github.drbookings.handlers.QuitHandler" command="_7gOgnDB5EeaDws2coGZpfA"/>
+  <handlers xmi:id="_7gOgoTB5EeaDws2coGZpfA" elementId="drbook.handler.openCommand" contributionURI="bundleclass://com.github.drbookings/com.github.drbookings.handlers.OpenHandler" command="_7gOgoDB5EeaDws2coGZpfA"/>
+  <handlers xmi:id="_7gOgpDB5EeaDws2coGZpfA" elementId="drbook.handler.saveCommand" contributionURI="bundleclass://com.github.drbookings/com.github.drbookings.handlers.SaveHandler" command="_7gOgozB5EeaDws2coGZpfA"/>
+  <handlers xmi:id="_7gOgpzB5EeaDws2coGZpfA" elementId="drbook.handler.aboutCommand" contributionURI="bundleclass://com.github.drbookings/com.github.drbookings.handlers.AboutHandler" command="_7gOgpjB5EeaDws2coGZpfA"/>
+  <bindingTables xmi:id="_7gOgnjB5EeaDws2coGZpfA" bindingContext="_7gOgmTB5EeaDws2coGZpfA">
+    <bindings xmi:id="_7gOgnzB5EeaDws2coGZpfA" keySequence="M1+Q" command="_7gOgnDB5EeaDws2coGZpfA"/>
+    <bindings xmi:id="_7gOgojB5EeaDws2coGZpfA" keySequence="M1+O" command="_7gOgoDB5EeaDws2coGZpfA"/>
+    <bindings xmi:id="_7gOgpTB5EeaDws2coGZpfA" keySequence="M1+S" command="_7gOgozB5EeaDws2coGZpfA"/>
+    <bindings xmi:id="_7gOgqDB5EeaDws2coGZpfA" keySequence="M1+A" command="_7gOgpjB5EeaDws2coGZpfA"/>
+  </bindingTables>
+  <rootContext xmi:id="_7gOgmTB5EeaDws2coGZpfA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_7gOgmjB5EeaDws2coGZpfA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="_7gOgmzB5EeaDws2coGZpfA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="_7gOgnDB5EeaDws2coGZpfA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
+  <commands xmi:id="_7gOgoDB5EeaDws2coGZpfA" elementId="drbook.open" commandName="openCommand"/>
+  <commands xmi:id="_7gOgozB5EeaDws2coGZpfA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
+  <commands xmi:id="_7gOgpjB5EeaDws2coGZpfA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <addons xmi:id="_7gOgkjB5EeaDws2coGZpfA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_7gOgkzB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_7gOglDB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_7gOglTB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_7gOgljB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_7gOglzB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_7gOgmDB5EeaDws2coGZpfA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>
