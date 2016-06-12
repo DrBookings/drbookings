@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Dr.Book
+Bundle-Name: Dr.Bookings
 Bundle-SymbolicName: com.github.drbookings;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: com.github.drbookings.Activator

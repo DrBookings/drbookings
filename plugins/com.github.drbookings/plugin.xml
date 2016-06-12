@@ -5,7 +5,7 @@
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            name="drbook"
+            name="com.github.drbookings"
             application="org.eclipse.e4.ui.workbench.swt.E4Application">
          <property
                name="lifeCycleURI"
@@ -14,10 +14,6 @@
          <property
                name="applicationCSS"
                value="platform:/plugin/com.github.drbookings/css/default.css">
-         </property>
-         <property
-               name="appName"
-               value="drbook">
          </property>
       </product>
    </extension>
