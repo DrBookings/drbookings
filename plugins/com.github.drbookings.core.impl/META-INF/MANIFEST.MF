@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DrBookings Core Implementation
+Bundle-SymbolicName: com.github.drbookings.core.impl
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.github.drbookings.core.impl.Activator
+Bundle-Vendor: SILICOSCIENES
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.osgi.framework;version="1.3.0"
+Bundle-ActivationPolicy: lazy
+Require-Bundle: com.github.drbookings.core.api;bundle-version="1.0.0"
+Export-Package: com.github.drbookings.core.datamodel.impl

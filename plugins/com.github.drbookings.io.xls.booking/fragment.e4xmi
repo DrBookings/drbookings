@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_4KHB0DFUEeaV6__ryPgclA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_f3L0ADFVEeaV6__ryPgclA" featurename="commands" parentElementId="org.github.drbookings.ui.app.application">
+    <elements xsi:type="commands:Command" xmi:id="_g0OEADFVEeaV6__ryPgclA" elementId="com.github.drbookings.ui.io.xls.booking.command.importbookingsfromxls" commandName="Import Bookings from XLS"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7b34EDFVEeaV6__ryPgclA" featurename="handlers" parentElementId="org.github.drbookings.ui.app.application">
+    <elements xsi:type="commands:Handler" xmi:id="_--Rn0DFVEeaV6__ryPgclA" elementId="com.github.drbookings.ui.io.xls.booking.handler.0" contributionURI="bundleclass://com.github.drbookings.ui.io.xls.booking/com.github.drbookings.ui.io.xls.booking.handlers.HandlerImportXLSBooking" command="_g0OEADFVEeaV6__ryPgclA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BYyicDFWEeaV6__ryPgclA" featurename="children" parentElementId="drbookings.menu.file">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_KHKAwDFWEeaV6__ryPgclA" elementId="com.github.drbookings.ui.io.xls.booking.handledmenuitem.importbookingsfromxls" label="Import Bookings from XLS" command="_g0OEADFVEeaV6__ryPgclA"/>
+  </fragments>
+</fragment:ModelFragments>

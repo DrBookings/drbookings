@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.github.drbookings.feature.libs"
+      id="com.github.drbookings.libs.feature"
       label="Libraries Feature"
       version="1.0.0.qualifier"
       provider-name="SILICOSCIENCES">
@@ -65,6 +65,13 @@
 
    <plugin
          id="net.sf.jranges"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.lang3"
          download-size="0"
          install-size="0"
          version="0.0.0"

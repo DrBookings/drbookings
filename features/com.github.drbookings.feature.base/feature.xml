@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.github.drbookings.feature.base"
+      id="com.github.drbookings.base.feature"
       label="Base Feature"
       version="1.0.0.qualifier"
       provider-name="SILICOSCIENCES">
@@ -19,6 +19,33 @@
 
    <plugin
          id="com.github.drbookings.ui.app"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.drbookings.ui.io.xls.booking"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.github.drbookings.core.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.drbookings.core.impl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.drbookings.service.bookingmanager"
          download-size="0"
          install-size="0"
          version="0.0.0"
