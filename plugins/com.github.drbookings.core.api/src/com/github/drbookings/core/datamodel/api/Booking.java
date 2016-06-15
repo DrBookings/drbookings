@@ -2,12 +2,15 @@ package com.github.drbookings.core.datamodel.api;
 
 import java.time.LocalDate;
 
+import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
+
 public interface Booking {
 
-	LocalDate getCheckIn();
+	ObservableValue<LocalDate> getCheckIn();
 
-	LocalDate getCheckOut();
+	ObservableValue<LocalDate> getCheckOut();
 
-	String getID();
+	ObservableStringValue getId();
 
 }

@@ -5,7 +5,7 @@
       <children xsi:type="advanced:Perspective" xmi:id="_XIJW4zDSEeaun79_1wVesA">
         <children xsi:type="basic:PartSashContainer" xmi:id="_XIJ94DDSEeaun79_1wVesA">
           <children xsi:type="basic:PartStack" xmi:id="_XIJ94TDSEeaun79_1wVesA">
-            <children xsi:type="basic:Part" xmi:id="_XILzEDDSEeaun79_1wVesA" contributionURI="bundleclass://com.github.drbookings.ui.app/com.github.drbookings.parts.SamplePart" label="Sample Part"/>
+            <children xsi:type="basic:Part" xmi:id="_XILzEDDSEeaun79_1wVesA" contributionURI="bundleclass://com.github.drbookings.ui.app/com.github.drbookings.parts.SamplePart" label="Bookings"/>
           </children>
         </children>
       </children>
