@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_pzUj8DJ8EeaNObMABewifQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_NhEZ0DJ9EeaNObMABewifQ" featurename="commands" parentElementId="org.github.drbookings.ui.app.application">
+    <elements xsi:type="commands:Command" xmi:id="_Wa2d8DJ9EeaNObMABewifQ" elementId="com.github.drbookings.ui.io.googlecalendar.command.parse" commandName="Parse"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Rb7s4DJ9EeaNObMABewifQ" featurename="handlers" parentElementId="org.github.drbookings.ui.app.application">
+    <elements xsi:type="commands:Handler" xmi:id="_ZyjZkDJ9EeaNObMABewifQ" elementId="com.github.drbookings.ui.io.googlecalendar.handler.0" contributionURI="bundleclass://com.github.drbookings.ui.io.googlecalendar/com.github.drbookings.ui.io.googlecalendar.handlers.HandlerImportGoogleCalendar" command="_Wa2d8DJ9EeaNObMABewifQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_TgIZQDJ9EeaNObMABewifQ" featurename="children" parentElementId="drbookings.menu.file">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_cgp-kDJ9EeaNObMABewifQ" elementId="com.github.drbookings.ui.io.googlecalendar.handledmenuitem.importfromgooglecalendar" label="Import from Google Calendar" command="_Wa2d8DJ9EeaNObMABewifQ"/>
+  </fragments>
+</fragment:ModelFragments>

@@ -4,37 +4,48 @@ import java.time.LocalDate;
 
 import com.github.drbookings.core.datamodel.api.Booking;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
+
 public class BookingBean implements Booking {
 
-	private final LocalDate checkIn, checkOut;
+	private final SimpleObjectProperty<LocalDate> checkIn = new SimpleObjectProperty<LocalDate>();
+	private final SimpleObjectProperty<LocalDate> checkOut = new SimpleObjectProperty<LocalDate>();
 
-	private final String guestNames;
+	private final SimpleStringProperty guestNames = new SimpleStringProperty();
 
-	private final String id;
+	private final SimpleStringProperty id = new SimpleStringProperty();
+
+	public BookingBean(final String id, final LocalDate checkIn, final LocalDate checkOut) {
+		this.id.set(id);
+		this.checkIn.set(checkIn);
+		this.checkOut.set(checkOut);
+
+	}
 
 	public BookingBean(final String id, final LocalDate checkIn, final LocalDate checkOut, final String names) {
-		this.id = id;
-		this.checkIn = checkIn;
-		this.checkOut = checkOut;
-		this.guestNames = names;
+		this(id, checkIn, checkOut);
+		this.guestNames.set(names);
 	}
 
 	@Override
-	public LocalDate getCheckIn() {
+	public ObservableValue<LocalDate> getCheckIn() {
 		return checkIn;
 	}
 
 	@Override
-	public LocalDate getCheckOut() {
+	public ObservableValue<LocalDate> getCheckOut() {
 		return checkOut;
 	}
 
-	public String getGuestNames() {
+	public ObservableStringValue getGuestNames() {
 		return guestNames;
 	}
 
 	@Override
-	public String getID() {
+	public ObservableStringValue getId() {
 		return id;
 	}
 
