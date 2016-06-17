@@ -12,15 +12,23 @@
 <?import javafx.scene.control.TableView?>
 
 
-<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.drbookings.FXMLController">
-    <stylesheets>
-        <URL value="@/styles/fxml.css"/>
-    </stylesheets>
-    <children>
-        <TableView fx:id="table" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-        <columns>
-          
-     </columns>
-     </TableView>
-    </children>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.drbookings.FXMLController">
+	<stylesheets>
+		<URL value="@/styles/fxml.css" />
+	</stylesheets>
+	<children>
+		<TableView fx:id="table" AnchorPane.bottomAnchor="50.0"
+			AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+			AnchorPane.topAnchor="10.0">
+			<columns>
+			</columns>
+		</TableView>
+		<HBox spacing="10" AnchorPane.bottomAnchor="10.0"
+			AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+			<Button text="New Booking" onAction="#handleButtonNew" />
+			<Button text="Delete Booking" onAction="#handleButtonDelete" />
+			<Button text="Modify Booking" onAction="#handleButtonModify" />
+		</HBox>
+	</children>
 </AnchorPane>
