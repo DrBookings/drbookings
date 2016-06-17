@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -166,7 +167,8 @@ public class RunnableImportCSVBooking extends RunnableProto<List<BookingBean>> {
 				final LocalDate checkIn = bookingCheckIn.get(i);
 				final LocalDate checkOut = bookingCheckOut.get(i);
 				final String names = guestNames.get(i);
-				bookings.add(new BookingBean(Integer.toString(number), checkIn, checkOut, names));
+				bookings.add(
+						new BookingBean(Integer.toString(number), checkIn, checkOut, Arrays.asList(names.split(","))));
 			}
 			return bookings;
 
