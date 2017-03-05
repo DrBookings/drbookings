@@ -7,6 +7,7 @@ import com.github.drbookings.core.datamodel.api.Booking;
 import com.github.drbookings.core.datamodel.api.BookingDay;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -20,12 +21,16 @@ public class BookingDayBean extends BookingIdentifiableBean implements BookingDa
 
 	private final SimpleObjectProperty<LocalDate> date = new SimpleObjectProperty<LocalDate>();
 
-	public BookingDayBean(final String id, final LocalDate date, final Booking initialBooking) {
+	public BookingDayBean(final ObservableValue<String> id, final LocalDate date, final Booking initialBooking) {
 		super(id);
 		this.bookings = FXCollections.observableArrayList(initialBooking);
 		this.bookings.addListener(this);
 		this.bookingsValue = new SimpleObjectProperty<>(bookings);
 		this.date.setValue(date);
+	}
+
+	public BookingDayBean(final String id, final LocalDate date, final Booking initialBooking) {
+		this(new SimpleStringProperty(id), date, initialBooking);
 	}
 
 	@Override

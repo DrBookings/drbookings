@@ -90,6 +90,10 @@ public class RunnableImportCSVBooking extends RunnableProto<List<BookingBean>> {
 		throw new ExceptionFileFormat("Failed to parse " + identifierBookingNumber);
 	}
 
+	private int getColumnIndexStatus(final HSSFRow row) throws ExceptionFileFormat {
+		return getColumnIndexForIdentifier(row, FileFormatBookingXLS.STATUS);
+	}
+
 	private LocalDate getDate(final Cell cell) {
 		if (cell != null) {
 			final String result = cell.getStringCellValue();
@@ -137,8 +141,10 @@ public class RunnableImportCSVBooking extends RunnableProto<List<BookingBean>> {
 			final int indexClientName = getColumnIndexClientName(sheet.getRow(0));
 			final int indexBookingCheckIn = getColumnIndexCheckIn(sheet.getRow(0));
 			final int indexBookingCheckOut = getColumnIndexCheckOut(sheet.getRow(0));
+			final int indexStatus = getColumnIndexStatus(sheet.getRow(0));
 			final List<Integer> bookingNumbers = new ArrayList<>();
 			final List<String> guestNames = new ArrayList<>();
+			final List<String> stati = new ArrayList<>();
 			final List<LocalDate> bookingCheckIn = new ArrayList<>();
 			final List<LocalDate> bookingCheckOut = new ArrayList<>();
 			for (final Row r : sheet) {
@@ -150,6 +156,7 @@ public class RunnableImportCSVBooking extends RunnableProto<List<BookingBean>> {
 				guestNames.add(getString(r.getCell(indexClientName)));
 				bookingCheckIn.add(getDate(r.getCell(indexBookingCheckIn)));
 				bookingCheckOut.add(getDate(r.getCell(indexBookingCheckOut)));
+				stati.add(getString(r.getCell(indexStatus)));
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Booking numbers: " + bookingNumbers);
@@ -167,8 +174,10 @@ public class RunnableImportCSVBooking extends RunnableProto<List<BookingBean>> {
 				final LocalDate checkIn = bookingCheckIn.get(i);
 				final LocalDate checkOut = bookingCheckOut.get(i);
 				final String names = guestNames.get(i);
+				final String status = stati.get(i);
 				bookings.add(
-						new BookingBean(Integer.toString(number), checkIn, checkOut, Arrays.asList(names.split(","))));
+						new BookingBean(Integer.toString(number), checkIn, checkOut, Arrays.asList(names.split(",")))
+								.setStatus(status));
 			}
 			return bookings;
 
