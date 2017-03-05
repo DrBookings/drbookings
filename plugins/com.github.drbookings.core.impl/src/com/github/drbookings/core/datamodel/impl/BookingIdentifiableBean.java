@@ -1,21 +1,39 @@
 package com.github.drbookings.core.datamodel.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.github.drbookings.core.datamodel.api.BookingIdentifiable;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class BookingIdentifiableBean implements BookingIdentifiable {
 
-	private ObservableList<String> guestNames;
+	private final ObservableList<String> guestNames;
 
-	private final String id;
+	private final SimpleObjectProperty<List<String>> guestNamesValue;
+
+	private final SimpleStringProperty id;
+
+	private final SimpleStringProperty status;
+
+	public BookingIdentifiableBean(final ObservableValue<String> id) {
+		super();
+		this.guestNames = FXCollections.observableArrayList();
+		this.status = new SimpleStringProperty();
+		this.id = new SimpleStringProperty();
+		this.id.bind(id);
+		this.guestNamesValue = new SimpleObjectProperty<>(guestNames);
+		this.guestNames.addListener((ListChangeListener) c -> guestNamesValue.setValue(guestNames));
+	}
 
 	public BookingIdentifiableBean(final String id) {
-		super();
-		this.id = id;
+		this(new SimpleStringProperty(id));
 	}
 
 	@Override
@@ -46,8 +64,18 @@ public class BookingIdentifiableBean implements BookingIdentifiable {
 	}
 
 	@Override
-	public String getId() {
+	public ObservableValue<List<String>> getGuestNamesValue() {
+		return guestNamesValue;
+	}
+
+	@Override
+	public ObservableValue<String> getId() {
 		return id;
+	}
+
+	@Override
+	public SimpleStringProperty getStatus() {
+		return status;
 	}
 
 	@Override
@@ -59,12 +87,17 @@ public class BookingIdentifiableBean implements BookingIdentifiable {
 	}
 
 	public void setGuestNames(final Collection<? extends String> guestNames) {
-		this.guestNames = FXCollections.observableArrayList(guestNames);
+		this.guestNames.setAll(guestNames);
+	}
+
+	public BookingIdentifiableBean setStatus(final String newStatus) {
+		this.status.setValue(newStatus);
+		return this;
 	}
 
 	@Override
 	public String toString() {
-		return id + ", " + guestNames.toString();
+		return id + "\n" + status.getValue() + "\n" + guestNames.toString();
 	}
 
 }

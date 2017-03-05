@@ -13,4 +13,6 @@ public class FileFormatBookingXLS {
 
 	public static final String IDENTIFIER_CHECK_OUT = "Check-out";
 
+	public static final String STATUS = "Status";
+
 }

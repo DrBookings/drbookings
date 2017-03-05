@@ -37,4 +37,11 @@ public class BookingBean extends BookingIdentifiableBean implements Booking {
 		return checkOut;
 	}
 
+	@Override
+	public BookingBean setStatus(final String newStatus) {
+
+		super.setStatus(newStatus);
+		return this;
+	}
+
 }
