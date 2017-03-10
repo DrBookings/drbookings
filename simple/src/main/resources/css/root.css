@@ -4,3 +4,7 @@
 .table-row-cell:contains-selection {
     -fx-background: palegreen ;
 }
+.copyable-label, .copyable-label:focused {
+    -fx-background-color: transparent ;
+    -fx-background-insets: 0px ;
+}

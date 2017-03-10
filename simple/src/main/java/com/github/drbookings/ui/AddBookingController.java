@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.BookingDates;
 import com.github.drbookings.model.DataModel;
 

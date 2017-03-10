@@ -1,19 +1,18 @@
 package com.github.drbookings.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
-import com.github.drbookings.model.bean.DateBean;
-import com.github.drbookings.model.bean.RoomBean;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Dates {
 
-    public static List<RoomBean> roomView(final String roomName, final List<DateBean> datesAfter) {
-	final List<RoomBean> result = new ArrayList<>();
-	for (final DateBean db : datesAfter) {
-	    result.add(db.getRoom(roomName));
-	}
-	return result;
+    public static Pair<LocalDate, LocalDate> getFirstAndLastDayOfMonth(final int month) {
+	final int year = LocalDate.now().getYear();
+	final LocalDate firstDay = LocalDate.of(year, month, 1);
+	final LocalDate lastDay = LocalDate.of(year, month,
+		firstDay.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()).getDayOfMonth());
+	return new ImmutablePair<>(firstDay, lastDay);
     }
 
 }

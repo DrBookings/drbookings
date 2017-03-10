@@ -23,6 +23,7 @@ public class Rooms {
     public static boolean hasCleaningAfter(final RoomBean room) {
 	final List<RoomBean> nextRooms = DataModel.getInstance().getAllAfter(room);
 	for (final RoomBean rb : nextRooms) {
+
 	    if (rb.hasCleaning()) {
 		return true;
 	    }

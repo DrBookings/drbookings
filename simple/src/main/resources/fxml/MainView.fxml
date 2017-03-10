@@ -8,8 +8,8 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 
-<VBox styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.MainController">
+<VBox styleClass="root" fx:id="node" xmlns:fx="http://javafx.com/fxml/1"
+	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.MainController">
 	<children>
 		<MenuBar>
 			<menus>
@@ -17,7 +17,8 @@
 					<items>
 						<MenuItem fx:id="menuItemOpen" text="Open" onAction="#handleMenuItemOpen" />
 						<SeparatorMenuItem />
-						<MenuItem fx:id="menuItemExit" text="Exit" onAction="#handleMenuItemExit" />
+						<MenuItem fx:id="menuItemCleaningPlan" text="Show Cleaning Plan"
+							onAction="#handleMenuItemCleaningPlan" />
 					</items>
 				</Menu>
 			</menus>
@@ -31,10 +32,12 @@
 			</padding>
 			<children>
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
-					text="Add Booking" />
-				<TableView fx:id="tableView" editable="true"
+					text="Add Booking" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+				<Label fx:id="labelStatus" GridPane.columnIndex="1"
+					GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
+				<TableView fx:id="tableView" editable="true" maxWidth="Infinity"
 					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-					GridPane.vgrow="ALWAYS">
+					GridPane.vgrow="ALWAYS" GridPane.columnSpan="2">
 					<columns>
 						<TableColumn prefWidth="140" text="Date" fx:id="cDate">
 							<cellValueFactory>

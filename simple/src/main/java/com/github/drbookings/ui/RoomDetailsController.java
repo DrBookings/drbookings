@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
 import java.net.URL;
 import java.util.Collection;
@@ -7,11 +7,11 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.RoomSelectionManager;
 import com.github.drbookings.model.Bookings;
 import com.github.drbookings.model.DataModel;
 import com.github.drbookings.model.bean.BookingBean;
 import com.github.drbookings.model.bean.RoomBean;
-import com.github.drbookings.ui.Styles;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;

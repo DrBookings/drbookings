@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
 import com.github.drbookings.model.bean.DateBean;
 import com.github.drbookings.model.bean.RoomBean;

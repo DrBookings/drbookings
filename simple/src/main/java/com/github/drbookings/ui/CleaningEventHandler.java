@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
