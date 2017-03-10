@@ -1,21 +1,38 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.RoomSelectionManager;
 import com.github.drbookings.model.DataModel;
+import com.github.drbookings.model.Dates;
 import com.github.drbookings.model.bean.DateBean;
 import com.github.drbookings.model.bean.RoomBean;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -30,10 +47,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
@@ -41,14 +62,25 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class MainController implements Initializable {
 
     private final static Logger logger = LoggerFactory.getLogger(MainController.class);
+
+    private static final String defaultDataFileNameKey = "data";
+
+    private static final String defaultDataFileName = "booking-data.xml";
+
+    private static final DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, E");
+
+    @FXML
+    private Node node;
 
     @FXML
     private TableView<DateBean> tableView;
@@ -61,6 +93,9 @@ public class MainController implements Initializable {
 
     @FXML
     private TableColumn<DateBean, DateBean> cStudio2;
+
+    @FXML
+    private Label labelStatus;
 
     @FXML
     private TableColumn<DateBean, DateBean> cStudio3;
@@ -78,6 +113,10 @@ public class MainController implements Initializable {
     Button buttonAddBooking;
 
     private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
+
+    private File file;
+
+    private int currentMonth = -1;
 
     private void addBooking() {
 	final ObservableList<RoomBean> rooms = RoomSelectionManager.getInstance().getSelection();
@@ -128,6 +167,24 @@ public class MainController implements Initializable {
 	};
     }
 
+    private String getCleaningPlanString(final Multimap<String, LocalDate> cleaningMap) {
+	final StringBuilder sb = new StringBuilder();
+	for (final Entry<String, Collection<LocalDate>> e : cleaningMap.asMap().entrySet()) {
+	    sb.append(e.getKey());
+	    sb.append("\t");
+	    for (final Iterator<LocalDate> it = e.getValue().iterator(); it.hasNext();) {
+		final LocalDate v = it.next();
+		sb.append(v.format(myDateFormatter));
+		sb.append("\n");
+		if (it.hasNext()) {
+		    sb.append("\t\t");
+		}
+	    }
+	    sb.append("\n");
+	}
+	return sb.toString();
+    }
+
     private Callback<TableView<DateBean>, TableRow<DateBean>> getRowFactory() {
 	return param -> {
 
@@ -139,7 +196,10 @@ public class MainController implements Initializable {
 			setStyle("");
 		    } else {
 			if (item.getDate().isEqual(LocalDate.now())) {
-			    setStyle("-fx-background-color:lightgreen");
+			    setStyle("-fx-background-color: lightgreen;");
+			} else if (item.getDate()
+				.equals(item.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
+			    setStyle("-fx-background-color: lemonchiffon;");
 			} else {
 			    setStyle("");
 			}
@@ -161,10 +221,9 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void handleMenuItemExit(final ActionEvent event) {
-	if (logger.isDebugEnabled()) {
-	    logger.debug("MenuItem Exit");
-	}
+    private void handleMenuItemCleaningPlan(final ActionEvent event) {
+	Platform.runLater(() -> showCleaningPlan());
+
     }
 
     @FXML
@@ -172,10 +231,28 @@ public class MainController implements Initializable {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("MenuItem Open");
 	}
+	final FileChooser fileChooser = new FileChooser();
+	fileChooser.setInitialDirectory(file.getParentFile());
+	fileChooser.getExtensionFilters().addAll(
+		new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
+		new FileChooser.ExtensionFilter("All Files", "*"));
+	fileChooser.setTitle("Open Resource File");
+	file = fileChooser.showOpenDialog(node.getScene().getWindow());
+	if (file != null) {
+	    new Thread(() -> restoreState()).start();
+	}
     }
 
     private void handleTableSelectEvent(final MouseEvent event) {
 	Platform.runLater(() -> showRoomDetailsDialog());
+    }
+
+    private void initDataFile() {
+	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
+	final String fileString = userPrefs.get(defaultDataFileNameKey,
+		System.getProperty("user.home") + File.separator + defaultDataFileName);
+	file = new File(fileString);
+
     }
 
     @Override
@@ -188,7 +265,7 @@ public class MainController implements Initializable {
 			    .map(pos -> pos.getRow()).collect(Collectors.toSet());
 		    rowsWithSelectedCells.addAll(rows);
 		});
-	final DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, E");
+
 	tableView.setItems(DataModel.getInstance().getData());
 	cDate.setCellFactory(column -> {
 	    return new TableCell<DateBean, LocalDate>() {
@@ -223,7 +300,7 @@ public class MainController implements Initializable {
 	mi2.setOnAction(event -> {
 	    Platform.runLater(() -> addBooking());
 	});
-	menu.getItems().addAll(mi1, mi2);
+	menu.getItems().addAll(mi2, mi1);
 	tableView.getSelectionModel().setCellSelectionEnabled(true);
 	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	tableView.setContextMenu(menu);
@@ -240,6 +317,62 @@ public class MainController implements Initializable {
 	    }
 	});
 	tableView.setRowFactory(getRowFactory());
+	initStatusLabel();
+	initDataFile();
+    }
+
+    private void initStatusLabel() {
+	RoomSelectionManager.getInstance().getSelection().addListener((ListChangeListener<RoomBean>) c -> {
+	    if (c.getList().isEmpty()) {
+		return;
+	    }
+	    final int currentMonth = c.getList().get(0).getDateBean().getDate().getMonthValue();
+	    if (this.currentMonth != currentMonth) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Current month: " + currentMonth);
+		}
+		this.currentMonth = currentMonth;
+		updateStatusLabel();
+	    }
+	});
+
+    }
+
+    private void restoreState() {
+	// final File file = new File(System.getProperty("user.home"),
+	// "booking-data.xml");
+	if (logger.isInfoEnabled()) {
+	    logger.info("Loading state from " + file.getAbsolutePath());
+	}
+	try {
+	    final JAXBContext jc = JAXBContext.newInstance(DataModel.class);
+	    final Unmarshaller jaxbMarshaller = jc.createUnmarshaller();
+	    DataModel.getInstance().setAll(((DataModel) jaxbMarshaller.unmarshal(file)).getData());
+	} catch (final Exception e1) {
+	    logger.error(e1.getLocalizedMessage(), e1);
+	}
+    }
+
+    private void saveState() {
+	if (file == null) {
+	    return;
+	}
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Saving state to " + file);
+	}
+	try {
+	    final JAXBContext jc = JAXBContext.newInstance(DataModel.class);
+	    final Marshaller jaxbMarshaller = jc.createMarshaller();
+	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    jaxbMarshaller.marshal(DataModel.getInstance(), file);
+	} catch (final Exception e1) {
+	    logger.error(e1.getLocalizedMessage(), e1);
+	}
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Saving state done");
+	}
+	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
+	userPrefs.put(defaultDataFileNameKey, file.getAbsolutePath());
 
     }
 
@@ -263,6 +396,35 @@ public class MainController implements Initializable {
 	}
     }
 
+    private void showCleaningPlan() {
+	final LocalDate now = LocalDate.now();
+	final List<DateBean> dates = DataModel.getInstance()
+		.getAfter(LocalDate.of(now.getYear(), currentMonth, now.getDayOfMonth()));
+	final Multimap<String, LocalDate> cleaningMap = ArrayListMultimap.create();
+	for (final DateBean db : dates) {
+	    for (final RoomBean rb : db) {
+		if (rb.hasCleaning()) {
+		    cleaningMap.put(rb.getCleaning(), db.getDate());
+		}
+	    }
+	}
+	final Alert alert = new Alert(AlertType.INFORMATION);
+	alert.setTitle("Cleaning Plan");
+	final TextArea label = new TextArea();
+
+	label.setEditable(false);
+	label.setPrefHeight(400);
+	label.setPrefWidth(400);
+	label.getStyleClass().add("copyable-label");
+	label.setText(getCleaningPlanString(cleaningMap));
+	final String month = LocalDate.of(now.getYear(), currentMonth, now.getDayOfMonth()).getMonth()
+		.getDisplayName(TextStyle.FULL, Locale.getDefault());
+	alert.setHeaderText("Cleaning Plan from " + month);
+	alert.setContentText(null);
+	alert.getDialogPane().setContent(label);
+	alert.showAndWait();
+    }
+
     private void showRoomDetailsDialog() {
 	try {
 	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/RoomDetailsView.fxml"));
@@ -277,6 +439,30 @@ public class MainController implements Initializable {
 	} catch (final IOException e) {
 	    logger.error(e.getLocalizedMessage(), e);
 	}
+    }
+
+    public void shutDown() {
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Shutting down");
+	}
+	new Thread(() -> saveState()).start();
+    }
+
+    private void updateStatusLabel() {
+	final Pair<LocalDate, LocalDate> p = Dates.getFirstAndLastDayOfMonth(currentMonth);
+	if (logger.isDebugEnabled()) {
+	    logger.debug("First day: " + p.getLeft());
+	    logger.debug("Last day: " + p.getRight());
+	}
+	final int bookingDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "booking");
+	final int airbnbDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "airbnb");
+	final int otherDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "");
+
+	final String month = p.getLeft().getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+
+	labelStatus.setText(month + ": Booking days: " + bookingDays + ", Airbnb days: " + airbnbDays + ", Other days: "
+		+ otherDays);
+	labelStatus.setStyle("-fx-font-size: 14pt;");
     }
 
 }

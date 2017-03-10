@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -95,6 +96,12 @@ public class DataModel {
 	return Optional.empty();
     }
 
+    public List<DateBean> getAfter(final LocalDate date) {
+	final List<DateBean> result = data.stream().filter(db -> db.getDate().isAfter(date))
+		.collect(Collectors.toList());
+	return result;
+    }
+
     public Optional<RoomBean> getAfter(final RoomBean roomBean) {
 	final DateBean db = roomBean.getDateBean();
 	final Optional<DateBean> dbAfter = getAfter(db);
@@ -105,8 +112,9 @@ public class DataModel {
     }
 
     public List<RoomBean> getAllAfter(final RoomBean room) {
+	// Collections.sort(data);
 	final List<DateBean> datesAfter = data.subList(data.indexOf(room.getDateBean()), data.size() - 1);
-	final List<RoomBean> rooms = Dates.roomView(room.getName(), datesAfter);
+	final List<RoomBean> rooms = DateBeans.roomView(room.getName(), datesAfter);
 	return rooms;
     }
 
@@ -149,6 +157,22 @@ public class DataModel {
 		final RoomBean rb2 = db.getRoom(rb.getName());
 		final List<BookingBean> bb2 = rb2.getBookings();
 		result.addAll(bb2);
+	    }
+	}
+	return result;
+    }
+
+    public int getNumberOfBookingDays(final LocalDate startDate, final LocalDate endDate, final String string) {
+	int result = 0;
+	for (final DateBean db : data) {
+	    if (db.getDate().isAfter(startDate) && db.getDate().isBefore(endDate)) {
+		for (final RoomBean rb : db) {
+		    for (final BookingBean bb : rb.getBookings()) {
+			if (bb.getSource().equalsIgnoreCase(string)) {
+			    result++;
+			}
+		    }
+		}
 	    }
 	}
 	return result;
