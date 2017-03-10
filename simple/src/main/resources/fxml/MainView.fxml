@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+
+<VBox styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.MainController">
+	<children>
+		<MenuBar>
+			<menus>
+				<Menu text="File">
+					<items>
+						<MenuItem fx:id="menuItemOpen" text="Open" onAction="#handleMenuItemOpen" />
+						<SeparatorMenuItem />
+						<MenuItem fx:id="menuItemExit" text="Exit" onAction="#handleMenuItemExit" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+		<GridPane hgap="10" vgap="10" VBox.vgrow="ALWAYS">
+			<stylesheets>
+				<URL value="@/css/root.css" />
+			</stylesheets>
+			<padding>
+				<Insets bottom="10" left="25" right="25" top="25" />
+			</padding>
+			<children>
+				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
+					text="Add Booking" />
+				<TableView fx:id="tableView" editable="true"
+					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
+					GridPane.vgrow="ALWAYS">
+					<columns>
+						<TableColumn prefWidth="140" text="Date" fx:id="cDate">
+							<cellValueFactory>
+								<PropertyValueFactory property="date" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="cStudio1" prefWidth="120" text="#1">
+						</TableColumn>
+						<TableColumn fx:id="cStudio2" prefWidth="120" text="#2">
+						</TableColumn>
+						<TableColumn fx:id="cStudio3" prefWidth="120" text="#3">
+						</TableColumn>
+						<TableColumn fx:id="cStudio4" prefWidth="120" text="#4">
+						</TableColumn>
+					</columns>
+				</TableView>
+			</children>
+			<columnConstraints>
+				<ColumnConstraints />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints />
+				<RowConstraints />
+			</rowConstraints>
+		</GridPane>
+	</children>
+</VBox>

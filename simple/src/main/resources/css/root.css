@@ -1,0 +1,6 @@
+.table-column {
+  -fx-alignment: center-left;
+}
+.table-row-cell:contains-selection {
+    -fx-background: palegreen ;
+}

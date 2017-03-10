@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+
+<GridPane fx:controller="com.github.drbookings.RoomDetailsController"
+	styleClass="root" xmlns:fx="http://javafx.com/fxml" alignment="center"
+	hgap="10" vgap="10">
+	<stylesheets>
+		<URL value="@/css/root.css" />
+	</stylesheets>
+	<padding>
+		<Insets top="25" right="25" bottom="10" left="25" />
+	</padding>
+	<Label fx:id="labelSource" GridPane.columnIndex="0"
+		GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.hgrow="always"
+		maxWidth="Infinity" alignment="CENTER" />
+	<Label text="Check-In" GridPane.columnIndex="0"
+		GridPane.rowIndex="1">
+	</Label>
+	<Label fx:id="labelCheckIn" GridPane.columnIndex="1"
+		GridPane.rowIndex="1" GridPane.hgrow="always"
+		maxWidth="Infinity" alignment="CENTER">
+		<padding>
+			<Insets top="2" right="2" bottom="2" left="2" />
+		</padding>
+	</Label>
+	<Label text="Check-out" GridPane.columnIndex="0"
+		GridPane.rowIndex="2">
+	</Label>
+	<Label fx:id="labelCheckOut" GridPane.columnIndex="1"
+		GridPane.rowIndex="2" GridPane.hgrow="always"
+		maxWidth="Infinity" alignment="CENTER">
+		<padding>
+			<Insets top="2" right="2" bottom="2" left="2" />
+		</padding>
+	</Label>
+	<Label text="Guest Name" GridPane.columnIndex="0"
+		GridPane.rowIndex="3" />
+	<Label fx:id="labelGuestName" GridPane.columnIndex="1"
+		GridPane.rowIndex="3" GridPane.hgrow="always"
+		maxWidth="Infinity" alignment="CENTER"/>
+	<Label text="Cleaning" GridPane.columnIndex="0"
+		GridPane.rowIndex="4" />
+	<TextField fx:id="textFieldCleaning" GridPane.columnIndex="1"
+		GridPane.rowIndex="4" />
+</GridPane>
