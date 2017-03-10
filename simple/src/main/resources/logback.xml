@@ -8,29 +8,14 @@
 		</encoder>
 	</appender>
 
-	<appender name="file" class="ch.qos.logback.core.FileAppender">
-		<file>${HOME:-${USERPROFILE}}/wolftrader.log</file>
-		<encoder>
-			<pattern>%d{HH:mm:ss} %-5level [%-5thread] (%file:%line\): %message%n
-			</pattern>
-		</encoder>
-	</appender>
+	
 
 	<root level="debug">
 		<appender-ref ref="stdout" />
-		<appender-ref ref="file" />
+	
 	</root>
 
-	<logger name="org.apache.http" additivity="false" level="error">
-		<appender-ref ref="stdout" />
-		<appender-ref ref="file" />
-	</logger>
-
-	<logger name="com.gargoylesoftware.htmlunit" additivity="false" level="error">
-		<appender-ref ref="stdout" />
-		<appender-ref ref="file" />
-	</logger>
-
+	
 
 
 
