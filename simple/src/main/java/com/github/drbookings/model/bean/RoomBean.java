@@ -1,10 +1,10 @@
 package com.github.drbookings.model.bean;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -15,11 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.DataModel;
 
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -30,7 +34,7 @@ public class RoomBean implements Comparable<RoomBean> {
     private final static Logger logger = LoggerFactory.getLogger(RoomBean.class);
 
     public static Callback<RoomBean, Observable[]> extractor() {
-	return param -> new Observable[] { param.bookingsProperty() };
+	return param -> new Observable[] { param.bookingsProperty(), param.cleaningProperty() };
     }
 
     private final StringProperty name = new SimpleStringProperty();
@@ -40,21 +44,99 @@ public class RoomBean implements Comparable<RoomBean> {
     private final ListProperty<BookingBean> bookings = new SimpleListProperty<>(
 	    FXCollections.observableArrayList(BookingBean.extractor()));
 
-    private DateBean dateBean;
+    private final ObjectProperty<DateBean> dateBean = new SimpleObjectProperty<>();
+
+    /**
+     * Internally updated.
+     */
+    private final BooleanProperty booked = new SimpleBooleanProperty();
+
+    /**
+     * Internally updated.
+     */
+    private final BooleanProperty hasCleaning = new SimpleBooleanProperty();
+
+    /**
+     * Internally updated.
+     */
+    private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
 
     private String id;
 
-    public RoomBean() {
-	this.id = UUID.randomUUID().toString();
+    RoomBean() {
+	setId(UUID.randomUUID().toString());
+
+	bindBookedProperty();
+	bindHasCleaningProperty();
+	bindDateProperty();
 
     }
 
-    public synchronized RoomBean addBooking(final BookingBean booking) {
-	booking.setRoomBean(this);
-	if (!bookingsProperty().contains(booking)) {
-	    bookingsProperty().add(booking);
+    RoomBean(final String name) {
+	this();
+	setName(name);
+
+    }
+
+    public synchronized RoomBean addBooking(final BookingBean booking) throws OverbookingException {
+
+	if (getBookings().contains(booking)) {
+	    throw new IllegalArgumentException("Booking already present");
 	}
+	bookingsProperty().add(booking);
+	// isCheckOut() needs a room set
+	// if (bookingsProperty().filtered(b -> !b.isCheckOut()).size() > 1)
+	// {
+	// throw new OverbookingException();
+	// }
+
+	booking.setRoom(this);
 	return this;
+    }
+
+    public synchronized RoomBean addBooking(final RoomBean room, final BookingBean booking)
+	    throws OverbookingException {
+
+	if (getBookings().contains(booking)) {
+	    throw new IllegalArgumentException("Booking already present");
+	} else if (getBookings().size() > 2) {
+	    // > 2 over booking in any case.
+	    throw new OverbookingException();
+	} else {
+	    bookingsProperty().add(booking);
+	    // isCheckOut() needs a room set
+	    if (bookingsProperty().filtered(b -> !b.isCheckOut()).size() > 1) {
+		throw new OverbookingException();
+	    }
+	}
+	booking.setRoom(this);
+	return this;
+    }
+
+    private void bindBookedProperty() {
+	bookedProperty().bind(Bindings.createBooleanBinding(
+		() -> bookingsProperty().filtered(b -> b.isCheckOut()).size() > 0, bookingsProperty()));
+    }
+
+    private void bindDateProperty() {
+	dateProperty().bind(Bindings.createObjectBinding(() -> {
+	    if (dateBeanProperty().get() != null) {
+		return dateBeanProperty().get().getDate();
+	    } else {
+		return null;
+	    }
+	}, dateBeanProperty()));
+
+    }
+
+    private void bindHasCleaningProperty() {
+	hasCleaningProperty().bind(Bindings.createBooleanBinding(
+		() -> cleaningProperty().get() != null && !cleaningProperty().get().isEmpty(), cleaningProperty()));
+
+    }
+
+    public BooleanProperty bookedProperty() {
+	return this.booked;
     }
 
     public ListProperty<BookingBean> bookingsProperty() {
@@ -70,17 +152,24 @@ public class RoomBean implements Comparable<RoomBean> {
 	return getDateBean().compareTo(o.getDateBean());
     }
 
-    public Optional<RoomBean> getAfter() {
-	return DataModel.getInstance().getAfter(this);
+    public RoomBean createCopyFor(final DateBean date) throws OverbookingException {
+	final RoomBean result = new RoomBean(getName()).setCleaning(getCleaning());
+	date.addRoom(result);
+	return result;
+    }
+
+    public ObjectProperty<DateBean> dateBeanProperty() {
+	return dateBean;
+    }
+
+    public ObjectProperty<LocalDate> dateProperty() {
+	return this.date;
     }
 
     public Optional<BookingBean> getBooking(final String guestName) {
-	final List<BookingBean> bookings = getBookings().stream().filter(b -> b.getGuestName().equals(guestName))
-		.collect(Collectors.toList());
+	final List<BookingBean> bookings = bookingsProperty().filtered(b -> b.getGuestName().equals(guestName));
 	if (bookings.size() > 1) {
-	    if (logger.isWarnEnabled()) {
-		logger.warn("Unexpected booking count for guest " + guestName + ", " + bookings);
-	    }
+	    // if guest checks in and out (different booking source)
 	}
 	if (bookings.isEmpty()) {
 	    return Optional.empty();
@@ -94,15 +183,27 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this.bookingsProperty().get();
     }
 
+    public Optional<BookingBean> getCheckIn() {
+	return getDateBean().getDataModel().getCheckIn(this);
+    }
+
+    public Optional<BookingBean> getCheckOut() {
+	return getDateBean().getDataModel().getCheckOut(this);
+    }
+
     @XmlElement
     public String getCleaning() {
 	return this.cleaningProperty().get();
     }
 
+    public LocalDate getDate() {
+	return this.dateProperty().get();
+    }
+
     @XmlElement(name = "date")
     @XmlIDREF
     public DateBean getDateBean() {
-	return dateBean;
+	return dateBeanProperty().get();
     }
 
     @XmlID
@@ -117,16 +218,23 @@ public class RoomBean implements Comparable<RoomBean> {
     }
 
     public boolean hasCheckIn() {
-	for (final BookingBean bb : bookings) {
-	    if (bb.isCheckIn()) {
-		return true;
-	    }
-	}
-	return false;
+	return getDateBean().getDataModel().hasCheckIn(this);
+    }
+
+    public boolean hasCheckOut() {
+	return getDateBean().getDataModel().hasCheckOut(this);
     }
 
     public boolean hasCleaning() {
-	return getCleaning() != null && !getCleaning().isEmpty();
+	return hasCleaningProperty().get();
+    }
+
+    public BooleanProperty hasCleaningProperty() {
+	return this.hasCleaning;
+    }
+
+    public boolean isBooked() {
+	return this.bookedProperty().get();
     }
 
     public void merge(final RoomBean room) throws OverbookingException {
@@ -141,9 +249,17 @@ public class RoomBean implements Comparable<RoomBean> {
     }
 
     public synchronized RoomBean removeBooking(final BookingBean booking) {
-	booking.setRoomBean(null);
+	booking.setRoom(null);
 	bookingsProperty().remove(booking);
 	return this;
+    }
+
+    /**
+     * Bound property.
+     */
+    @SuppressWarnings("unused")
+    private void setBooked(final boolean booked) {
+	this.bookedProperty().set(booked);
     }
 
     public void setBookings(final Collection<? extends BookingBean> bookings) {
@@ -155,12 +271,31 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this;
     }
 
+    /**
+     * Bound property.
+     */
+    @SuppressWarnings("unused")
+    private void setDate(final LocalDate date) {
+	this.dateProperty().set(date);
+    }
+
+    /**
+     * Set by DateBean itself.
+     */
     public RoomBean setDateBean(final DateBean dateBean) {
-	this.dateBean = dateBean;
+	this.dateBeanProperty().set(dateBean);
 	return this;
     }
 
-    public void setId(final String id) {
+    /**
+     * Bound property.
+     */
+    @SuppressWarnings("unused")
+    private void setHasCleaning(final boolean hasCleaning) {
+	this.hasCleaningProperty().set(hasCleaning);
+    }
+
+    private void setId(final String id) {
 	this.id = id;
     }
 

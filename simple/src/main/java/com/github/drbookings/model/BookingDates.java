@@ -8,25 +8,21 @@ import java.util.List;
 import java.util.ListIterator;
 
 import com.github.drbookings.DateRange;
+import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.bean.BookingBean;
 import com.github.drbookings.model.bean.DateBean;
-import com.github.drbookings.model.bean.RoomBean;
 
 public class BookingDates implements List<DateBean> {
 
     private static List<DateBean> allDates(final LocalDate checkIn, final LocalDate checkOut, final String source,
-	    final String room, final String guestName) {
+	    final String room, final String guestName) throws OverbookingException {
 	final List<DateBean> result = new ArrayList<>();
 	for (final LocalDate d : new DateRange(checkIn, checkOut)) {
 	    final DateBean b = new DateBean(d);
 	    if (room == null || room.isEmpty()) {
-		for (final RoomBean rb : b.getRooms()) {
-		    rb.addBooking(new BookingBean().setGuestName(guestName).setSource(source));
-		}
-	    } else {
-		b.getRoom(room).addBooking(new BookingBean().setGuestName(guestName).setSource(source));
+		throw new IllegalArgumentException();
 	    }
-
+	    b.getRoom(room).addBooking(new BookingBean(guestName).setSource(source));
 	    result.add(b);
 	}
 	// a few extra
@@ -35,7 +31,7 @@ public class BookingDates implements List<DateBean> {
     }
 
     public static BookingDates buildBookingDate(final LocalDate checkIn, final LocalDate checkOut, final String source,
-	    final String room, final String guestName) {
+	    final String room, final String guestName) throws OverbookingException {
 	final BookingDates b = new BookingDates(allDates(checkIn, checkOut, source, room, guestName));
 	return b;
     }

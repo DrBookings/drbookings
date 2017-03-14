@@ -3,7 +3,7 @@ package com.github.drbookings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.ui.MainController;
+import com.github.drbookings.ui.controller.MainController;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +25,7 @@ public class DrBookingsApplication extends Application {
     public void start(final Stage stage) throws Exception {
 	final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 	final Parent root = loader.load();
-	final Scene scene = new Scene(root, 800, 800);
+	final Scene scene = new Scene(root, 900, 800);
 	stage.setTitle("Dr.Bookings");
 	stage.setScene(scene);
 	mainController = loader.getController();

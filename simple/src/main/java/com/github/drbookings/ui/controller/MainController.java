@@ -1,8 +1,9 @@
-package com.github.drbookings.ui;
+package com.github.drbookings.ui.controller;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -10,9 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -22,22 +26,25 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.RoomSelectionManager;
+import com.github.drbookings.CellSelectionManager;
 import com.github.drbookings.model.DataModel;
 import com.github.drbookings.model.Dates;
 import com.github.drbookings.model.bean.DateBean;
 import com.github.drbookings.model.bean.RoomBean;
-import com.google.common.collect.ArrayListMultimap;
+import com.github.drbookings.ui.AuslastungCellFactory;
+import com.github.drbookings.ui.AuslastungCellValueFactory;
+import com.github.drbookings.ui.StudioCellFactory;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -47,12 +54,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -104,6 +113,9 @@ public class MainController implements Initializable {
     private TableColumn<DateBean, DateBean> cStudio4;
 
     @FXML
+    private TableColumn<DateBean, Number> cAuslastung;
+
+    @FXML
     private MenuItem menuItemExit;
 
     @FXML
@@ -116,12 +128,13 @@ public class MainController implements Initializable {
 
     private File file;
 
-    private int currentMonth = -1;
+    private int currentMonth = LocalDate.now().getMonthValue();
+
+    private final DataModel dataModel = new DataModel();
 
     private void addBooking() {
-	final ObservableList<RoomBean> rooms = RoomSelectionManager.getInstance().getSelection();
-	final DateBean db = rooms.get(0).getDateBean();
-	Platform.runLater(() -> showAddBookingDialog(db.getDate()));
+	final ObservableList<RoomBean> dates = CellSelectionManager.getInstance().getSelection();
+	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate()));
     }
 
     private void deleteSelected() {
@@ -138,47 +151,82 @@ public class MainController implements Initializable {
 		logger.debug("Delete in column " + c + ", " + cellData);
 	    }
 	    if (cellData instanceof DateBean) {
-		final DateBean bean = (DateBean) cellData;
-		final RoomBean room = bean.getRoom(Integer.valueOf(c).toString());
-		DataModel.getInstance().removeAll(room.getBookings());
-	    } else {
-		if (logger.isDebugEnabled()) {
-		    logger.debug("Delete row " + r);
+		if (((DateBean) cellData).getBookings().isEmpty()) {
+
+		} else {
+		    dataModel.removeAll(((DateBean) cellData).getBookings().get(0));
 		}
+
 	    }
 	}
     }
 
+    private void doUpdateStatusLabel() {
+
+	final Pair<LocalDate, LocalDate> p = Dates.getFirstAndLastDayOfMonth(currentMonth);
+	if (logger.isDebugEnabled()) {
+	    logger.debug("First day: " + p.getLeft());
+	    logger.debug("Last day: " + p.getRight());
+	}
+	final DecimalFormat nf = new DecimalFormat("#,###,###,##0.00");
+	final int bookingDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?i)booking");
+	final double bookingEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?i)booking");
+	final int airbnbDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?i)airbnb");
+	final double airbnbEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?i)airbnb");
+	final int otherDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?!airbnb|booking)");
+	final double otherEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?!airbnb|booking)");
+	final String month = p.getLeft().getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+	labelStatus.setText(month + ": Booking nights: " + bookingDays + " (" + nf.format(bookingEarnings)
+		+ "€), Airbnb nights: " + airbnbDays + " (" + nf.format(airbnbEarnings) + "€), Other nights: "
+		+ otherDays + " (" + nf.format(otherEarnings) + "€), Total: " + (airbnbDays + bookingDays + otherDays)
+		+ " (" + nf.format(airbnbEarnings + bookingEarnings + otherEarnings) + "€)");
+	labelStatus.setAlignment(Pos.CENTER);
+	labelStatus.setStyle("-fx-font-weight: bold;");
+
+    }
+
+    @SuppressWarnings("rawtypes")
     private ListChangeListener<TablePosition> getCellSelectionListener() {
-	return c -> {
-	    final List<RoomBean> roomBeans = new ArrayList<>();
-	    for (final TablePosition tp : c.getList()) {
-		final int c2 = tp.getColumn();
+	return change -> {
+	    final List<RoomBean> cells = new ArrayList<>();
+	    for (final TablePosition tp : change.getList()) {
 		final int r = tp.getRow();
+		final int c = tp.getColumn();
 		final Object cell = tp.getTableColumn().getCellData(r);
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Selection changed to " + cell);
+		}
 		if (cell instanceof DateBean) {
-		    final DateBean db = (DateBean) cell;
-		    final RoomBean rb = db.getRoom(Integer.valueOf(c2).toString());
-		    roomBeans.add(rb);
+		    cells.add(((DateBean) cell).getRoom(c + ""));
 		}
 	    }
-	    RoomSelectionManager.getInstance().setSelection(roomBeans);
-
+	    CellSelectionManager.getInstance().setSelection(cells);
 	};
     }
 
-    private String getCleaningPlanString(final Multimap<String, LocalDate> cleaningMap) {
+    private String getCleaningPlanString(final Map<String, Multimap<LocalDate, String>> cleaningMap) {
 	final StringBuilder sb = new StringBuilder();
-	for (final Entry<String, Collection<LocalDate>> e : cleaningMap.asMap().entrySet()) {
+	for (final Entry<String, Multimap<LocalDate, String>> e : cleaningMap.entrySet()) {
 	    sb.append(e.getKey());
 	    sb.append("\t");
-	    for (final Iterator<LocalDate> it = e.getValue().iterator(); it.hasNext();) {
-		final LocalDate v = it.next();
+	    for (final Iterator<Entry<LocalDate, Collection<String>>> eeIt = e.getValue().asMap().entrySet()
+		    .iterator(); eeIt.hasNext();) {
+		final Entry<LocalDate, Collection<String>> ee = eeIt.next();
+		final LocalDate v = ee.getKey();
 		sb.append(v.format(myDateFormatter));
-		sb.append("\n");
-		if (it.hasNext()) {
+		for (final Iterator<String> itS = ee.getValue().iterator(); itS.hasNext();) {
+		    final String s = itS.next();
+		    sb.append(",\tF");
+		    sb.append(s);
+		    if (itS.hasNext()) {
+			sb.append(" ");
+		    }
+		}
+		if (eeIt.hasNext()) {
+		    sb.append("\n");
 		    sb.append("\t\t");
 		}
+
 	    }
 	    sb.append("\n");
 	}
@@ -196,7 +244,7 @@ public class MainController implements Initializable {
 			setStyle("");
 		    } else {
 			if (item.getDate().isEqual(LocalDate.now())) {
-			    setStyle("-fx-background-color: lightgreen;");
+			    setStyle("-fx-background-color: gold;");
 			} else if (item.getDate()
 				.equals(item.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
 			    setStyle("-fx-background-color: lemonchiffon;");
@@ -232,7 +280,9 @@ public class MainController implements Initializable {
 	    logger.debug("MenuItem Open");
 	}
 	final FileChooser fileChooser = new FileChooser();
-	fileChooser.setInitialDirectory(file.getParentFile());
+	if (file != null) {
+	    fileChooser.setInitialDirectory(file.getParentFile());
+	}
 	fileChooser.getExtensionFilters().addAll(
 		new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
 		new FileChooser.ExtensionFilter("All Files", "*"));
@@ -266,7 +316,26 @@ public class MainController implements Initializable {
 		    rowsWithSelectedCells.addAll(rows);
 		});
 
-	tableView.setItems(DataModel.getInstance().getData());
+	tableView.setItems(dataModel.getData());
+	// tableView.getItems().addListener((ListChangeListener<DateBean>) c ->
+	// {
+	// final int cnt = 1;
+	// while (c.next()) {
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Change " + cnt + " DateBean Added " + c.wasAdded());
+	// logger.debug("Change " + cnt + " DateBean Removed " +
+	// c.wasRemoved());
+	// logger.debug("Change " + cnt + " DateBean Permut " +
+	// c.wasPermutated());
+	// logger.debug("Change " + cnt + " DateBean Replaced " +
+	// c.wasReplaced());
+	// logger.debug("Change " + cnt + " DateBean Updated " +
+	// c.wasUpdated());
+	// logger.debug("");
+	// }
+	//
+	// }
+	// });
 	cDate.setCellFactory(column -> {
 	    return new TableCell<DateBean, LocalDate>() {
 		@Override
@@ -283,13 +352,15 @@ public class MainController implements Initializable {
 	    };
 	});
 	cStudio1.setCellFactory(new StudioCellFactory("1"));
-	cStudio1.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
+
 	cStudio2.setCellFactory(new StudioCellFactory("2"));
-	cStudio2.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
+
 	cStudio3.setCellFactory(new StudioCellFactory("3"));
-	cStudio3.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
+
 	cStudio4.setCellFactory(new StudioCellFactory("4"));
-	cStudio4.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
+
+	cAuslastung.setCellFactory(new AuslastungCellFactory());
+	cAuslastung.setCellValueFactory(new AuslastungCellValueFactory());
 
 	final ContextMenu menu = new ContextMenu();
 	final MenuItem mi1 = new MenuItem("Delete");
@@ -322,11 +393,11 @@ public class MainController implements Initializable {
     }
 
     private void initStatusLabel() {
-	RoomSelectionManager.getInstance().getSelection().addListener((ListChangeListener<RoomBean>) c -> {
+	CellSelectionManager.getInstance().getSelection().addListener((ListChangeListener<RoomBean>) c -> {
 	    if (c.getList().isEmpty()) {
 		return;
 	    }
-	    final int currentMonth = c.getList().get(0).getDateBean().getDate().getMonthValue();
+	    final int currentMonth = c.getList().get(0).getDate().getMonthValue();
 	    if (this.currentMonth != currentMonth) {
 		if (logger.isDebugEnabled()) {
 		    logger.debug("Current month: " + currentMonth);
@@ -338,25 +409,38 @@ public class MainController implements Initializable {
 
     }
 
+    private void makeBackup() {
+	if (file.exists() && file.length() != 0) {
+	    try {
+		FileUtils.copyFile(file, new File(file.getParentFile(), file.getName() + ".bak"));
+	    } catch (final IOException e) {
+		if (logger.isErrorEnabled()) {
+		    logger.error(e.getLocalizedMessage(), e);
+		}
+	    }
+	}
+
+    }
+
     private void restoreState() {
-	// final File file = new File(System.getProperty("user.home"),
-	// "booking-data.xml");
 	if (logger.isInfoEnabled()) {
 	    logger.info("Loading state from " + file.getAbsolutePath());
 	}
 	try {
 	    final JAXBContext jc = JAXBContext.newInstance(DataModel.class);
 	    final Unmarshaller jaxbMarshaller = jc.createUnmarshaller();
-	    DataModel.getInstance().setAll(((DataModel) jaxbMarshaller.unmarshal(file)).getData());
+	    dataModel.setData(((DataModel) jaxbMarshaller.unmarshal(file)).getData());
+	    updateStatusLabel();
 	} catch (final Exception e1) {
 	    logger.error(e1.getLocalizedMessage(), e1);
 	}
     }
 
     private void saveState() {
-	if (file == null) {
+	if (file == null || dataModel.getData().isEmpty()) {
 	    return;
 	}
+	makeBackup();
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Saving state to " + file);
 	}
@@ -364,7 +448,7 @@ public class MainController implements Initializable {
 	    final JAXBContext jc = JAXBContext.newInstance(DataModel.class);
 	    final Marshaller jaxbMarshaller = jc.createMarshaller();
 	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	    jaxbMarshaller.marshal(DataModel.getInstance(), file);
+	    jaxbMarshaller.marshal(dataModel, file);
 	} catch (final Exception e1) {
 	    logger.error(e1.getLocalizedMessage(), e1);
 	}
@@ -389,6 +473,7 @@ public class MainController implements Initializable {
 	    stage.setTitle("Add Booking");
 	    stage.setScene(scene);
 	    final AddBookingController c = loader.getController();
+	    c.setDataModel(dataModel);
 	    c.datePickerCheckIn.setValue(date);
 	    stage.show();
 	} catch (final IOException e) {
@@ -398,13 +483,20 @@ public class MainController implements Initializable {
 
     private void showCleaningPlan() {
 	final LocalDate now = LocalDate.now();
-	final List<DateBean> dates = DataModel.getInstance()
-		.getAfter(LocalDate.of(now.getYear(), currentMonth, now.getDayOfMonth()));
-	final Multimap<String, LocalDate> cleaningMap = ArrayListMultimap.create();
+	final List<DateBean> dates = dataModel.getAfter(LocalDate.of(now.getYear(), currentMonth, 1));
+	// final Multimap<String, LocalDate> cleaningMap =
+	// ArrayListMultimap.create();
+	final Map<String, Multimap<LocalDate, String>> cleaningRoomMap = new LinkedHashMap<>();
 	for (final DateBean db : dates) {
 	    for (final RoomBean rb : db) {
 		if (rb.hasCleaning()) {
-		    cleaningMap.put(rb.getCleaning(), db.getDate());
+		    // cleaningMap.put(rb.getCleaning(), db.getDate());
+		    Multimap<LocalDate, String> m = cleaningRoomMap.get(rb.getCleaning());
+		    if (m == null) {
+			m = LinkedHashMultimap.create();
+			cleaningRoomMap.put(rb.getCleaning(), m);
+		    }
+		    m.put(db.getDate(), rb.getName());
 		}
 	    }
 	}
@@ -416,8 +508,8 @@ public class MainController implements Initializable {
 	label.setPrefHeight(400);
 	label.setPrefWidth(400);
 	label.getStyleClass().add("copyable-label");
-	label.setText(getCleaningPlanString(cleaningMap));
-	final String month = LocalDate.of(now.getYear(), currentMonth, now.getDayOfMonth()).getMonth()
+	label.setText(getCleaningPlanString(cleaningRoomMap));
+	final String month = LocalDate.of(now.getYear(), currentMonth, now.minusDays(1).getDayOfMonth()).getMonth()
 		.getDisplayName(TextStyle.FULL, Locale.getDefault());
 	alert.setHeaderText("Cleaning Plan from " + month);
 	alert.setContentText(null);
@@ -434,7 +526,7 @@ public class MainController implements Initializable {
 	    stage.setTitle("Room Details");
 	    stage.setScene(scene);
 	    final RoomDetailsController c = loader.getController();
-	    stage.setOnCloseRequest(event -> Platform.runLater(() -> c.update()));
+	    stage.setOnCloseRequest(event -> c.shutDown());
 	    stage.show();
 	} catch (final IOException e) {
 	    logger.error(e.getLocalizedMessage(), e);
@@ -445,24 +537,21 @@ public class MainController implements Initializable {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Shutting down");
 	}
-	new Thread(() -> saveState()).start();
+	final Alert alert = new Alert(AlertType.CONFIRMATION);
+	alert.setTitle("Save changes?");
+	alert.setHeaderText("Save changes?");
+
+	final Optional<ButtonType> result = alert.showAndWait();
+	if (result.get() == ButtonType.OK) {
+	    new Thread(() -> saveState()).start();
+	} else {
+
+	}
     }
 
     private void updateStatusLabel() {
-	final Pair<LocalDate, LocalDate> p = Dates.getFirstAndLastDayOfMonth(currentMonth);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("First day: " + p.getLeft());
-	    logger.debug("Last day: " + p.getRight());
-	}
-	final int bookingDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "booking");
-	final int airbnbDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "airbnb");
-	final int otherDays = DataModel.getInstance().getNumberOfBookingDays(p.getLeft(), p.getRight(), "");
+	Platform.runLater(() -> doUpdateStatusLabel());
 
-	final String month = p.getLeft().getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-
-	labelStatus.setText(month + ": Booking days: " + bookingDays + ", Airbnb days: " + airbnbDays + ", Other days: "
-		+ otherDays);
-	labelStatus.setStyle("-fx-font-size: 14pt;");
     }
 
 }
