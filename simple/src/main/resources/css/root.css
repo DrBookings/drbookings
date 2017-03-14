@@ -4,7 +4,12 @@
 .table-row-cell:contains-selection {
     -fx-background: palegreen ;
 }
-.copyable-label, .copyable-label:focused {
-    -fx-background-color: transparent ;
-    -fx-background-insets: 0px ;
+.table-row-cell .table-cell {
+    -fx-border-width: 0px;
+}
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+.root {
+    -fx-control-inner-background-alt: -fx-control-inner-background;
 }

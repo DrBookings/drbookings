@@ -7,45 +7,53 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 
-<GridPane fx:controller="com.github.drbookings.ui.RoomDetailsController"
+<GridPane fx:controller="com.github.drbookings.ui.controller.RoomDetailsController"
 	styleClass="root" xmlns:fx="http://javafx.com/fxml" alignment="center"
-	hgap="10" vgap="10">
+	maxHeight="Infinity" prefWidth="Infinity" hgap="10" vgap="10">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 	</stylesheets>
 	<padding>
-		<Insets top="25" right="25" bottom="10" left="25" />
+		<Insets top="4" right="4" bottom="4" left="4" />
 	</padding>
-	<Label fx:id="labelSource" GridPane.columnIndex="0"
-		GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.hgrow="always"
-		maxWidth="Infinity" alignment="CENTER" />
-	<Label text="Check-In" GridPane.columnIndex="0"
-		GridPane.rowIndex="1">
-	</Label>
-	<Label fx:id="labelCheckIn" GridPane.columnIndex="1"
-		GridPane.rowIndex="1" GridPane.hgrow="always"
-		maxWidth="Infinity" alignment="CENTER">
-		<padding>
-			<Insets top="2" right="2" bottom="2" left="2" />
-		</padding>
-	</Label>
-	<Label text="Check-out" GridPane.columnIndex="0"
-		GridPane.rowIndex="2">
-	</Label>
-	<Label fx:id="labelCheckOut" GridPane.columnIndex="1"
-		GridPane.rowIndex="2" GridPane.hgrow="always"
-		maxWidth="Infinity" alignment="CENTER">
-		<padding>
-			<Insets top="2" right="2" bottom="2" left="2" />
-		</padding>
-	</Label>
-	<Label text="Guest Name" GridPane.columnIndex="0"
-		GridPane.rowIndex="3" />
-	<Label fx:id="labelGuestName" GridPane.columnIndex="1"
-		GridPane.rowIndex="3" GridPane.hgrow="always"
-		maxWidth="Infinity" alignment="CENTER"/>
-	<Label text="Cleaning" GridPane.columnIndex="0"
-		GridPane.rowIndex="4" />
-	<TextField fx:id="textFieldCleaning" GridPane.columnIndex="1"
-		GridPane.rowIndex="4" />
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+			percentWidth="40.0" prefWidth="100.0" />
+		<ColumnConstraints hgrow="ALWAYS" minWidth="10.0"
+			percentWidth="60.0" prefWidth="100.0" />
+	</columnConstraints>
+	<children>
+		<Label text="Cleaning" GridPane.columnIndex="0"
+			GridPane.rowIndex="0" />
+
+		<TextField fx:id="cleaning" alignment="CENTER"
+			GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+		<Label text="Check-out" GridPane.columnIndex="0"
+			GridPane.rowIndex="2" />
+
+		<Label fx:id="checkOut" alignment="CENTER"
+			GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+		<Label text="Guest names"  GridPane.columnIndex="0"
+			GridPane.rowIndex="3" />
+
+		<Label fx:id="guestNames" alignment="CENTER" 
+			GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+		<Label text="Check-in"  GridPane.columnIndex="0"
+			GridPane.rowIndex="4" />
+
+		<Label fx:id="checkIn" alignment="CENTER"
+			GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+		<Label fx:id="bruttoEarningsLabel" alignment="CENTER"
+			GridPane.columnIndex="0" GridPane.rowIndex="5" />
+
+		<TextField fx:id="bruttoEarningsInput" alignment="CENTER"
+			GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+		<Button fx:id="buttonSave" text="Save" 
+			GridPane.columnIndex="1" GridPane.rowIndex="7" onAction="#handleButtonSave" />
+	</children>
 </GridPane>

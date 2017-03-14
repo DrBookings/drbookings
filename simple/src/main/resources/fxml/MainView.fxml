@@ -9,17 +9,20 @@
 <?import javafx.scene.control.cell.*?>
 
 <VBox styleClass="root" fx:id="node" xmlns:fx="http://javafx.com/fxml/1"
-	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.MainController">
+	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.MainController">
 	<children>
 		<MenuBar>
 			<menus>
 				<Menu text="File">
 					<items>
 						<MenuItem fx:id="menuItemOpen" text="Open" onAction="#handleMenuItemOpen" />
-						<SeparatorMenuItem />
-						<MenuItem fx:id="menuItemCleaningPlan" text="Show Cleaning Plan"
-							onAction="#handleMenuItemCleaningPlan" />
 					</items>
+				</Menu>
+				<Menu text="View">
+				<items>
+				<MenuItem fx:id="menuItemCleaningPlan" text="Show Cleaning Plan"
+							onAction="#handleMenuItemCleaningPlan" />
+				</items>
 				</Menu>
 			</menus>
 		</MenuBar>
@@ -34,10 +37,11 @@
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
 					text="Add Booking" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 				<Label fx:id="labelStatus" GridPane.columnIndex="1"
-					GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
+					GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" maxWidth="Infinity" />
 				<TableView fx:id="tableView" editable="true" maxWidth="Infinity"
 					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
 					GridPane.vgrow="ALWAYS" GridPane.columnSpan="2">
+					 <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
 					<columns>
 						<TableColumn prefWidth="140" text="Date" fx:id="cDate">
 							<cellValueFactory>
@@ -45,12 +49,29 @@
 							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio1" prefWidth="120" text="#1">
+							<cellValueFactory>
+								<PropertyValueFactory property="self" />
+							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio2" prefWidth="120" text="#2">
+						<cellValueFactory>
+								<PropertyValueFactory property="self" />
+							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio3" prefWidth="120" text="#3">
+						<cellValueFactory>
+								<PropertyValueFactory property="self" />
+							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio4" prefWidth="120" text="#4">
+						<cellValueFactory>
+								<PropertyValueFactory property="self" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="cAuslastung" prefWidth="80" text="Auslastung">
+						<cellValueFactory>
+								<PropertyValueFactory property="cellBean" />
+							</cellValueFactory>
 						</TableColumn>
 					</columns>
 				</TableView>

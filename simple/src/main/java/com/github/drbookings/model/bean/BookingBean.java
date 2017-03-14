@@ -1,6 +1,6 @@
 package com.github.drbookings.model.bean;
 
-import java.util.Optional;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -11,19 +11,24 @@ import javax.xml.bind.annotation.XmlIDREF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.DataModel;
-
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
 public class BookingBean implements Comparable<BookingBean> {
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(BookingBean.class);
 
     public static Callback<BookingBean, Observable[]> extractor() {
-	return param -> new Observable[] { param.guestNameProperty(), param.sourceProperty() };
+	return param -> new Observable[] { param.guestNameProperty(), param.sourceProperty(),
+		param.bruttoEarningsProperty() };
     }
 
     private String id;
@@ -32,15 +37,70 @@ public class BookingBean implements Comparable<BookingBean> {
 
     private final StringProperty guestName = new SimpleStringProperty();
 
-    private RoomBean roomBean;
+    private final FloatProperty bruttoEarnings = new SimpleFloatProperty();
 
-    public BookingBean() {
-	this.id = UUID.randomUUID().toString();
+    /**
+     * Internally updated.
+     */
+    private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
+
+    /**
+     * Set by the room itself.
+     */
+    private final ObjectProperty<RoomBean> room = new SimpleObjectProperty<>();
+
+    /**
+     * Internally updated.
+     */
+    private final FloatProperty bruttoEarningsPerNight = new SimpleFloatProperty();
+
+    BookingBean() {
+	setId(UUID.randomUUID().toString());
+	bindBruttoEarningsPerNightProperty();
+	bindDateProperty();
+    }
+
+    public BookingBean(final String guestName) {
+	this();
+	setGuestName(guestName);
+    }
+
+    private void bindBruttoEarningsPerNightProperty() {
+	bruttoEarningsPerNight
+		.bind(Bindings.createFloatBinding(() -> calculateBruttoEarningsPerNight(), bruttoEarningsProperty()));
+
+    }
+
+    private void bindDateProperty() {
+	date.bind(Bindings.createObjectBinding(() -> getDateFromRoom(), roomProperty()));
+
+    }
+
+    public FloatProperty bruttoEarningsPerNightProperty() {
+	return this.bruttoEarningsPerNight;
+    }
+
+    public FloatProperty bruttoEarningsProperty() {
+	return this.bruttoEarnings;
+    }
+
+    private float calculateBruttoEarningsPerNight() {
+	if (getRoom() == null) {
+	    return 0;
+	}
+	return getRoom().getDateBean().getDataModel().calculateBruttoEarningsPerNight(this);
     }
 
     @Override
     public int compareTo(final BookingBean o) {
-	return getRoomBean().getDateBean().compareTo(o.getRoomBean().getDateBean());
+	if (getDate() == null) {
+	    throw new IllegalStateException("Booking without date " + this);
+	}
+	return getDate().compareTo(o.getDate());
+    }
+
+    public ObjectProperty<LocalDate> dateProperty() {
+	return date;
     }
 
     @Override
@@ -69,7 +129,34 @@ public class BookingBean implements Comparable<BookingBean> {
 	} else if (!getSource().equals(other.getSource())) {
 	    return false;
 	}
+	if (getDate() == null) {
+	    if (other.getDate() != null) {
+		return false;
+	    }
+	} else if (!getDate().equals(other.getDate())) {
+	    return false;
+	}
 	return true;
+    }
+
+    @XmlElement(name = "brutto-earnings")
+    public float getBruttoEarnings() {
+	return this.bruttoEarningsProperty().get();
+    }
+
+    public float getBruttoEarningsPerNight() {
+	return this.bruttoEarningsPerNightProperty().get();
+    }
+
+    public LocalDate getDate() {
+	return dateProperty().get();
+    }
+
+    private LocalDate getDateFromRoom() {
+	if (getRoom() == null) {
+	    return null;
+	}
+	return getRoom().getDate();
     }
 
     @XmlElement
@@ -83,13 +170,17 @@ public class BookingBean implements Comparable<BookingBean> {
 	return id;
     }
 
-    @XmlElement(name = "room")
-    @XmlIDREF
-    public RoomBean getRoomBean() {
-	return roomBean;
+    public int getNumberOfTotalNights() {
+	return getRoom().getDateBean().getDataModel().getNightCount(this);
     }
 
-    @XmlElement
+    @XmlElement(name = "room")
+    @XmlIDREF
+    public RoomBean getRoom() {
+	return roomProperty().get();
+    }
+
+    @XmlElement(name = "source")
     public String getSource() {
 	return this.sourceProperty().get();
     }
@@ -98,43 +189,82 @@ public class BookingBean implements Comparable<BookingBean> {
 	return this.guestName;
     }
 
+    public boolean hasGuest() {
+	return getGuestName() != null && !getGuestName().isEmpty();
+    }
+
     @Override
     public int hashCode() {
 	final int prime = 31;
 	int result = 1;
 	result = prime * result + (getGuestName() == null ? 0 : getGuestName().hashCode());
 	result = prime * result + (getSource() == null ? 0 : getSource().hashCode());
+	result = prime * result + (getDate() == null ? 0 : getDate().hashCode());
 	return result;
     }
 
     public boolean isCheckIn() {
-	final Optional<BookingBean> optionalBeforeThis = DataModel.getInstance().getBefore(this);
-
-	if (optionalBeforeThis.isPresent()) {
-	    final BookingBean beforeThis = optionalBeforeThis.get();
-	    if (beforeThis.getGuestName() == null || beforeThis.getGuestName().isEmpty()
-		    || !beforeThis.getGuestName().equals(getGuestName())) {
-		return true;
-	    }
-	} else {
-	    return true;
+	if (getRoom() == null || getRoom().getDateBean() == null || getRoom().getDateBean().getDataModel() == null) {
+	    return false;
 	}
-	return false;
+	return getRoom().getDateBean().getDataModel().isCheckIn(this);
     }
 
     public boolean isCheckOut() {
-	final Optional<BookingBean> optionalAfterThis = DataModel.getInstance().getAfter(this);
-	if (optionalAfterThis.isPresent()) {
-	    final BookingBean afterThis = optionalAfterThis.get();
-	    if (afterThis.getGuestName() == null || afterThis.getGuestName().isEmpty()
-		    || !afterThis.getGuestName().equals(getGuestName())) {
-		return true;
-	    } else {
-		return false;
-	    }
-	} else {
-	    return true;
+	if (getRoom() == null || getRoom().getDateBean() == null || getRoom().getDateBean().getDataModel() == null) {
+	    return false;
 	}
+	return getRoom().getDateBean().getDataModel().isCheckOut(this);
+    }
+
+    public boolean isConnected(final BookingBean otherBooking) {
+	return isForwardConnected(otherBooking) || isReverseConnected(otherBooking);
+    }
+
+    private boolean isForwardConnected(final BookingBean otherBooking) {
+	if (getDate() == null) {
+	    return false;
+	}
+	final boolean result = getDate().equals(otherBooking.getDate().plusDays(1));
+	return result;
+    }
+
+    private boolean isReverseConnected(final BookingBean otherBooking) {
+	if (getDate() == null) {
+	    return false;
+	}
+	final boolean result = getDate().equals(otherBooking.getDate().minusDays(1));
+	return result;
+    }
+
+    public ObjectProperty<RoomBean> roomProperty() {
+	return room;
+    }
+
+    public void setAllBruttoEarnings(final float earnings) {
+	getRoom().getDateBean().getDataModel().setAllBruttoEarnings(this, earnings);
+
+    }
+
+    public void setBruttoEarnings(final float earnings) {
+	this.bruttoEarningsProperty().set(earnings);
+    }
+
+    /**
+     * Property is bound.
+     */
+    @SuppressWarnings("unused")
+    private void setBruttoEarningsPerNight(final float bruttoEarningsPerNight) {
+	this.bruttoEarningsPerNightProperty().set(bruttoEarningsPerNight);
+    }
+
+    /**
+     * Property is bound.
+     */
+    @SuppressWarnings("unused")
+    private BookingBean setDate(final LocalDate date) {
+	this.dateProperty().set(date);
+	return this;
     }
 
     public BookingBean setGuestName(final String guestName) {
@@ -142,12 +272,13 @@ public class BookingBean implements Comparable<BookingBean> {
 	return this;
     }
 
-    public void setId(final String id) {
+    private void setId(final String id) {
 	this.id = id;
     }
 
-    public void setRoomBean(final RoomBean roomBean) {
-	this.roomBean = roomBean;
+    public BookingBean setRoom(final RoomBean roomBean) {
+	this.roomProperty().set(roomBean);
+	return this;
     }
 
     public BookingBean setSource(final String source) {
@@ -161,7 +292,7 @@ public class BookingBean implements Comparable<BookingBean> {
 
     @Override
     public String toString() {
-	return "Booking: Date: " + getRoomBean().getDateBean().getDate() + " Guest:" + getGuestName() + ", Source:"
+	return "Booking: Date: " + getRoom().getDateBean().getDate() + " Guest:" + getGuestName() + ", Source:"
 		+ getSource();
     }
 
