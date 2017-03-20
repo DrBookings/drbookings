@@ -29,7 +29,7 @@
 						</manifest>
 					</archive>
 					<appendAssemblyId>false</appendAssemblyId>
-					<finalName>DrBookings</finalName>
+					<finalName>DrBookings-${version}</finalName>
 				</configuration>
 				<executions>
 					<execution>

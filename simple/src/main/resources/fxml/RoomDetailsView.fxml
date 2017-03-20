@@ -52,6 +52,12 @@
 
 		<TextField fx:id="bruttoEarningsInput" alignment="CENTER"
 			GridPane.columnIndex="1" GridPane.rowIndex="5" />
+			
+			<Label fx:id="checkInNoteLabel" alignment="CENTER"
+			GridPane.columnIndex="0" GridPane.rowIndex="6" />
+
+		<TextArea fx:id="checkInNoteInput" wrapText="true"
+			GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
 		<Button fx:id="buttonSave" text="Save" defaultButton="true"
 			GridPane.columnIndex="1" GridPane.rowIndex="7" onAction="#handleButtonSave" />

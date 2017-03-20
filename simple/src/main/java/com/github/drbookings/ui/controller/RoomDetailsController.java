@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -45,6 +46,12 @@ public class RoomDetailsController implements Initializable {
 
     @FXML
     private Label bruttoEarningsLabel;
+
+    @FXML
+    private Label checkInNoteLabel;
+
+    @FXML
+    private TextArea checkInNoteInput;
 
     @FXML
     private Label guestNames;
@@ -76,17 +83,56 @@ public class RoomDetailsController implements Initializable {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Updating model");
 	}
+	updateModelCleaning();
+	updateModelBruttoEarnings();
+	updateModelCheckInNote();
+    }
+
+    private void updateModelBruttoEarnings() {
+	if (!room.getBookings().isEmpty() || bruttoEarningsInput.getText() == null) {
+	    try {
+		final float result = Float.parseFloat(bruttoEarningsInput.getText());
+		room.getBookings().get(0).setAllBruttoEarnings(result);
+	    } catch (final NumberFormatException e) {
+		UIUtils.showError("Invalid input", e.getLocalizedMessage());
+	    }
+	}
+    }
+
+    private void updateModelCheckInNote() {
+	if (!room.getBookings().isEmpty()) {
+	    room.getBookings().get(0).setAllCheckInNote(checkInNoteInput.getText().trim());
+	}
+    }
+
+    private void updateModelCleaning() {
 	if (cleaning.getText() != null) {
 	    room.setCleaning(cleaning.getText().trim());
 	}
-	if (room.getBookings().isEmpty() || bruttoEarningsInput.getText() == null) {
 
+    }
+
+    private void updateUIBruttoEarnings() {
+	if (room.getBookings().isEmpty()) {
+	    bruttoEarningsLabel.setText(null);
+	    bruttoEarningsInput.setText(null);
 	} else {
-	    try {
-		room.getBookings().get(0).setAllBruttoEarnings(Float.parseFloat(bruttoEarningsInput.getText()));
-	    } catch (final NumberFormatException e) {
-		// ignore
-	    }
+	    final BookingBean bb = room.getBookings().get(0);
+	    bruttoEarningsLabel.setText("Brutto earnings for\n" + bb.getGuestName() + "\n("
+		    + bb.getNumberOfTotalNights() + " total nights)");
+	    bruttoEarningsInput.setText("" + bb.getBruttoEarnings());
+	}
+
+    }
+
+    private void updateUICheckInNote() {
+	if (room.getBookings().isEmpty()) {
+	    checkInNoteLabel.setText(null);
+	    checkInNoteInput.setText(null);
+	} else {
+	    final BookingBean bb = room.getBookings().get(0);
+	    checkInNoteLabel.setText("Check-in note for\n" + bb.getGuestName());
+	    checkInNoteInput.setText(bb.getCheckInNote());
 	}
     }
 
@@ -107,15 +153,8 @@ public class RoomDetailsController implements Initializable {
 	}
 
 	cleaning.setText(room.getCleaning());
-	if (room.getBookings().isEmpty()) {
-	    bruttoEarningsLabel.setText(null);
-	    bruttoEarningsInput.setText(null);
-	} else {
-	    final BookingBean bb = room.getBookings().get(0);
-	    bruttoEarningsLabel.setText("Brutto earnings for\n" + bb.getGuestName() + "\n("
-		    + bb.getNumberOfTotalNights() + " total nights)");
-	    bruttoEarningsInput.setText("" + bb.getBruttoEarnings());
-	}
+	updateUIBruttoEarnings();
+	updateUICheckInNote();
 
 	final List<BookingBean> ci = Bookings.viewCheckIn(room.getBookings());
 	final List<BookingBean> co = Bookings.viewCheckOut(room.getBookings());

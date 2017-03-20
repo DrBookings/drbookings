@@ -40,6 +40,8 @@ public class BookingBean implements Comparable<BookingBean> {
 
     private final StringProperty guestName = new SimpleStringProperty();
 
+    private final StringProperty checkInNote = new SimpleStringProperty();
+
     private final FloatProperty bruttoEarnings = new SimpleFloatProperty();
 
     /**
@@ -103,6 +105,10 @@ public class BookingBean implements Comparable<BookingBean> {
 	return getRoom().getDateBean().getDataModel().calculateBruttoEarningsPerNight(this);
     }
 
+    public StringProperty checkInNoteProperty() {
+	return this.checkInNote;
+    }
+
     @Override
     public int compareTo(final BookingBean o) {
 	if (getDate() == null) {
@@ -160,6 +166,11 @@ public class BookingBean implements Comparable<BookingBean> {
 	return this.bruttoEarningsPerNightProperty().get();
     }
 
+    @XmlElement(name = "check-in-note")
+    public String getCheckInNote() {
+	return this.checkInNoteProperty().get();
+    }
+
     public LocalDate getDate() {
 	return dateProperty().get();
     }
@@ -202,6 +213,10 @@ public class BookingBean implements Comparable<BookingBean> {
 
     public StringProperty guestNameProperty() {
 	return this.guestName;
+    }
+
+    public boolean hasCheckInNote() {
+	return getCheckInNote() != null && getCheckInNote().length() > 0;
     }
 
     public boolean hasGuest() {
@@ -267,6 +282,11 @@ public class BookingBean implements Comparable<BookingBean> {
 
     }
 
+    public void setAllCheckInNote(final String checkInNote) {
+	getRoom().getDateBean().getDataModel().setAllCheckInNote(this, checkInNote);
+
+    }
+
     public void setBruttoEarnings(final float earnings) {
 	this.bruttoEarningsProperty().set(earnings);
     }
@@ -277,6 +297,10 @@ public class BookingBean implements Comparable<BookingBean> {
     @SuppressWarnings("unused")
     private void setBruttoEarningsPerNight(final float bruttoEarningsPerNight) {
 	this.bruttoEarningsPerNightProperty().set(bruttoEarningsPerNight);
+    }
+
+    public void setCheckInNote(final String checkInNote) {
+	this.checkInNoteProperty().set(checkInNote);
     }
 
     /**
