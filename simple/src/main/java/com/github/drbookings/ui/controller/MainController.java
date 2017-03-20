@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.github.drbookings.CellSelectionManager;
 import com.github.drbookings.model.DataModel;
 import com.github.drbookings.model.Dates;
+import com.github.drbookings.model.ModelConfiguration.NightCounting;
 import com.github.drbookings.model.bean.DateBean;
 import com.github.drbookings.model.bean.RoomBean;
 import com.github.drbookings.ui.AuslastungCellFactory;
@@ -45,6 +46,8 @@ import com.google.common.collect.Multimap;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -75,6 +78,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -87,6 +91,8 @@ public class MainController implements Initializable {
     private static final String defaultDataFileName = "booking-data.xml";
 
     private static final DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, E");
+
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
 
     @FXML
     private Node node;
@@ -116,6 +122,9 @@ public class MainController implements Initializable {
     private TableColumn<DateBean, Number> cAuslastung;
 
     @FXML
+    private TableColumn<DateBean, Number> cBruttoEarningsPerNightTotal;
+
+    @FXML
     private MenuItem menuItemExit;
 
     @FXML
@@ -128,7 +137,7 @@ public class MainController implements Initializable {
 
     private File file;
 
-    private int currentMonth = LocalDate.now().getMonthValue();
+    private final IntegerProperty currentMonth = new SimpleIntegerProperty(LocalDate.now().getMonthValue());
 
     private final DataModel dataModel = new DataModel();
 
@@ -137,6 +146,11 @@ public class MainController implements Initializable {
 	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate()));
     }
 
+    public IntegerProperty currentMonthProperty() {
+	return this.currentMonth;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void deleteSelected() {
 	final ObservableList<TablePosition> selectedItems = tableView.getSelectionModel().getSelectedCells();
 	if (logger.isDebugEnabled()) {
@@ -154,32 +168,42 @@ public class MainController implements Initializable {
 		if (((DateBean) cellData).getBookings().isEmpty()) {
 
 		} else {
-		    dataModel.removeAll(((DateBean) cellData).getBookings().get(0));
+		    dataModel.removeAll(((DateBean) cellData).getRoom("" + c).getBookings().get(0));
 		}
-
 	    }
 	}
     }
 
     private void doUpdateStatusLabel() {
 
-	final Pair<LocalDate, LocalDate> p = Dates.getFirstAndLastDayOfMonth(currentMonth);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("First day: " + p.getLeft());
-	    logger.debug("Last day: " + p.getRight());
-	}
-	final DecimalFormat nf = new DecimalFormat("#,###,###,##0.00");
-	final int bookingDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?i)booking");
+	final Pair<LocalDate, LocalDate> p = Dates.getFirstAndLastDayOfMonth(getCurrentMonth());
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("First day: " + p.getLeft());
+	// logger.debug("Last day: " + p.getRight());
+	// }
+
+	// if
+	// (dataModel.getModelConfiguration().getNightCounting().equals(NightCounting.DAY_BEFORE)
+	// ||
+	// dataModel.getModelConfiguration().getNightCounting().equals(NightCounting.DAY_BEFORE_AND_AFTER))
+	// {
+	// // for nights, calculate last final day of last final month as
+	// // final well
+	// p = new ImmutablePair<LocalDate, LocalDate>(p.getLeft().minusDays(1),
+	// p.getRight());
+	// }
+
+	final long bookingDays = dataModel.getNumberOfBookingDays(p.getLeft(), p.getRight(), "(?i)booking");
 	final double bookingEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?i)booking");
-	final int airbnbDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?i)airbnb");
+	final long airbnbDays = dataModel.getNumberOfBookingDays(p.getLeft(), p.getRight(), "(?i)airbnb");
 	final double airbnbEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?i)airbnb");
-	final int otherDays = dataModel.getNumberOfBookingNights(p.getLeft(), p.getRight(), "(?!airbnb|booking)");
+	final long otherDays = dataModel.getNumberOfBookingDays(p.getLeft(), p.getRight(), "(?!airbnb|booking)");
 	final double otherEarnings = dataModel.getBruttoEarnings(p.getLeft(), p.getRight(), "(?!airbnb|booking)");
 	final String month = p.getLeft().getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-	labelStatus.setText(month + ": Booking nights: " + bookingDays + " (" + nf.format(bookingEarnings)
-		+ "€), Airbnb nights: " + airbnbDays + " (" + nf.format(airbnbEarnings) + "€), Other nights: "
-		+ otherDays + " (" + nf.format(otherEarnings) + "€), Total: " + (airbnbDays + bookingDays + otherDays)
-		+ " (" + nf.format(airbnbEarnings + bookingEarnings + otherEarnings) + "€)");
+	labelStatus.setText(month + ": Booking: " + bookingDays + " (" + decimalFormat.format(bookingEarnings)
+		+ "€), Airbnb: " + airbnbDays + " (" + decimalFormat.format(airbnbEarnings) + "€), Other: " + otherDays
+		+ " (" + decimalFormat.format(otherEarnings) + "€), Total: " + (airbnbDays + bookingDays + otherDays)
+		+ " (" + decimalFormat.format(airbnbEarnings + bookingEarnings + otherEarnings) + "€)");
 	labelStatus.setAlignment(Pos.CENTER);
 	labelStatus.setStyle("-fx-font-weight: bold;");
 
@@ -233,6 +257,10 @@ public class MainController implements Initializable {
 	return sb.toString();
     }
 
+    public int getCurrentMonth() {
+	return this.currentMonthProperty().get();
+    }
+
     private Callback<TableView<DateBean>, TableRow<DateBean>> getRowFactory() {
 	return param -> {
 
@@ -244,10 +272,10 @@ public class MainController implements Initializable {
 			setStyle("");
 		    } else {
 			if (item.getDate().isEqual(LocalDate.now())) {
-			    setStyle("-fx-background-color: gold;");
+			    setStyle("-fx-background-color: gold; -fx-font-weight: bold;");
 			} else if (item.getDate()
 				.equals(item.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
-			    setStyle("-fx-background-color: lemonchiffon;");
+			    setStyle("-fx-background-color: darkgray;");
 			} else {
 			    setStyle("");
 			}
@@ -293,6 +321,11 @@ public class MainController implements Initializable {
 	}
     }
 
+    @FXML
+    private void handleMenuItemSettingsColors(final ActionEvent event) {
+
+    }
+
     private void handleTableSelectEvent(final MouseEvent event) {
 	Platform.runLater(() -> showRoomDetailsDialog());
     }
@@ -308,34 +341,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
-	tableView.getSelectionModel().getSelectedCells()
-		.addListener((final ListChangeListener.Change<? extends TablePosition> c) -> {
-		    rowsWithSelectedCells.clear();
-		    final Set<Integer> rows = tableView.getSelectionModel().getSelectedCells().stream()
-			    .map(pos -> pos.getRow()).collect(Collectors.toSet());
-		    rowsWithSelectedCells.addAll(rows);
-		});
-
-	tableView.setItems(dataModel.getData());
-	// tableView.getItems().addListener((ListChangeListener<DateBean>) c ->
-	// {
-	// final int cnt = 1;
-	// while (c.next()) {
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("Change " + cnt + " DateBean Added " + c.wasAdded());
-	// logger.debug("Change " + cnt + " DateBean Removed " +
-	// c.wasRemoved());
-	// logger.debug("Change " + cnt + " DateBean Permut " +
-	// c.wasPermutated());
-	// logger.debug("Change " + cnt + " DateBean Replaced " +
-	// c.wasReplaced());
-	// logger.debug("Change " + cnt + " DateBean Updated " +
-	// c.wasUpdated());
-	// logger.debug("");
-	// }
-	//
-	// }
-	// });
+	initTableView();
 	cDate.setCellFactory(column -> {
 	    return new TableCell<DateBean, LocalDate>() {
 		@Override
@@ -351,6 +357,24 @@ public class MainController implements Initializable {
 		}
 	    };
 	});
+	cBruttoEarningsPerNightTotal.setCellFactory(column -> {
+	    return new TableCell<DateBean, Number>() {
+
+		@Override
+		protected void updateItem(final Number item, final boolean empty) {
+		    super.updateItem(item, empty);
+		    if (item == null || empty) {
+			setText(null);
+			setStyle("");
+		    } else {
+			setText(decimalFormat.format(item));
+		    }
+		}
+
+	    };
+	});
+	cDate.getStyleClass().addAll("center-left");
+	cBruttoEarningsPerNightTotal.getStyleClass().add("opace");
 	cStudio1.setCellFactory(new StudioCellFactory("1"));
 
 	cStudio2.setCellFactory(new StudioCellFactory("2"));
@@ -362,25 +386,6 @@ public class MainController implements Initializable {
 	cAuslastung.setCellFactory(new AuslastungCellFactory());
 	cAuslastung.setCellValueFactory(new AuslastungCellValueFactory());
 
-	final ContextMenu menu = new ContextMenu();
-	final MenuItem mi1 = new MenuItem("Delete");
-	final MenuItem mi2 = new MenuItem("Add");
-	mi1.setOnAction(event -> {
-	    Platform.runLater(() -> deleteSelected());
-	});
-	mi2.setOnAction(event -> {
-	    Platform.runLater(() -> addBooking());
-	});
-	menu.getItems().addAll(mi2, mi1);
-	tableView.getSelectionModel().setCellSelectionEnabled(true);
-	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-	tableView.setContextMenu(menu);
-	tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
-	    if (t.getButton() == MouseButton.SECONDARY) {
-		menu.show(tableView, t.getScreenX(), t.getScreenY());
-	    }
-	});
-
 	tableView.getSelectionModel().getSelectedCells().addListener(getCellSelectionListener());
 	tableView.setOnMousePressed(event -> {
 	    if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
@@ -388,6 +393,9 @@ public class MainController implements Initializable {
 	    }
 	});
 	tableView.setRowFactory(getRowFactory());
+	dataModel.getData().addListener((ListChangeListener<DateBean>) c -> {
+	    updateStatusLabel();
+	});
 	initStatusLabel();
 	initDataFile();
     }
@@ -398,15 +406,51 @@ public class MainController implements Initializable {
 		return;
 	    }
 	    final int currentMonth = c.getList().get(0).getDate().getMonthValue();
-	    if (this.currentMonth != currentMonth) {
+	    if (getCurrentMonth() != currentMonth) {
 		if (logger.isDebugEnabled()) {
 		    logger.debug("Current month: " + currentMonth);
 		}
-		this.currentMonth = currentMonth;
+		setCurrentMonth(currentMonth);
 		updateStatusLabel();
 	    }
 	});
 
+    }
+
+    private void initTableView() {
+	tableView.getSelectionModel().getSelectedCells().addListener(
+		(@SuppressWarnings("rawtypes") final ListChangeListener.Change<? extends TablePosition> c) -> {
+		    rowsWithSelectedCells.clear();
+		    final Set<Integer> rows = tableView.getSelectionModel().getSelectedCells().stream()
+			    .map(pos -> pos.getRow()).collect(Collectors.toSet());
+		    rowsWithSelectedCells.addAll(rows);
+		});
+
+	tableView.setItems(dataModel.getData());
+	tableView.getSelectionModel().setCellSelectionEnabled(true);
+	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	initTableViewContextMenus();
+
+    }
+
+    private void initTableViewContextMenus() {
+	final ContextMenu menu = new ContextMenu();
+	final MenuItem mi1 = new MenuItem("Delete");
+	final MenuItem mi2 = new MenuItem("Add");
+	mi1.setOnAction(event -> {
+	    Platform.runLater(() -> deleteSelected());
+	});
+	mi2.setOnAction(event -> {
+	    Platform.runLater(() -> addBooking());
+	});
+	menu.getItems().addAll(mi2, mi1);
+
+	tableView.setContextMenu(menu);
+	tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+	    if (t.getButton() == MouseButton.SECONDARY) {
+		menu.show(tableView, t.getScreenX(), t.getScreenY());
+	    }
+	});
     }
 
     private void makeBackup() {
@@ -460,6 +504,10 @@ public class MainController implements Initializable {
 
     }
 
+    private void setCurrentMonth(final int currentMonth) {
+	this.currentMonthProperty().set(currentMonth);
+    }
+
     private void showAddBookingDialog() {
 	showAddBookingDialog(null);
     }
@@ -469,12 +517,19 @@ public class MainController implements Initializable {
 	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AddBookingView.fxml"));
 	    final Parent root = loader.load();
 	    final Stage stage = new Stage();
-	    final Scene scene = new Scene(root, 400, 400);
+	    stage.setWidth(400);
+	    stage.setHeight(400);
+	    final Scene scene = new Scene(root);
 	    stage.setTitle("Add Booking");
 	    stage.setScene(scene);
 	    final AddBookingController c = loader.getController();
 	    c.setDataModel(dataModel);
 	    c.datePickerCheckIn.setValue(date);
+	    final Stage windowStage = (Stage) node.getScene().getWindow();
+	    stage.initOwner(windowStage);
+	    stage.initModality(Modality.WINDOW_MODAL);
+	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
+	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
 	    stage.show();
 	} catch (final IOException e) {
 	    logger.error(e.getLocalizedMessage(), e);
@@ -483,7 +538,7 @@ public class MainController implements Initializable {
 
     private void showCleaningPlan() {
 	final LocalDate now = LocalDate.now();
-	final List<DateBean> dates = dataModel.getAfter(LocalDate.of(now.getYear(), currentMonth, 1));
+	final List<DateBean> dates = dataModel.getAfter(LocalDate.of(now.getYear(), getCurrentMonth(), 1));
 	// final Multimap<String, LocalDate> cleaningMap =
 	// ArrayListMultimap.create();
 	final Map<String, Multimap<LocalDate, String>> cleaningRoomMap = new LinkedHashMap<>();
@@ -509,7 +564,7 @@ public class MainController implements Initializable {
 	label.setPrefWidth(400);
 	label.getStyleClass().add("copyable-label");
 	label.setText(getCleaningPlanString(cleaningRoomMap));
-	final String month = LocalDate.of(now.getYear(), currentMonth, now.minusDays(1).getDayOfMonth()).getMonth()
+	final String month = LocalDate.of(now.getYear(), getCurrentMonth(), now.minusDays(1).getDayOfMonth()).getMonth()
 		.getDisplayName(TextStyle.FULL, Locale.getDefault());
 	alert.setHeaderText("Cleaning Plan from " + month);
 	alert.setContentText(null);
@@ -522,9 +577,16 @@ public class MainController implements Initializable {
 	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/RoomDetailsView.fxml"));
 	    final Parent root = loader.load();
 	    final Stage stage = new Stage();
-	    final Scene scene = new Scene(root, 400, 400);
+	    final Scene scene = new Scene(root);
 	    stage.setTitle("Room Details");
 	    stage.setScene(scene);
+	    stage.setWidth(400);
+	    stage.setHeight(400);
+	    final Stage windowStage = (Stage) node.getScene().getWindow();
+	    stage.initOwner(windowStage);
+	    stage.initModality(Modality.NONE);
+	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
+	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
 	    final RoomDetailsController c = loader.getController();
 	    stage.setOnCloseRequest(event -> c.shutDown());
 	    stage.show();
@@ -550,6 +612,7 @@ public class MainController implements Initializable {
     }
 
     private void updateStatusLabel() {
+	dataModel.getModelConfiguration().setNightCounting(NightCounting.DAY_BEFORE);
 	Platform.runLater(() -> doUpdateStatusLabel());
 
     }

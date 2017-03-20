@@ -23,15 +23,15 @@ public class AuslastungCellFactory implements Callback<TableColumn<DateBean, Num
 		} else {
 		    setText(String.format("%4.0f%%", item.floatValue() * 100));
 		    if (item.floatValue() < 0.33) {
-			setStyle("-fx-background-color:coral;-fx-alignment: CENTER;-fx-opacity:0.5;");
+			setStyle("-fx-background-color:coral;-fx-alignment: CENTER;-fx-opacity:0.6;");
 		    } else if (item.floatValue() < 0.50) {
 			setStyle("-fx-background-color:orange;-fx-alignment: CENTER;-fx-opacity:0.5;");
 		    } else if (item.floatValue() > 0.90) {
-			setStyle("-fx-background-color:limegreen;-fx-alignment: CENTER;-fx-opacity:0.5;");
+			setStyle("-fx-background-color:limegreen;-fx-alignment: CENTER;-fx-opacity:0.6;");
 		    } else if (item.floatValue() > 0.66) {
-			setStyle("-fx-background-color:yellowgreen;-fx-alignment: CENTER;-fx-opacity:0.5;");
+			setStyle("-fx-background-color:yellowgreen;-fx-alignment: CENTER;-fx-opacity:0.6;");
 		    } else {
-			setStyle("-fx-alignment: CENTER;-fx-opacity:0.5;");
+			setStyle("-fx-alignment: CENTER;-fx-opacity:0.6;");
 		    }
 		}
 	    }

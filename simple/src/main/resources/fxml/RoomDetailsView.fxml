@@ -53,7 +53,7 @@
 		<TextField fx:id="bruttoEarningsInput" alignment="CENTER"
 			GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-		<Button fx:id="buttonSave" text="Save" 
+		<Button fx:id="buttonSave" text="Save" defaultButton="true"
 			GridPane.columnIndex="1" GridPane.rowIndex="7" onAction="#handleButtonSave" />
 	</children>
 </GridPane>

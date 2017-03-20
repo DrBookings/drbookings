@@ -52,6 +52,9 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 
     private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
 
+    private final ListProperty<RoomBean> rooms = new SimpleListProperty<>(
+	    FXCollections.observableArrayList(RoomBean.extractor()));
+
     /**
      * Internally updated.
      */
@@ -60,10 +63,12 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
     /**
      * Internally updated.
      */
-    private final IntegerProperty roomCount = new SimpleIntegerProperty();
+    private final FloatProperty totalEarningsPerNight = new SimpleFloatProperty();
 
-    private final ListProperty<RoomBean> rooms = new SimpleListProperty<>(
-	    FXCollections.observableArrayList(RoomBean.extractor()));
+    /**
+     * Internally updated.
+     */
+    private final IntegerProperty roomCount = new SimpleIntegerProperty();
 
     /**
      * Internally updated.
@@ -78,18 +83,17 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 
     DateBean() {
 	setId(UUID.randomUUID().toString());
-
-	selfProperty().bind(Bindings.createObjectBinding(update(), bookingsProperty()));
-
-	bindAuslastungProperty();
+	selfProperty()
+		.bind(Bindings.createObjectBinding(update(), bookingsProperty(), totalEarningsPerNightProperty()));
 	bindRoomCountProperty();
+	bindAuslastungProperty();
+	bindEarningsPerDayProperty();
 	bindRoomsProperty();
-
+	setDate(LocalDate.now());
 	rooms.add(new RoomBean("1").setDateBean(this));
 	rooms.add(new RoomBean("2").setDateBean(this));
 	rooms.add(new RoomBean("3").setDateBean(this));
 	rooms.add(new RoomBean("4").setDateBean(this));
-
     }
 
     public DateBean(final LocalDate date) {
@@ -114,21 +118,21 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 
     private void bindAuslastungProperty() {
 	auslastungProperty().bind(Bindings.createFloatBinding(() -> {
-	    float cnt = 0;
-
-	    // System.err.println("Rooms " + roomsProperty());
+	    float result1 = 0;
 	    for (final RoomBean rb : rooms) {
-		cnt += rb.bookingsProperty().filtered(b -> !b.isCheckOut()).size();
+		result1 += rb.bookingsProperty().filtered(new NightCountFilter()).size();
 	    }
-	    if (cnt == 0) {
-		return cnt;
+	    if (result1 == 0) {
+		return result1;
 	    }
-	    final float result2 = cnt / roomsProperty().size();
-	    // System.err.println("Booking cnt " + cnt);
-	    // System.err.println("Rooms cnt " + roomsProperty().size());
-	    // System.err.println("Auslastung update to " + result2);
+	    final float result2 = result1 / roomsProperty().size();
 	    return result2;
 	}, roomsProperty()));
+
+    }
+
+    private void bindEarningsPerDayProperty() {
+	totalEarningsPerNightProperty().bind(Bindings.createFloatBinding(calculateEarningsPerDay(), roomsProperty()));
 
     }
 
@@ -144,8 +148,23 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 
     }
 
+    /**
+     * Internally updated.
+     */
     private ReadOnlyListProperty<BookingBean> bookingsProperty() {
 	return this.bookings;
+    }
+
+    private Callable<Float> calculateEarningsPerDay() {
+	return () -> {
+	    float result = 0;
+
+	    for (final BookingBean bb : getBookings()) {
+		result += bb.getBruttoEarningsPerNight();
+	    }
+
+	    return result;
+	};
     }
 
     @Override
@@ -210,16 +229,12 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
     }
 
     public RoomBean getRoom(final String name) {
-	final List<RoomBean> rooms = roomsProperty().filtered(r -> r.getName().equals(name));
-	if (rooms.size() > 1) {
-	    if (logger.isErrorEnabled()) {
-		logger.error("Too many rooms with id " + name + " (" + rooms + ")");
+	for (final RoomBean room : rooms) {
+	    if (room.getName().equals(name)) {
+		return room;
 	    }
 	}
-	if (rooms.isEmpty()) {
-	    return null;
-	}
-	return rooms.get(0);
+	return null;
     }
 
     public int getRoomCount() {
@@ -236,6 +251,10 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 
     public DateBean getSelf() {
 	return this.selfProperty().get();
+    }
+
+    public float getTotalEarningsPerNight() {
+	return this.totalEarningsPerNightProperty().get();
     }
 
     @Override
@@ -324,12 +343,27 @@ public class DateBean implements Iterable<RoomBean>, Comparable<DateBean> {
 	this.selfProperty().set(self);
     }
 
+    /**
+     * Internally updated.
+     */
+    @SuppressWarnings("unused")
+    private void setTotalEarningsPerNight(final float totalEarnings) {
+	this.totalEarningsPerNightProperty().set(totalEarnings);
+    }
+
     @Override
     public String toString() {
 	return "DateBean: Date:" + getDate() + ", Rooms:" + getRooms();
     }
 
+    public FloatProperty totalEarningsPerNightProperty() {
+	return this.totalEarningsPerNight;
+    }
+
     private Callable<DateBean> update() {
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Updaing self");
+	}
 	return () -> DateBean.this;
     }
 

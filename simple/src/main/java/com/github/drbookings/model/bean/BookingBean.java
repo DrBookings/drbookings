@@ -33,7 +33,10 @@ public class BookingBean implements Comparable<BookingBean> {
 
     private String id;
 
-    private final StringProperty source = new SimpleStringProperty();
+    /**
+     * Not null initially to match regex
+     */
+    private final StringProperty source = new SimpleStringProperty("");
 
     private final StringProperty guestName = new SimpleStringProperty();
 
@@ -54,15 +57,24 @@ public class BookingBean implements Comparable<BookingBean> {
      */
     private final FloatProperty bruttoEarningsPerNight = new SimpleFloatProperty();
 
-    BookingBean() {
+    protected BookingBean() {
 	setId(UUID.randomUUID().toString());
 	bindBruttoEarningsPerNightProperty();
 	bindDateProperty();
     }
 
+    public BookingBean(final BookingBean booking) {
+	this(booking.getGuestName(), booking.getGuestName());
+    }
+
     public BookingBean(final String guestName) {
 	this();
 	setGuestName(guestName);
+    }
+
+    public BookingBean(final String guestName, final String roomName) {
+	this(guestName);
+	setRoom(new RoomBean(roomName, this));
     }
 
     private void bindBruttoEarningsPerNightProperty() {
@@ -171,6 +183,9 @@ public class BookingBean implements Comparable<BookingBean> {
     }
 
     public int getNumberOfTotalNights() {
+	if (getRoom() == null) {
+	    return 0;
+	}
 	return getRoom().getDateBean().getDataModel().getNightCount(this);
     }
 
@@ -225,12 +240,18 @@ public class BookingBean implements Comparable<BookingBean> {
 	if (getDate() == null) {
 	    return false;
 	}
+	if (!otherBooking.getGuestName().equals(getGuestName())) {
+	    return false;
+	}
 	final boolean result = getDate().equals(otherBooking.getDate().plusDays(1));
 	return result;
     }
 
     private boolean isReverseConnected(final BookingBean otherBooking) {
 	if (getDate() == null) {
+	    return false;
+	}
+	if (!otherBooking.getGuestName().equals(getGuestName())) {
 	    return false;
 	}
 	final boolean result = getDate().equals(otherBooking.getDate().minusDays(1));
@@ -292,8 +313,22 @@ public class BookingBean implements Comparable<BookingBean> {
 
     @Override
     public String toString() {
-	return "Booking: Date: " + getRoom().getDateBean().getDate() + " Guest:" + getGuestName() + ", Source:"
-		+ getSource();
+	final StringBuilder sb = new StringBuilder("Booking:");
+	if (getRoom() != null) {
+	    sb.append("room:");
+	    sb.append(getRoom().getName());
+	    sb.append(", ");
+	    if (getRoom().getDate() != null) {
+		sb.append("date: ");
+		sb.append(getRoom().getDate());
+		sb.append(", ");
+	    }
+	}
+	sb.append("guest:");
+	sb.append(getGuestName());
+	sb.append(", source:");
+	sb.append(getSource());
+	return sb.toString();
     }
 
 }

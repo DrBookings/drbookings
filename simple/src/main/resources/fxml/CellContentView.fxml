@@ -7,18 +7,18 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 
-<VBox fx:controller="com.github.drbookings.ui.controller.CellContentController"
-	styleClass="root" xmlns:fx="http://javafx.com/fxml" alignment="center">
+<VBox fx:id="cellContainer" fx:controller="com.github.drbookings.ui.controller.CellContentController"
+	styleClass="root" xmlns:fx="http://javafx.com/fxml" alignment="center" spacing="0">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 	</stylesheets>
 
 
 	<children>
-		<VBox VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckIn" alignment="CENTER"/>
-		<VBox VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesStay" alignment="CENTER"/>
-		<VBox VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckOut" alignment="CENTER"/>
-
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckIn" alignment="CENTER"/>
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesStay" alignment="CENTER"/>
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckOut" alignment="CENTER"/>
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="cleaning" alignment="CENTER"/>
 	</children>
 
 </VBox>
