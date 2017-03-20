@@ -27,7 +27,7 @@
 				<Menu text="Settings">
 					<items>
 						<MenuItem text="Colors"
-							onAction="#handleMenuItemSettingsColor" />
+							onAction="#handleMenuItemSettingsColors" />
 					</items>
 				</Menu>
 			</menus>

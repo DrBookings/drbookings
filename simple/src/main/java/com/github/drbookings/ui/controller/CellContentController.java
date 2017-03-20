@@ -66,7 +66,7 @@ public class CellContentController implements Initializable {
 	if (booking.getBruttoEarnings() <= 0) {
 	    l.setStyle("-fx-text-fill: deeppink;-fx-font-weight: bold;");
 	} else {
-	    l.setStyle("-fx-opacity:0.3;");
+	    l.setStyle("-fx-opacity:0.5;");
 	}
 	return l;
 
