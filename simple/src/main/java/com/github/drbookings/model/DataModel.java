@@ -483,6 +483,16 @@ public class DataModel {
 	}
     }
 
+    public void setAllCheckInNote(final BookingBean booking, final String checkInNote) {
+	final List<BookingBean> bookings = getAllSame(booking);
+	for (final BookingBean bb : bookings) {
+	    if (!bb.hasCheckInNote() || checkInNote == null || checkInNote.length() < 1) {
+		bb.setCheckInNote(checkInNote);
+	    }
+	}
+
+    }
+
     public synchronized void setData(final Collection<? extends DateBean> data) throws OverbookingException {
 	this.data.clear();
 	for (final DateBean db : data) {
