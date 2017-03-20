@@ -74,9 +74,10 @@ public class AddBookingController implements Initializable {
 		}
 		getDataModel().add(b);
 	    } catch (final OverbookingException e) {
-		if (logger.isErrorEnabled()) {
-		    logger.error(e.getLocalizedMessage(), e);
+		if (logger.isDebugEnabled()) {
+		    logger.debug(e.getLocalizedMessage(), e);
 		}
+		showError("Overbooking", e.getLocalizedMessage());
 	    }
 	    final Stage stage = (Stage) buttonOK.getScene().getWindow();
 	    stage.close();
@@ -87,17 +88,17 @@ public class AddBookingController implements Initializable {
     @FXML
     void handleButtonSetCheckInDate(final ActionEvent event) {
 	final LocalDate date = datePickerCheckIn.getValue();
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Selected Check-in " + date);
-	}
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Selected Check-in " + date);
+	// }
     }
 
     @FXML
     void handleButtonSetCheckOutDate(final ActionEvent event) {
 	final LocalDate date = datePickerCheckOut.getValue();
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Selected Check-out " + date);
-	}
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Selected Check-out " + date);
+	// }
     }
 
     @Override

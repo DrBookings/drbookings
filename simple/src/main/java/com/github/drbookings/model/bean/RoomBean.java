@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -54,6 +55,11 @@ public class RoomBean implements Comparable<RoomBean> {
     /**
      * Internally updated.
      */
+    private final BooleanProperty needsCleaning = new SimpleBooleanProperty();
+
+    /**
+     * Internally updated.
+     */
     private final BooleanProperty hasCleaning = new SimpleBooleanProperty();
 
     /**
@@ -63,34 +69,41 @@ public class RoomBean implements Comparable<RoomBean> {
 
     private String id;
 
-    RoomBean() {
+    protected RoomBean() {
 	setId(UUID.randomUUID().toString());
-
 	bindBookedProperty();
 	bindHasCleaningProperty();
 	bindDateProperty();
+	bindNeedsCleaningProperty();
 
     }
 
-    RoomBean(final String name) {
+    public RoomBean(final String name) {
 	this();
 	setName(name);
 
     }
 
+    public RoomBean(final String roomName, final BookingBean bookingBean) {
+	this(roomName);
+	addBookingNoCheck(bookingBean);
+    }
+
     public synchronized RoomBean addBooking(final BookingBean booking) throws OverbookingException {
 
-	if (getBookings().contains(booking)) {
-	    throw new IllegalArgumentException("Booking already present");
+	if (bookingsProperty().contains(booking)) {
+	    if (!hasCheckOut()) {
+		throw new OverbookingException("Cannot add same booking again " + getDate());
+	    } else {
+		// silently ignore
+		// return this;
+	    }
 	}
-	bookingsProperty().add(booking);
-	// isCheckOut() needs a room set
-	// if (bookingsProperty().filtered(b -> !b.isCheckOut()).size() > 1)
-	// {
-	// throw new OverbookingException();
-	// }
-
-	booking.setRoom(this);
+	if (bookingsProperty().filtered(b -> b.isCheckIn()).size() > 0
+		|| bookingsProperty().filtered(b -> !b.isCheckOut()).size() > 0) {
+	    throw new OverbookingException("Cannot add " + booking + " to room " + this);
+	}
+	addBookingNoCheck(booking);
 	return this;
     }
 
@@ -108,14 +121,19 @@ public class RoomBean implements Comparable<RoomBean> {
 	    if (bookingsProperty().filtered(b -> !b.isCheckOut()).size() > 1) {
 		throw new OverbookingException();
 	    }
+	    booking.setRoom(this);
 	}
-	booking.setRoom(this);
 	return this;
+    }
+
+    private synchronized void addBookingNoCheck(final BookingBean booking) {
+	bookingsProperty().add(booking);
+	booking.setRoom(this);
     }
 
     private void bindBookedProperty() {
 	bookedProperty().bind(Bindings.createBooleanBinding(
-		() -> bookingsProperty().filtered(b -> b.isCheckOut()).size() > 0, bookingsProperty()));
+		() -> bookingsProperty().filtered(new NightCountFilter()).size() > 0, bookingsProperty()));
     }
 
     private void bindDateProperty() {
@@ -135,12 +153,35 @@ public class RoomBean implements Comparable<RoomBean> {
 
     }
 
+    private void bindNeedsCleaningProperty() {
+	needsCleaningProperty()
+		.bind(Bindings.createBooleanBinding(calculateNeedsCleaning(), bookingsProperty(), cleaningProperty()));
+
+    }
+
     public BooleanProperty bookedProperty() {
 	return this.booked;
     }
 
     public ListProperty<BookingBean> bookingsProperty() {
 	return this.bookings;
+    }
+
+    private Callable<Boolean> calculateNeedsCleaning() {
+	return () -> {
+	    if (RoomBean.this.hasCleaning()) {
+		return false;
+	    }
+	    if (RoomBean.this.hasCheckOut() && RoomBean.this.hasCheckIn()) {
+		return !RoomBean.this.getCheckIn().get().getGuestName()
+			.equals(RoomBean.this.getCheckOut().get().getGuestName());
+	    }
+	    if (!RoomBean.this.hasCheckOut()) {
+		return false;
+	    }
+	    return searchNextCleaning();
+	};
+
     }
 
     public StringProperty cleaningProperty() {
@@ -166,16 +207,26 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this.date;
     }
 
-    public Optional<BookingBean> getBooking(final String guestName) {
-	final List<BookingBean> bookings = bookingsProperty().filtered(b -> b.getGuestName().equals(guestName));
-	if (bookings.size() > 1) {
-	    // if guest checks in and out (different booking source)
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj) {
+	    return true;
 	}
-	if (bookings.isEmpty()) {
-	    return Optional.empty();
+	if (obj == null) {
+	    return false;
 	}
-	return Optional.of(bookings.get(0));
-
+	if (!(obj instanceof RoomBean)) {
+	    return false;
+	}
+	final RoomBean other = (RoomBean) obj;
+	if (getName() == null) {
+	    if (other.getName() != null) {
+		return false;
+	    }
+	} else if (!getName().equals(other.getName())) {
+	    return false;
+	}
+	return true;
     }
 
     @XmlElement(name = "bookings")
@@ -184,16 +235,40 @@ public class RoomBean implements Comparable<RoomBean> {
     }
 
     public Optional<BookingBean> getCheckIn() {
+	if (getDateBean() == null) {
+	    return Optional.empty();
+	}
 	return getDateBean().getDataModel().getCheckIn(this);
     }
 
     public Optional<BookingBean> getCheckOut() {
+	if (getDateBean() == null) {
+	    return Optional.empty();
+	}
 	return getDateBean().getDataModel().getCheckOut(this);
     }
 
     @XmlElement
     public String getCleaning() {
 	return this.cleaningProperty().get();
+    }
+
+    public Optional<BookingBean> getConnectedBooking(final BookingBean bookingBean) {
+	final List<BookingBean> bookings = bookingsProperty().filtered(new ConnectedBookingFilter(bookingBean));
+	if (bookings.size() > 1) {
+	    // if guest checks in and out (different booking source)
+	}
+	if (bookings.isEmpty()) {
+	    return Optional.empty();
+	}
+	return Optional.of(bookings.get(0));
+    }
+
+    public Optional<RoomBean> getConnectedNext() {
+	if (getDateBean() == null) {
+	    return Optional.empty();
+	}
+	return getDateBean().getDataModel().getConnectedNext(this);
     }
 
     public LocalDate getDate() {
@@ -218,10 +293,16 @@ public class RoomBean implements Comparable<RoomBean> {
     }
 
     public boolean hasCheckIn() {
+	if (getDateBean() == null) {
+	    return false;
+	}
 	return getDateBean().getDataModel().hasCheckIn(this);
     }
 
     public boolean hasCheckOut() {
+	if (getDateBean() == null) {
+	    return false;
+	}
 	return getDateBean().getDataModel().hasCheckOut(this);
     }
 
@@ -233,8 +314,22 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this.hasCleaning;
     }
 
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (getBookings() == null ? 0 : getBookings().hashCode());
+	result = prime * result + (getCleaning() == null ? 0 : getCleaning().hashCode());
+	result = prime * result + (getName() == null ? 0 : getName().hashCode());
+	return result;
+    }
+
     public boolean isBooked() {
 	return this.bookedProperty().get();
+    }
+
+    public boolean isNeedsCleaning() {
+	return this.needsCleaningProperty().get();
     }
 
     public void merge(final RoomBean room) throws OverbookingException {
@@ -248,10 +343,29 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this.name;
     }
 
+    public BooleanProperty needsCleaningProperty() {
+	return this.needsCleaning;
+    }
+
     public synchronized RoomBean removeBooking(final BookingBean booking) {
 	booking.setRoom(null);
 	bookingsProperty().remove(booking);
 	return this;
+    }
+
+    private Boolean searchNextCleaning() {
+	Optional<RoomBean> next = getConnectedNext();
+	while (next.isPresent()) {
+	    final RoomBean rb = next.get();
+	    if (rb.hasCleaning()) {
+		return false;
+	    }
+	    if (rb.hasCheckIn()) {
+		return true;
+	    }
+	    next = rb.getConnectedNext();
+	}
+	return true;
     }
 
     /**
@@ -304,9 +418,17 @@ public class RoomBean implements Comparable<RoomBean> {
 	return this;
     }
 
+    /**
+     * Bound property.
+     */
+    @SuppressWarnings("unused")
+    private void setNeedsCleaning(final boolean needsCleaning) {
+	this.needsCleaningProperty().set(needsCleaning);
+    }
+
     @Override
     public String toString() {
-	return "Room: booking:" + getBookings() + ", cleaning:" + getCleaning() + ", name:" + getName();
+	return "Room:name:" + getName() + ", bookings:" + getBookings().size() + ", cleaning:" + getCleaning();
     }
 
 }

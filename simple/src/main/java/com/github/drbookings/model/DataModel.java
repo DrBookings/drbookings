@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,10 +27,13 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.DateRange;
 import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.ModelConfiguration.NightCounting;
 import com.github.drbookings.model.bean.BookingBean;
 import com.github.drbookings.model.bean.DateBean;
 import com.github.drbookings.model.bean.RoomBean;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -36,6 +41,21 @@ import javafx.collections.ObservableList;
 public class DataModel {
 
     private static final Logger logger = LoggerFactory.getLogger(DataModel.class);
+
+    private static Predicate<BookingBean> getBookingSourceRegexFilter(final String bookingSourceRegex) {
+	return b -> b.getSource().matches(bookingSourceRegex);
+    }
+
+    private static Predicate<BookingBean> getInclusiveAfterDateFilter(final LocalDate date) {
+	return b -> b.getDate().plusDays(1).isAfter(date);
+    }
+
+    private static Predicate<BookingBean> getInclusiveBeforeDateFilter(final LocalDate date) {
+	return b -> b.getDate().minusDays(1).isBefore(date);
+    }
+
+    private final ObjectProperty<ModelConfiguration> modelConfiguration = new SimpleObjectProperty<>(
+	    new ModelConfiguration());
 
     private final ObservableList<DateBean> data = FXCollections.observableArrayList(DateBean.extractor());
 
@@ -57,26 +77,63 @@ public class DataModel {
     public synchronized void add(final DateBean db) throws OverbookingException {
 	final DateBean db2 = dataMap.get(db.getDate());
 	if (db2 == null) {
-	    data.add(db);
-	    dataMap.put(db.getDate(), db);
-	    db.setDataModel(this);
+	    addNoCheck(db);
 	} else {
 	    db2.merge(db);
 	}
+	fillMissing();
     }
 
-    synchronized void add(final LocalDate date) {
-	try {
-	    add(new DateBean(date));
-	} catch (final OverbookingException e) {
-	    // cannot happen
-	    e.printStackTrace();
+    public synchronized void add(final LocalDate date, final BookingBean booking) throws OverbookingException {
+	final RoomBean rb = booking.getRoom();
+	if (rb == null) {
+	    throw new IllegalArgumentException("Booking room not set");
+	}
+	add(new DateBean(date).addRoom(rb));
+    }
+
+    public synchronized void add(final LocalDate startDate, final LocalDate endDate, final BookingBean booking)
+	    throws OverbookingException {
+	for (final LocalDate d : new DateRange(startDate, endDate)) {
+	    add(d, new BookingBean(booking));
 	}
     }
 
+    public void add(final LocalDate startDate, final LocalDate endDate, final String guestName, final String roomName)
+	    throws OverbookingException {
+	for (final LocalDate ld : new DateRange(startDate, endDate)) {
+	    final DateBean db = new DateBean(ld).addRoom(new RoomBean(roomName, new BookingBean(guestName)));
+	    add(db);
+	}
+    }
+
+    private synchronized void addNoCheck(final DateBean db) {
+	data.add(db);
+	dataMap.put(db.getDate(), db);
+	db.setDataModel(this);
+	Collections.sort(data);
+    }
+
+    private void addNoCheck(final LocalDate d) {
+	addNoCheck(new DateBean(d));
+
+    }
+
     public synchronized float calculateBruttoEarningsPerNight(final BookingBean booking) {
-	if (isCheckOut(booking)) {
-	    return 0;
+	final NightCounting nightCounting = getModelConfiguration().getNightCounting();
+	switch (nightCounting) {
+	case DAY_AFTER:
+	    if (isCheckIn(booking)) {
+		return 0;
+	    }
+	    break;
+	case DAY_BEFORE:
+	    if (isCheckOut(booking)) {
+		return 0;
+	    }
+	    break;
+	default:
+	    break;
 	}
 	final int nightCount = getNightCount(booking);
 	return booking.getBruttoEarnings() / nightCount;
@@ -86,26 +143,58 @@ public class DataModel {
 	final List<LocalDate> keyList = new ArrayList<>(dataMap.keySet());
 	final Collection<LocalDate> toAdd = new HashSet<>();
 	Collections.sort(keyList);
-	final LocalDate last = null;
+	LocalDate last = null;
 	for (final LocalDate d : keyList) {
 	    if (last != null) {
 		if (d.equals(last.plusDays(1))) {
 		    // ok
 		} else {
-		    toAdd.addAll(new DateRange(last, d).toList());
+		    toAdd.addAll(new DateRange(last.plusDays(1), d.minusDays(1)).toList());
 		}
 	    }
+	    last = d;
 	}
 	for (final LocalDate d : toAdd) {
-	    add(d);
+	    addNoCheck(d);
 	}
     }
 
     public synchronized List<DateBean> getAfter(final LocalDate date) {
 
-	final List<DateBean> result = data.stream().filter(db -> db.getDate().isAfter(date.minusDays(1)))
+	final List<DateBean> result = data.stream().filter(db -> db.getDate().isAfter(date))
 		.collect(Collectors.toList());
 	return result;
+    }
+
+    public List<BookingBean> getAllBookings() {
+	final List<BookingBean> result = new ArrayList<>();
+	for (final DateBean db : data) {
+	    result.addAll(db.getBookings());
+	}
+	return result;
+    }
+
+    public Stream<BookingBean> getAllBookingsStream() {
+	final List<Stream<BookingBean>> bookingStreams = getBookingStreams();
+	if (bookingStreams.isEmpty()) {
+	    return Stream.empty();
+	}
+	Stream<BookingBean> result = bookingStreams.get(0);
+	for (int i = 1; i < bookingStreams.size(); i++) {
+	    result = Stream.concat(result, bookingStreams.get(i));
+	}
+	return result;
+    }
+
+    public synchronized Stream<BookingBean> getAllBookingsStreamBetween(final LocalDate startDate,
+	    final LocalDate endDate) {
+	return getAllBookingsStream()
+		.filter(getInclusiveAfterDateFilter(startDate).and(getInclusiveBeforeDateFilter(endDate)));
+    }
+
+    public synchronized Stream<BookingBean> getAllBookingsStreamBetween(final LocalDate startDate,
+	    final LocalDate endDate, final String regexSource) {
+	return getAllBookingsStreamBetween(startDate, endDate).filter(getBookingSourceRegexFilter(regexSource));
     }
 
     public synchronized List<BookingBean> getAllSame(final BookingBean bookingBean) {
@@ -124,40 +213,32 @@ public class DataModel {
 	return result;
     }
 
-    public synchronized double getBruttoEarnings(final LocalDate startDate, final LocalDate endDate,
-	    final String source) {
+    public List<BookingBean> getBookings() {
+	return getAllBookingsStream().collect(Collectors.toList());
+    }
 
-	double result = 0;
-	for (final DateBean db : data) {
-	    if (db.getDate().isAfter(startDate.minusDays(1)) && db.getDate().isBefore(endDate)) {
-		for (final RoomBean rb : db) {
-		    for (final BookingBean bb : rb.getBookings()) {
-			if (bb.getSource().matches(source)) {
-			    result += bb.getBruttoEarningsPerNight();
-			}
-		    }
-		}
-	    }
-	}
-	return result;
+    public List<Stream<BookingBean>> getBookingStreams() {
+	return getData().stream().map(d -> d.getBookings().stream()).collect(Collectors.toList());
+    }
+
+    public synchronized double getBruttoEarnings(final LocalDate startDate, final LocalDate endDate,
+	    final String regexSource) {
+	return getAllBookingsStreamBetween(startDate, endDate, regexSource)
+		.mapToDouble(b -> b.getBruttoEarningsPerNight()).sum();
     }
 
     public synchronized Map<String, List<BookingBean>> getByGuestName(final LocalDate startDate,
 	    final LocalDate endDate) {
 	final Map<String, List<BookingBean>> map = new LinkedHashMap<>();
-	for (final DateBean db : data) {
-	    if (db.getDate().isAfter(startDate) && db.getDate().isBefore(endDate.plusDays(1))) {
-		for (final RoomBean rb : db) {
-		    for (final BookingBean bb : rb.getBookings()) {
-			List<BookingBean> bookings = map.get(bb.getGuestName());
-			if (bookings == null) {
-			    bookings = new ArrayList<>();
-			    map.put(bb.getGuestName(), bookings);
-			}
-			bookings.add(bb);
-		    }
-		}
+	for (final Iterator<BookingBean> bookingsIterator = getAllBookingsStreamBetween(startDate, endDate)
+		.iterator(); bookingsIterator.hasNext();) {
+	    final BookingBean nextBooking = bookingsIterator.next();
+	    List<BookingBean> bookings = map.get(nextBooking.getGuestName());
+	    if (bookings == null) {
+		bookings = new ArrayList<>();
+		map.put(nextBooking.getGuestName(), bookings);
 	    }
+	    bookings.add(nextBooking);
 	}
 	return map;
     }
@@ -165,7 +246,7 @@ public class DataModel {
     /**
      * @return the first booking that is check-in
      */
-    public Optional<BookingBean> getCheckIn(final RoomBean room) {
+    public synchronized Optional<BookingBean> getCheckIn(final RoomBean room) {
 	for (final BookingBean bb : room.getBookings()) {
 	    if (isCheckIn(bb)) {
 		return Optional.of(bb);
@@ -177,7 +258,7 @@ public class DataModel {
     /**
      * @return the first booking that is check-out
      */
-    public Optional<BookingBean> getCheckOut(final RoomBean room) {
+    public synchronized Optional<BookingBean> getCheckOut(final RoomBean room) {
 	for (final BookingBean bb : room.getBookings()) {
 	    if (isCheckOut(bb)) {
 		return Optional.of(bb);
@@ -189,7 +270,7 @@ public class DataModel {
     public synchronized Optional<BookingBean> getConnectedNext(final BookingBean bookingBean) {
 	final Optional<RoomBean> room = getConnectedNext(bookingBean.getRoom());
 	if (room.isPresent()) {
-	    return room.get().getBooking(bookingBean.getGuestName());
+	    return room.get().getConnectedBooking(bookingBean);
 	}
 	return Optional.empty();
     }
@@ -213,7 +294,7 @@ public class DataModel {
     public synchronized Optional<BookingBean> getConnectedPrevious(final BookingBean bookingBean) {
 	final Optional<RoomBean> room = getConnectedPrevious(bookingBean.getRoom());
 	if (room.isPresent()) {
-	    return room.get().getBooking(bookingBean.getGuestName());
+	    return room.get().getConnectedBooking(bookingBean);
 	}
 	return Optional.empty();
     }
@@ -258,39 +339,38 @@ public class DataModel {
 	return result;
     }
 
+    public ModelConfiguration getModelConfiguration() {
+	return this.modelConfigurationProperty().get();
+    }
+
     public int getNightCount(final BookingBean bb) {
 	return getAllSame(bb).size() - 1;
     }
 
-    public synchronized int getNumberOfBookingDays(final LocalDate startDate, final LocalDate endDate,
-	    final String source) {
-	int result = 0;
-	for (final DateBean db : data) {
-	    if (db.getDate().isAfter(startDate) && db.getDate().isBefore(endDate.plusDays(1))) {
-		for (final RoomBean rb : db) {
-		    for (final BookingBean bb : rb.getBookings()) {
-			if (bb.getSource().matches(source)) {
-			    result++;
-			}
-		    }
-		}
-	    }
-	}
-	return result;
+    public synchronized long getNumberOfBookingDays(final LocalDate startDate, final LocalDate endDate) {
+	return getAllBookingsStreamBetween(startDate, endDate).count();
     }
 
-    public synchronized int getNumberOfBookingNights(final LocalDate startDate, final LocalDate endDate,
-	    final String source) throws IllegalStateException {
-	final int days = getNumberOfBookingDays(startDate, endDate, source);
-	final int numberOfDistinctBookings = getNumberOfDistinctBookings(startDate, endDate, source);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Distinct bookings for " + source + ": " + numberOfDistinctBookings);
-	}
+    public synchronized long getNumberOfBookingDays(final LocalDate startDate, final LocalDate endDate,
+	    final String source) {
+	return getAllBookingsStreamBetween(startDate, endDate, source).count();
+    }
+
+    public synchronized long getNumberOfBookingNights(final LocalDate startDate, final LocalDate endDate) {
+	final long days = getNumberOfBookingDays(startDate, endDate);
+	final long numberOfDistinctBookings = getNumberOfDistinctBookings(startDate, endDate);
 	return days - numberOfDistinctBookings;
     }
 
-    public synchronized int getNumberOfDistinctBookings(final LocalDate startDate, final LocalDate endDate,
-	    final String source) throws IllegalStateException {
+    public synchronized long getNumberOfBookingNights(final LocalDate startDate, final LocalDate endDate,
+	    final String source) {
+	final long days = getNumberOfBookingDays(startDate, endDate, source);
+	final long numberOfDistinctBookings = getNumberOfDistinctBookings(startDate, endDate, source);
+	final long result = days - numberOfDistinctBookings;
+	return result;
+    }
+
+    public synchronized int getNumberOfDistinctBookings(final LocalDate startDate, final LocalDate endDate) {
 	final Map<String, List<BookingBean>> map = getByGuestName(startDate, endDate);
 	if (map.isEmpty()) {
 	    return 0;
@@ -299,6 +379,35 @@ public class DataModel {
 	for (final Entry<String, List<BookingBean>> e : map.entrySet()) {
 	    boolean foundMatch = false;
 	    final List<BookingBean> bookings = e.getValue();
+	    Collections.sort(bookings);
+	    BookingBean last = null;
+	    for (final BookingBean b : bookings) {
+		foundMatch = true;
+		if (last != null) {
+		    if (!last.isConnected(b)) {
+			cnt++;
+		    }
+		}
+		last = b;
+	    }
+	    if (foundMatch) {
+		cnt++;
+	    }
+	}
+	return cnt;
+    }
+
+    public synchronized int getNumberOfDistinctBookings(final LocalDate startDate, final LocalDate endDate,
+	    final String source) {
+	final Map<String, List<BookingBean>> map = getByGuestName(startDate, endDate);
+	if (map.isEmpty()) {
+	    return 0;
+	}
+	int cnt = 0;
+	for (final Entry<String, List<BookingBean>> e : map.entrySet()) {
+	    boolean foundMatch = false;
+	    final List<BookingBean> bookings = e.getValue();
+	    Collections.sort(bookings);
 	    BookingBean last = null;
 	    for (final BookingBean b : bookings) {
 		if (b.getSource().matches(source)) {
@@ -328,22 +437,16 @@ public class DataModel {
 
     public synchronized boolean isCheckIn(final BookingBean booking) {
 	final Optional<BookingBean> bb = getConnectedPrevious(booking);
-	if (bb.isPresent()) {
-	    if (bb.get().hasGuest() || bb.get().getGuestName().equals(booking.getGuestName())) {
-		return false;
-	    }
-	}
-	return true;
+	return !bb.isPresent();
     }
 
     public synchronized boolean isCheckOut(final BookingBean booking) {
 	final Optional<BookingBean> bb = getConnectedNext(booking);
-	if (bb.isPresent()) {
-	    if (booking.getGuestName().equals(bb.get().getGuestName())) {
-		return false;
-	    }
-	}
-	return true;
+	return !bb.isPresent();
+    }
+
+    public ObjectProperty<ModelConfiguration> modelConfigurationProperty() {
+	return this.modelConfiguration;
     }
 
     public synchronized void removeAll(final BookingBean... bookings) {
@@ -374,7 +477,9 @@ public class DataModel {
     public void setAllBruttoEarnings(final BookingBean booking, final float earnings) {
 	final List<BookingBean> bookings = getAllSame(booking);
 	for (final BookingBean bb : bookings) {
-	    bb.setBruttoEarnings(earnings);
+	    if (bb.getBruttoEarnings() == 0) {
+		bb.setBruttoEarnings(earnings);
+	    }
 	}
     }
 
@@ -388,4 +493,9 @@ public class DataModel {
     private void setId(final String id) {
 	this.id = id;
     }
+
+    public void setModelConfiguration(final ModelConfiguration modelConfiguration) {
+	this.modelConfigurationProperty().set(modelConfiguration);
+    }
+
 }

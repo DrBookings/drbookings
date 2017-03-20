@@ -20,6 +20,10 @@ public class Bookings {
 	return result;
     }
 
+    public static String getRegexAllElse() {
+	return "(?!airbnb|booking)";
+    }
+
     public static Set<String> guestNameView(final Collection<? extends BookingBean> bookings) {
 	return bookings.stream().map(g -> g.getGuestName()).collect(Collectors.toCollection(LinkedHashSet::new));
     }

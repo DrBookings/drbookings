@@ -3,44 +3,81 @@ package com.github.drbookings.ui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.drbookings.model.Bookings;
 import com.github.drbookings.model.bean.BookingBean;
 import com.github.drbookings.model.bean.RoomBean;
+import com.github.drbookings.ui.Styles;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 public class CellContentController implements Initializable {
 
-    private static Node buildEntryCheckIn(final String guestName) {
-	final VBox result = new VBox();
-	result.setStyle("-fx-background-color: darkorange;");
-	final Label l = new Label("Check-in " + guestName);
-	l.setMaxWidth(Double.POSITIVE_INFINITY);
-	l.setAlignment(Pos.CENTER);
-	result.getChildren().add(l);
-	return result;
+    private static Logger logger = LoggerFactory.getLogger(CellContentController.class);
+
+    private static Node buildEntryCheckIn(final BookingBean bookingBean) {
+
+	final Label l = getNewLabel("Check-in " + bookingBean.getGuestName());
+	if (bookingBean.getRoom().getDateBean().getDataModel().getConnectedPrevious(bookingBean.getRoom())
+		.isPresent()) {
+	    final RoomBean rb = bookingBean.getRoom().getDateBean().getDataModel()
+		    .getConnectedPrevious(bookingBean.getRoom()).get();
+	    if (Bookings.guestNameView(rb.getBookings()).contains(bookingBean.getGuestName())) {
+		// ignore same guest check-in
+		return l;
+	    }
+	}
+	l.setStyle("-fx-background-color: darkorange;");
+	return l;
     }
 
-    private static Node buildEntryCheckOut(final String guestName) {
-	final VBox result = new VBox();
-	final Label l = new Label("Check-out " + guestName);
-	l.setMaxWidth(Double.POSITIVE_INFINITY);
-	l.setAlignment(Pos.CENTER);
-	result.getChildren().add(l);
-	return result;
+    private static Node buildEntryCheckOut(final BookingBean booking) {
+	final Label l = getNewLabel("Check-out " + booking.getGuestName());
+	if (booking.getBruttoEarnings() <= 0) {
+	    l.setStyle("-fx-text-fill: deeppink;-fx-font-weight: bold;");
+	}
+	return l;
     }
 
-    private static Node buildEntryStay(final String guestName) {
-	final VBox result = new VBox();
-	final Label l = new Label(guestName);
+    private static Node buildEntryCleaning(final RoomBean rb) {
+	final Label l = getNewLabel("");
+	String s = "Cleaning " + rb.getCleaning();
+	if (rb.isNeedsCleaning()) {
+	    s = "No Cleaning";
+	    l.setStyle("-fx-background-color: red;-fx-font-weight: bold;");
+	} else {
+	    l.setStyle("-fx-background-color: khaki;");
+	}
+	l.setText(s);
+	return l;
+    }
+
+    private static Node buildEntryStay(final BookingBean booking) {
+	final Label l = getNewLabel(booking.getGuestName());
+	if (booking.getBruttoEarnings() <= 0) {
+	    l.setStyle("-fx-text-fill: deeppink;-fx-font-weight: bold;");
+	} else {
+	    l.setStyle("-fx-opacity:0.3;");
+	}
+	return l;
+
+    }
+
+    private static Label getNewLabel(final String text) {
+	final Label l = new Label(text);
 	l.setMaxWidth(Double.POSITIVE_INFINITY);
 	l.setAlignment(Pos.CENTER);
-	result.getChildren().add(l);
-	return result;
+	l.setPadding(new Insets(2));
+	return l;
     }
 
     @FXML
@@ -52,27 +89,86 @@ public class CellContentController implements Initializable {
     @FXML
     private VBox guestNamesStay;
 
+    @FXML
+    private VBox cleaning;
+
+    @FXML
+    private Parent cellContainer;
+
+    public Parent getCellContainer() {
+	return cellContainer;
+    }
+
+    public VBox getCleaning() {
+	return cleaning;
+    }
+
+    public VBox getGuestNamesCheckIn() {
+	return guestNamesCheckIn;
+    }
+
+    public VBox getGuestNamesCheckOut() {
+	return guestNamesCheckOut;
+    }
+
+    public VBox getGuestNamesStay() {
+	return guestNamesStay;
+    }
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
     }
 
-    public boolean setData(final RoomBean roomBean) {
-	boolean changed = false;
-	guestNamesCheckIn.getChildren().clear();
+    public void setCellContainer(final Parent cellContainer) {
+	this.cellContainer = cellContainer;
+    }
+
+    public void setCleaning(final VBox cleaning) {
+	this.cleaning = cleaning;
+    }
+
+    public void setData(final RoomBean roomBean) {
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Updating cell content for " + roomBean);
+	// }
+	if (roomBean.hasCleaning() || roomBean.isNeedsCleaning()) {
+	    cleaning.getChildren().add(buildEntryCleaning(roomBean));
+	} else {
+	    cleaning.getChildren().clear();
+	}
 	guestNamesCheckOut.getChildren().clear();
 	guestNamesStay.getChildren().clear();
+	guestNamesCheckIn.getChildren().clear();
+
+	BookingBean last = null;
 	for (final BookingBean bb : roomBean.getBookings()) {
 	    if (bb.isCheckOut()) {
-		guestNamesCheckIn.getChildren().add(buildEntryCheckOut(bb.getGuestName()));
+		guestNamesCheckOut.getChildren().add(buildEntryCheckOut(bb));
 	    } else if (bb.isCheckIn()) {
-		guestNamesCheckOut.getChildren().add(buildEntryCheckIn(bb.getGuestName()));
+		guestNamesCheckIn.getChildren().add(buildEntryCheckIn(bb));
 	    } else {
-		guestNamesStay.getChildren().add(buildEntryStay(bb.getGuestName()));
+		guestNamesStay.getChildren().add(buildEntryStay(bb));
 	    }
-	    changed = true;
+	    last = bb;
 	}
-	return changed;
+
+	if (last != null) {
+	    cellContainer.setStyle(Styles.getBackgroundStyleSource(last.getSource()));
+	}
+	cellContainer.requestLayout();
+    }
+
+    public void setGuestNamesCheckIn(final VBox guestNamesCheckIn) {
+	this.guestNamesCheckIn = guestNamesCheckIn;
+    }
+
+    public void setGuestNamesCheckOut(final VBox guestNamesCheckOut) {
+	this.guestNamesCheckOut = guestNamesCheckOut;
+    }
+
+    public void setGuestNamesStay(final VBox guestNamesStay) {
+	this.guestNamesStay = guestNamesStay;
     }
 
 }

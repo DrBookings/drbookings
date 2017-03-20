@@ -65,6 +65,7 @@ public class RoomDetailsController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
 	updateUIRooms(CellSelectionManager.getInstance().getSelection());
 	CellSelectionManager.getInstance().getSelection().addListener(roomListener);
+
     }
 
     public void shutDown() {

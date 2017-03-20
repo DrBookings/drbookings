@@ -19,10 +19,16 @@
 					</items>
 				</Menu>
 				<Menu text="View">
-				<items>
-				<MenuItem fx:id="menuItemCleaningPlan" text="Show Cleaning Plan"
+					<items>
+						<MenuItem text="Show Cleaning Plan"
 							onAction="#handleMenuItemCleaningPlan" />
-				</items>
+					</items>
+				</Menu>
+				<Menu text="Settings">
+					<items>
+						<MenuItem text="Colors"
+							onAction="#handleMenuItemSettingsColor" />
+					</items>
 				</Menu>
 			</menus>
 		</MenuBar>
@@ -31,7 +37,7 @@
 				<URL value="@/css/root.css" />
 			</stylesheets>
 			<padding>
-				<Insets bottom="10" left="25" right="25" top="25" />
+				<Insets bottom="10" left="10" right="10" top="10" />
 			</padding>
 			<children>
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
@@ -41,7 +47,9 @@
 				<TableView fx:id="tableView" editable="true" maxWidth="Infinity"
 					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
 					GridPane.vgrow="ALWAYS" GridPane.columnSpan="2">
-					 <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+					<columnResizePolicy>
+						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+					</columnResizePolicy>
 					<columns>
 						<TableColumn prefWidth="140" text="Date" fx:id="cDate">
 							<cellValueFactory>
@@ -54,23 +62,30 @@
 							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio2" prefWidth="120" text="#2">
-						<cellValueFactory>
+							<cellValueFactory>
 								<PropertyValueFactory property="self" />
 							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio3" prefWidth="120" text="#3">
-						<cellValueFactory>
+							<cellValueFactory>
 								<PropertyValueFactory property="self" />
 							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cStudio4" prefWidth="120" text="#4">
-						<cellValueFactory>
+							<cellValueFactory>
 								<PropertyValueFactory property="self" />
 							</cellValueFactory>
 						</TableColumn>
-						<TableColumn fx:id="cAuslastung" prefWidth="80" text="Auslastung">
-						<cellValueFactory>
-								<PropertyValueFactory property="cellBean" />
+						<TableColumn fx:id="cAuslastung" prefWidth="30"
+							text="Auslastung">
+							<cellValueFactory>
+								<PropertyValueFactory property="self" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="cBruttoEarningsPerNightTotal"
+							prefWidth="30" text="Earnings per Day">
+							<cellValueFactory>
+								<PropertyValueFactory property="totalEarningsPerNight" />
 							</cellValueFactory>
 						</TableColumn>
 					</columns>

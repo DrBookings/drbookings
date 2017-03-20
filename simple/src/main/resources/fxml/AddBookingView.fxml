@@ -35,6 +35,6 @@
 		GridPane.rowIndex="4" />
 	<TextField fx:id="textFieldGuestName" GridPane.columnIndex="1"
 		GridPane.rowIndex="4" />
-	<Button fx:id="buttonOK" text="OK" onAction="#handleButtonOK"
+	<Button fx:id="buttonOK" text="OK" onAction="#handleButtonOK" defaultButton="true"
 		GridPane.columnIndex="1" GridPane.rowIndex="5"></Button>
 </GridPane>
