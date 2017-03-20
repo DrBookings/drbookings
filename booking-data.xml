@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data id="640d0071-9d00-406f-8b9e-340ff8228414">
+    <dates>
+        <date id="f03069b0-8f99-4be2-93c8-c6cdca4dad80">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-02-27</date>
+            <rooms>
+                <room id="4e573c67-5f62-4119-9826-969e6f47b714">
+                    <date>f03069b0-8f99-4be2-93c8-c6cdca4dad80</date>
+                    <name>1</name>
+                </room>
+                <room id="e3ea489b-2b13-4e03-8041-bca7459c86b6">
+                    <date>f03069b0-8f99-4be2-93c8-c6cdca4dad80</date>
+                    <name>2</name>
+                </room>
+                <room id="62d3b5ee-579d-4c1b-b3c0-f84d10a21c23">
+                    <date>f03069b0-8f99-4be2-93c8-c6cdca4dad80</date>
+                    <name>3</name>
+                </room>
+                <room id="7085696d-576f-4fa8-ba15-a2889d870cbc">
+                    <bookings id="50aee079-1898-4873-8d88-9cda9654a54a">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>7085696d-576f-4fa8-ba15-a2889d870cbc</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>f03069b0-8f99-4be2-93c8-c6cdca4dad80</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="c0bf211c-1019-4f1a-8ac7-9be1f0cc46e8">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-02-28</date>
+            <rooms>
+                <room id="0c9ff405-a6c3-4c06-b38e-d83678bf27c0">
+                    <date>c0bf211c-1019-4f1a-8ac7-9be1f0cc46e8</date>
+                    <name>1</name>
+                </room>
+                <room id="7d990b85-6b6f-4e0e-9e7e-72ed50697b29">
+                    <date>c0bf211c-1019-4f1a-8ac7-9be1f0cc46e8</date>
+                    <name>2</name>
+                </room>
+                <room id="92588da7-2a7f-4a05-b665-1c1d8cccc69e">
+                    <date>c0bf211c-1019-4f1a-8ac7-9be1f0cc46e8</date>
+                    <name>3</name>
+                </room>
+                <room id="398f28c8-9724-4e52-a425-e422946e7afd">
+                    <bookings id="407787f2-5be7-4843-a26a-c05115ccd79e">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>398f28c8-9724-4e52-a425-e422946e7afd</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>c0bf211c-1019-4f1a-8ac7-9be1f0cc46e8</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="ed987d21-4473-4a9f-93ca-32c6c73835e9">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-01</date>
+            <rooms>
+                <room id="296236fe-3675-484d-8e30-40b43ced6dd9">
+                    <date>ed987d21-4473-4a9f-93ca-32c6c73835e9</date>
+                    <name>1</name>
+                </room>
+                <room id="600f66f3-8d2d-45af-9f37-c37507262d3f">
+                    <date>ed987d21-4473-4a9f-93ca-32c6c73835e9</date>
+                    <name>2</name>
+                </room>
+                <room id="42e591d0-0503-4336-8f0a-06942e82a780">
+                    <date>ed987d21-4473-4a9f-93ca-32c6c73835e9</date>
+                    <name>3</name>
+                </room>
+                <room id="59ae40f7-2025-4d8b-85bb-e7c9aea46d2a">
+                    <bookings id="619d26a9-373d-423d-8196-731f5d3668f0">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>59ae40f7-2025-4d8b-85bb-e7c9aea46d2a</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>ed987d21-4473-4a9f-93ca-32c6c73835e9</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="a31cdea0-7504-4cd3-b8b8-679d96abbade">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-02</date>
+            <rooms>
+                <room id="87dae51f-0c9b-4dec-97b6-471929820b4e">
+                    <bookings id="298253c7-86f6-4b95-8ae5-77e9eb233b81">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test1</guestName>
+                        <room>87dae51f-0c9b-4dec-97b6-471929820b4e</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>a31cdea0-7504-4cd3-b8b8-679d96abbade</date>
+                    <name>1</name>
+                </room>
+                <room id="bac4cf40-37a3-4d60-94c8-459ab9ad591e">
+                    <date>a31cdea0-7504-4cd3-b8b8-679d96abbade</date>
+                    <name>2</name>
+                </room>
+                <room id="a34d89e4-273c-421e-b0f7-88c16546403a">
+                    <date>a31cdea0-7504-4cd3-b8b8-679d96abbade</date>
+                    <name>3</name>
+                </room>
+                <room id="1e69361e-8514-48a6-8d5c-d06fc9a16633">
+                    <bookings id="b31971ff-3431-47e9-a7af-318bb06950b3">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>1e69361e-8514-48a6-8d5c-d06fc9a16633</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>a31cdea0-7504-4cd3-b8b8-679d96abbade</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="8d2f5bbe-3f8a-484c-9c2a-d23a55bb85ec">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-03</date>
+            <rooms>
+                <room id="7bd66c61-c1ae-408b-8ad6-39015a5e70ef">
+                    <bookings id="5fd931aa-e55e-49ae-a1ba-8fa7d8419883">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test1</guestName>
+                        <room>7bd66c61-c1ae-408b-8ad6-39015a5e70ef</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>8d2f5bbe-3f8a-484c-9c2a-d23a55bb85ec</date>
+                    <name>1</name>
+                </room>
+                <room id="f62b8c56-8bb0-405e-b61f-a8e8e8e59d40">
+                    <date>8d2f5bbe-3f8a-484c-9c2a-d23a55bb85ec</date>
+                    <name>2</name>
+                </room>
+                <room id="8cf8a259-78b5-4568-b11e-e23e6f0bf6f1">
+                    <date>8d2f5bbe-3f8a-484c-9c2a-d23a55bb85ec</date>
+                    <name>3</name>
+                </room>
+                <room id="5008f225-35cb-462d-8133-a64b80b2d749">
+                    <bookings id="eda9e4dd-76e9-400a-b529-078533001817">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>5008f225-35cb-462d-8133-a64b80b2d749</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>8d2f5bbe-3f8a-484c-9c2a-d23a55bb85ec</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="a0a6543c-a49c-46d6-941e-9ccd91fa20ac">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-04</date>
+            <rooms>
+                <room id="908123b2-40c4-4c49-acb2-6a85b43f0355">
+                    <bookings id="3dcd6b04-f9c3-4362-928b-58725178bdb2">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test1</guestName>
+                        <room>908123b2-40c4-4c49-acb2-6a85b43f0355</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>a0a6543c-a49c-46d6-941e-9ccd91fa20ac</date>
+                    <name>1</name>
+                </room>
+                <room id="5d9415c9-20ad-43c4-81c8-fe3421abe764">
+                    <date>a0a6543c-a49c-46d6-941e-9ccd91fa20ac</date>
+                    <name>2</name>
+                </room>
+                <room id="e5c923fd-cb29-4169-8293-384273b84918">
+                    <bookings id="085b9f60-c7dd-4446-8deb-12fb4ce64814">
+                        <brutto-earnings>123.0</brutto-earnings>
+                        <guestName>Test3</guestName>
+                        <room>e5c923fd-cb29-4169-8293-384273b84918</room>
+                        <source></source>
+                    </bookings>
+                    <date>a0a6543c-a49c-46d6-941e-9ccd91fa20ac</date>
+                    <name>3</name>
+                </room>
+                <room id="b9ac4570-0abb-43a6-acfa-c86cf9d67637">
+                    <bookings id="a4d188d5-d16d-47f5-a000-b64eb70cdfdb">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>b9ac4570-0abb-43a6-acfa-c86cf9d67637</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>a0a6543c-a49c-46d6-941e-9ccd91fa20ac</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="28e21c0a-b82e-4c06-b628-c8be60206041">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-05</date>
+            <rooms>
+                <room id="a2e1e5ed-d251-444e-807c-18aeff0eea3e">
+                    <date>28e21c0a-b82e-4c06-b628-c8be60206041</date>
+                    <name>1</name>
+                </room>
+                <room id="2d91265d-1965-4492-81d5-a8e286bd64e1">
+                    <bookings id="96c6ea68-9e2a-45d8-93c8-0e64560e3eb7">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>2d91265d-1965-4492-81d5-a8e286bd64e1</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>28e21c0a-b82e-4c06-b628-c8be60206041</date>
+                    <name>2</name>
+                </room>
+                <room id="dcb4d56c-41d3-4b87-a2e6-093c7ed55104">
+                    <bookings id="691a48b4-751d-4e9f-81f4-e44c7f5dcb7f">
+                        <brutto-earnings>123.0</brutto-earnings>
+                        <guestName>Test3</guestName>
+                        <room>dcb4d56c-41d3-4b87-a2e6-093c7ed55104</room>
+                        <source></source>
+                    </bookings>
+                    <date>28e21c0a-b82e-4c06-b628-c8be60206041</date>
+                    <name>3</name>
+                </room>
+                <room id="518dfa88-87da-4557-aeb5-6759b020eab5">
+                    <bookings id="45dcb204-675d-4595-9411-a6f3ffc3086f">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>518dfa88-87da-4557-aeb5-6759b020eab5</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>28e21c0a-b82e-4c06-b628-c8be60206041</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="54693c84-e32a-4d19-9c3c-c5055091043f">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-06</date>
+            <rooms>
+                <room id="c7cb1b68-80bd-430b-b732-ab2d2577f0a7">
+                    <date>54693c84-e32a-4d19-9c3c-c5055091043f</date>
+                    <name>1</name>
+                </room>
+                <room id="9f638c78-f07c-4cf7-91d7-9b0a491ba52d">
+                    <bookings id="1027dea6-2563-4f93-a60a-4f1562b4b3e6">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>9f638c78-f07c-4cf7-91d7-9b0a491ba52d</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>54693c84-e32a-4d19-9c3c-c5055091043f</date>
+                    <name>2</name>
+                </room>
+                <room id="b5ec707e-cc89-49e3-b1d8-78ce36bffbfb">
+                    <bookings id="c91fdda7-04ac-4972-be51-965c6a72cb01">
+                        <brutto-earnings>123.0</brutto-earnings>
+                        <guestName>Test3</guestName>
+                        <room>b5ec707e-cc89-49e3-b1d8-78ce36bffbfb</room>
+                        <source></source>
+                    </bookings>
+                    <bookings id="93481ba8-4e3e-4642-a9d0-6b8a2fc59100">
+                        <brutto-earnings>145.0</brutto-earnings>
+                        <guestName>Test4</guestName>
+                        <room>b5ec707e-cc89-49e3-b1d8-78ce36bffbfb</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <cleaning>Hilda</cleaning>
+                    <date>54693c84-e32a-4d19-9c3c-c5055091043f</date>
+                    <name>3</name>
+                </room>
+                <room id="ce389ab5-1aed-4a60-91f8-04a6c40435c7">
+                    <bookings id="5cc54e1f-12af-4cdd-92ec-0d9431346bc3">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>ce389ab5-1aed-4a60-91f8-04a6c40435c7</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>54693c84-e32a-4d19-9c3c-c5055091043f</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="312ad189-a108-4938-98cf-8f6aac368a41">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-07</date>
+            <rooms>
+                <room id="7e9125f3-017c-482f-bc2c-59df101a92ba">
+                    <date>312ad189-a108-4938-98cf-8f6aac368a41</date>
+                    <name>1</name>
+                </room>
+                <room id="05083c70-ac2b-4b3e-a8fd-f8229d3dfd4c">
+                    <bookings id="dceb0fc6-d234-4ff3-bc4f-ad8ccade392a">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>05083c70-ac2b-4b3e-a8fd-f8229d3dfd4c</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>312ad189-a108-4938-98cf-8f6aac368a41</date>
+                    <name>2</name>
+                </room>
+                <room id="2b494a89-b792-4285-a4d4-a7d0399af75f">
+                    <bookings id="db089f1e-8508-4572-b138-62fade134856">
+                        <brutto-earnings>145.0</brutto-earnings>
+                        <guestName>Test4</guestName>
+                        <room>2b494a89-b792-4285-a4d4-a7d0399af75f</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>312ad189-a108-4938-98cf-8f6aac368a41</date>
+                    <name>3</name>
+                </room>
+                <room id="528d61d4-a090-4b0e-a07a-de816a28fdbd">
+                    <bookings id="e05b24b8-1c94-42da-9292-4759e62265e5">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>528d61d4-a090-4b0e-a07a-de816a28fdbd</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>312ad189-a108-4938-98cf-8f6aac368a41</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="3ea70fa5-f08e-43d1-83d5-0760394b3148">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-08</date>
+            <rooms>
+                <room id="3ad7c39e-5c36-4f68-a727-f8d9795825db">
+                    <date>3ea70fa5-f08e-43d1-83d5-0760394b3148</date>
+                    <name>1</name>
+                </room>
+                <room id="7eb6240e-e1f9-4288-88b3-a85f71ad9f15">
+                    <bookings id="6e158e12-43ca-466e-8c8d-f8d139efee3b">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>7eb6240e-e1f9-4288-88b3-a85f71ad9f15</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>3ea70fa5-f08e-43d1-83d5-0760394b3148</date>
+                    <name>2</name>
+                </room>
+                <room id="412799e7-175e-40d2-a9ff-4102f5113fed">
+                    <bookings id="0c3e0548-78cb-46c7-9431-7041563fae9a">
+                        <brutto-earnings>145.0</brutto-earnings>
+                        <guestName>Test4</guestName>
+                        <room>412799e7-175e-40d2-a9ff-4102f5113fed</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>3ea70fa5-f08e-43d1-83d5-0760394b3148</date>
+                    <name>3</name>
+                </room>
+                <room id="704228ec-7c52-4684-94b4-2c94f3ab7b80">
+                    <bookings id="7d23c4ab-e7be-4f71-ac22-27bee4f8672b">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>704228ec-7c52-4684-94b4-2c94f3ab7b80</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>3ea70fa5-f08e-43d1-83d5-0760394b3148</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="ca3d6de1-e9ef-4216-b9b3-7f0bffa00dc1">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-09</date>
+            <rooms>
+                <room id="f9ba8c7e-22df-4990-81cf-d118ce3078f9">
+                    <date>ca3d6de1-e9ef-4216-b9b3-7f0bffa00dc1</date>
+                    <name>1</name>
+                </room>
+                <room id="19a1cb1f-16fe-4357-8410-ca63070deaa6">
+                    <bookings id="6bc813a2-61ce-4a56-848e-9178a7dcd971">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>19a1cb1f-16fe-4357-8410-ca63070deaa6</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>ca3d6de1-e9ef-4216-b9b3-7f0bffa00dc1</date>
+                    <name>2</name>
+                </room>
+                <room id="9b94bda0-c763-47af-a34c-cd34304784d3">
+                    <bookings id="e4f6836d-36d7-47de-80a0-e32cef8c6a79">
+                        <brutto-earnings>145.0</brutto-earnings>
+                        <guestName>Test4</guestName>
+                        <room>9b94bda0-c763-47af-a34c-cd34304784d3</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>ca3d6de1-e9ef-4216-b9b3-7f0bffa00dc1</date>
+                    <name>3</name>
+                </room>
+                <room id="aadba652-a459-43f1-ac57-2397980edc4f">
+                    <bookings id="4caf720c-b6b8-43dc-826a-2dade620f880">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>aadba652-a459-43f1-ac57-2397980edc4f</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>ca3d6de1-e9ef-4216-b9b3-7f0bffa00dc1</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="5c3108d0-0582-4442-babf-87ea2298d9ca">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-10</date>
+            <rooms>
+                <room id="6aa8542e-de9a-483e-a29c-c8b1fa2d99c9">
+                    <date>5c3108d0-0582-4442-babf-87ea2298d9ca</date>
+                    <name>1</name>
+                </room>
+                <room id="3d817330-39af-4794-be6d-5e79dd719831">
+                    <bookings id="2cbe749d-1752-4973-b1d6-b93fc8c8ab0b">
+                        <brutto-earnings>160.0</brutto-earnings>
+                        <guestName>Test2</guestName>
+                        <room>3d817330-39af-4794-be6d-5e79dd719831</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <cleaning>Paula</cleaning>
+                    <date>5c3108d0-0582-4442-babf-87ea2298d9ca</date>
+                    <name>2</name>
+                </room>
+                <room id="ce3ce9db-6c81-4651-85cf-e8abbb33fd54">
+                    <bookings id="6e4ad4c9-a759-4dca-9936-eef05e93c138">
+                        <brutto-earnings>145.0</brutto-earnings>
+                        <guestName>Test4</guestName>
+                        <room>ce3ce9db-6c81-4651-85cf-e8abbb33fd54</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>5c3108d0-0582-4442-babf-87ea2298d9ca</date>
+                    <name>3</name>
+                </room>
+                <room id="fe33d7bd-a816-4e1b-b0f1-c042713cbe6f">
+                    <bookings id="1b384250-d3ea-4b99-9163-8dc654dc0a88">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>fe33d7bd-a816-4e1b-b0f1-c042713cbe6f</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>5c3108d0-0582-4442-babf-87ea2298d9ca</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="e6c6871b-d810-49ba-8bbd-51fec0aa7212">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-11</date>
+            <rooms>
+                <room id="090e4271-61d1-4483-8ac9-3ff508cb1150">
+                    <date>e6c6871b-d810-49ba-8bbd-51fec0aa7212</date>
+                    <name>1</name>
+                </room>
+                <room id="52f9d74c-2435-4dac-821f-a5678df07e34">
+                    <date>e6c6871b-d810-49ba-8bbd-51fec0aa7212</date>
+                    <name>2</name>
+                </room>
+                <room id="ac1d3d48-3595-4dfb-b3fe-d1a1e7dade44">
+                    <date>e6c6871b-d810-49ba-8bbd-51fec0aa7212</date>
+                    <name>3</name>
+                </room>
+                <room id="d62d475f-17e0-4d27-a847-7bd204645990">
+                    <bookings id="23b941a9-6711-4b7d-a327-0717db691532">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>d62d475f-17e0-4d27-a847-7bd204645990</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>e6c6871b-d810-49ba-8bbd-51fec0aa7212</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="e416e1d5-5aac-4652-b21d-501feeafcca0">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-12</date>
+            <rooms>
+                <room id="b7744746-42b0-4145-ad3d-383d4126be06">
+                    <date>e416e1d5-5aac-4652-b21d-501feeafcca0</date>
+                    <name>1</name>
+                </room>
+                <room id="e7918416-57cb-4127-904d-cde4040adb20">
+                    <date>e416e1d5-5aac-4652-b21d-501feeafcca0</date>
+                    <name>2</name>
+                </room>
+                <room id="a6e4ef7f-c2e4-4330-8fb7-63f2599211dd">
+                    <date>e416e1d5-5aac-4652-b21d-501feeafcca0</date>
+                    <name>3</name>
+                </room>
+                <room id="f5047aab-99f3-479a-a1cb-91499563b3a8">
+                    <bookings id="2975463d-3c68-42ed-8455-0a3b09ddf7d4">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>f5047aab-99f3-479a-a1cb-91499563b3a8</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>e416e1d5-5aac-4652-b21d-501feeafcca0</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="f62f7e2f-5afc-4d30-b4d0-1d09124be8cf">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-13</date>
+            <rooms>
+                <room id="c7a1a514-daef-4d3d-93ea-db84f1a96b62">
+                    <date>f62f7e2f-5afc-4d30-b4d0-1d09124be8cf</date>
+                    <name>1</name>
+                </room>
+                <room id="6345e08b-d4a7-4de8-a8d0-bc9bd6ba4116">
+                    <date>f62f7e2f-5afc-4d30-b4d0-1d09124be8cf</date>
+                    <name>2</name>
+                </room>
+                <room id="0c6f9448-007a-40d2-8294-5d5bfe72909d">
+                    <date>f62f7e2f-5afc-4d30-b4d0-1d09124be8cf</date>
+                    <name>3</name>
+                </room>
+                <room id="7794a63b-91ae-4b24-b70f-3a5adb5d7fb9">
+                    <bookings id="6d2a63eb-ad24-4143-b168-ee1056ef9881">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>7794a63b-91ae-4b24-b70f-3a5adb5d7fb9</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>f62f7e2f-5afc-4d30-b4d0-1d09124be8cf</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="2a92f713-87b5-4c8f-b1c8-e47090682e92">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-14</date>
+            <rooms>
+                <room id="4c95bf25-2c00-4434-97c2-986ea37e692a">
+                    <date>2a92f713-87b5-4c8f-b1c8-e47090682e92</date>
+                    <name>1</name>
+                </room>
+                <room id="f14306a9-639d-4886-9df0-67f6bc7e6f7f">
+                    <date>2a92f713-87b5-4c8f-b1c8-e47090682e92</date>
+                    <name>2</name>
+                </room>
+                <room id="79bea79a-c59f-4b1a-8390-1181233d753b">
+                    <cleaning>Hilda</cleaning>
+                    <date>2a92f713-87b5-4c8f-b1c8-e47090682e92</date>
+                    <name>3</name>
+                </room>
+                <room id="7b92c091-c567-4eb2-a77e-8609cecfa5cf">
+                    <bookings id="b35d5f6d-6e98-47d7-8ac1-b03b08d7dd30">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>7b92c091-c567-4eb2-a77e-8609cecfa5cf</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>2a92f713-87b5-4c8f-b1c8-e47090682e92</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="5fa5de37-51bf-4a6a-b210-57a33b09f55d">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-15</date>
+            <rooms>
+                <room id="452f39f0-254c-478b-99a6-50ac89211203">
+                    <bookings id="8dcb0980-5e37-4d0b-a35c-af2cc89da686">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test6</guestName>
+                        <room>452f39f0-254c-478b-99a6-50ac89211203</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>5fa5de37-51bf-4a6a-b210-57a33b09f55d</date>
+                    <name>1</name>
+                </room>
+                <room id="f5976a11-d3e1-4eeb-adba-a2f0619d5fd2">
+                    <date>5fa5de37-51bf-4a6a-b210-57a33b09f55d</date>
+                    <name>2</name>
+                </room>
+                <room id="0f42cc04-7ac4-46a3-bec6-c4fd0cc00468">
+                    <date>5fa5de37-51bf-4a6a-b210-57a33b09f55d</date>
+                    <name>3</name>
+                </room>
+                <room id="82238968-90cd-4c8e-a0f7-d116e80918e9">
+                    <bookings id="8dc4400a-47e5-44c0-b700-246c7166af68">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>82238968-90cd-4c8e-a0f7-d116e80918e9</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>5fa5de37-51bf-4a6a-b210-57a33b09f55d</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="9ec6a7db-8db2-44b7-941b-04325864acd3">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-16</date>
+            <rooms>
+                <room id="7ab445e4-8a92-475e-a9e0-4ce147f8d7fd">
+                    <bookings id="2a64f0f1-4302-4112-b41b-ba74d7b4cbcf">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test6</guestName>
+                        <room>7ab445e4-8a92-475e-a9e0-4ce147f8d7fd</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>9ec6a7db-8db2-44b7-941b-04325864acd3</date>
+                    <name>1</name>
+                </room>
+                <room id="8a3c393b-caaf-4c8b-9915-38f4a56c036c">
+                    <date>9ec6a7db-8db2-44b7-941b-04325864acd3</date>
+                    <name>2</name>
+                </room>
+                <room id="6a6ff158-412d-4fbe-9249-49e515dd31a7">
+                    <date>9ec6a7db-8db2-44b7-941b-04325864acd3</date>
+                    <name>3</name>
+                </room>
+                <room id="a5e86883-8097-4b49-b5fb-ac6026178b4d">
+                    <bookings id="c08355bf-2100-4999-a929-c61fdc23316b">
+                        <brutto-earnings>320.0</brutto-earnings>
+                        <guestName>Test5</guestName>
+                        <room>a5e86883-8097-4b49-b5fb-ac6026178b4d</room>
+                        <source>Airbnb</source>
+                    </bookings>
+                    <date>9ec6a7db-8db2-44b7-941b-04325864acd3</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="b233957d-23d6-4b3a-865c-71853fc37604">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-17</date>
+            <rooms>
+                <room id="74ee2c71-1e2a-4ab4-9f2c-f15b41671272">
+                    <bookings id="4aa38d62-e71c-405a-a3aa-ca4ecb277f8e">
+                        <brutto-earnings>0.0</brutto-earnings>
+                        <guestName>Test6</guestName>
+                        <room>74ee2c71-1e2a-4ab4-9f2c-f15b41671272</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>b233957d-23d6-4b3a-865c-71853fc37604</date>
+                    <name>1</name>
+                </room>
+                <room id="4e3749e2-a3b5-4872-ad97-1129a3bda67e">
+                    <date>b233957d-23d6-4b3a-865c-71853fc37604</date>
+                    <name>2</name>
+                </room>
+                <room id="de633573-dc86-4018-b79f-e4e6225a0a2e">
+                    <date>b233957d-23d6-4b3a-865c-71853fc37604</date>
+                    <name>3</name>
+                </room>
+                <room id="319120eb-0f46-4587-a2dd-6c0f6e3b6aaf">
+                    <date>b233957d-23d6-4b3a-865c-71853fc37604</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="0b93131f-0e0d-4872-a788-7b4360910f35">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-18</date>
+            <rooms>
+                <room id="e73a4f62-efd6-487a-b2f2-d6e7814bf268">
+                    <date>0b93131f-0e0d-4872-a788-7b4360910f35</date>
+                    <name>1</name>
+                </room>
+                <room id="37364565-1b41-400e-840e-aef354e2aa47">
+                    <date>0b93131f-0e0d-4872-a788-7b4360910f35</date>
+                    <name>2</name>
+                </room>
+                <room id="9d771c55-789c-40ce-a15e-37739c82ca27">
+                    <date>0b93131f-0e0d-4872-a788-7b4360910f35</date>
+                    <name>3</name>
+                </room>
+                <room id="f6a90486-a17c-4b68-9a10-88af1b81516c">
+                    <date>0b93131f-0e0d-4872-a788-7b4360910f35</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="d90e95cc-58cc-49da-b6d2-e84637d09a3f">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-19</date>
+            <rooms>
+                <room id="74805643-cd6e-432d-b17d-953b97d570aa">
+                    <date>d90e95cc-58cc-49da-b6d2-e84637d09a3f</date>
+                    <name>1</name>
+                </room>
+                <room id="2f4c363e-c9e1-46ca-bb99-7202d7bb6b25">
+                    <date>d90e95cc-58cc-49da-b6d2-e84637d09a3f</date>
+                    <name>2</name>
+                </room>
+                <room id="e44bdf1a-3d51-466a-8873-7be3daabc6dc">
+                    <date>d90e95cc-58cc-49da-b6d2-e84637d09a3f</date>
+                    <name>3</name>
+                </room>
+                <room id="0e354536-a4a0-4aa8-8ea0-be20043ded03">
+                    <date>d90e95cc-58cc-49da-b6d2-e84637d09a3f</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="417fd898-4522-4ad8-a4a7-8a635f82b1ab">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-20</date>
+            <rooms>
+                <room id="f4ccf5b6-306c-416c-9a61-d7c9be5bd4f1">
+                    <date>417fd898-4522-4ad8-a4a7-8a635f82b1ab</date>
+                    <name>1</name>
+                </room>
+                <room id="121120e8-a399-4045-beb5-b66bdd7afe24">
+                    <date>417fd898-4522-4ad8-a4a7-8a635f82b1ab</date>
+                    <name>2</name>
+                </room>
+                <room id="72c2fdac-d32d-4eea-ab18-72c9225fb3fc">
+                    <date>417fd898-4522-4ad8-a4a7-8a635f82b1ab</date>
+                    <name>3</name>
+                </room>
+                <room id="925427c2-a375-4e02-9d6b-96a5738c7ddd">
+                    <date>417fd898-4522-4ad8-a4a7-8a635f82b1ab</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="f4bd2e6e-ae0b-4ebd-b5e2-dc7893df6392">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-21</date>
+            <rooms>
+                <room id="9a25d293-25ab-424f-9205-233858b014ba">
+                    <date>f4bd2e6e-ae0b-4ebd-b5e2-dc7893df6392</date>
+                    <name>1</name>
+                </room>
+                <room id="4890672a-1ce1-4669-8bf6-591363f04eb7">
+                    <bookings id="15852dc1-10fe-41fb-a20b-5ce1ec9b6f9c">
+                        <brutto-earnings>234.0</brutto-earnings>
+                        <guestName>Test7</guestName>
+                        <room>4890672a-1ce1-4669-8bf6-591363f04eb7</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>f4bd2e6e-ae0b-4ebd-b5e2-dc7893df6392</date>
+                    <name>2</name>
+                </room>
+                <room id="19354c55-e893-498f-8796-41654ea46af5">
+                    <date>f4bd2e6e-ae0b-4ebd-b5e2-dc7893df6392</date>
+                    <name>3</name>
+                </room>
+                <room id="1851aaf0-ad2e-42d3-8875-fa3ee69e2bf6">
+                    <date>f4bd2e6e-ae0b-4ebd-b5e2-dc7893df6392</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="bf7d5bc1-e4a8-4806-a1c0-ca48cb638287">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-22</date>
+            <rooms>
+                <room id="ba4ef359-77f3-4080-9817-6e97c666d95f">
+                    <date>bf7d5bc1-e4a8-4806-a1c0-ca48cb638287</date>
+                    <name>1</name>
+                </room>
+                <room id="42d3d983-665f-429e-ad22-f53a9c7f9daa">
+                    <bookings id="be729052-4280-411e-9bfe-6c346c449670">
+                        <brutto-earnings>234.0</brutto-earnings>
+                        <guestName>Test7</guestName>
+                        <room>42d3d983-665f-429e-ad22-f53a9c7f9daa</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>bf7d5bc1-e4a8-4806-a1c0-ca48cb638287</date>
+                    <name>2</name>
+                </room>
+                <room id="9ebeda51-8b39-4787-a712-01c3cf0d0d36">
+                    <date>bf7d5bc1-e4a8-4806-a1c0-ca48cb638287</date>
+                    <name>3</name>
+                </room>
+                <room id="04a9080b-6874-4b7e-9b5f-365217a2c6ea">
+                    <date>bf7d5bc1-e4a8-4806-a1c0-ca48cb638287</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="c6d32144-6e39-45a5-9b3d-104bc10406ef">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-23</date>
+            <rooms>
+                <room id="a38fd2e9-5934-48e2-9ad0-b92607043683">
+                    <date>c6d32144-6e39-45a5-9b3d-104bc10406ef</date>
+                    <name>1</name>
+                </room>
+                <room id="e77c0bd9-c8a9-4a3f-9c2f-9347f43f8f07">
+                    <bookings id="02ea2e0d-6086-4d1f-aadf-ceb873e50225">
+                        <brutto-earnings>234.0</brutto-earnings>
+                        <guestName>Test7</guestName>
+                        <room>e77c0bd9-c8a9-4a3f-9c2f-9347f43f8f07</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>c6d32144-6e39-45a5-9b3d-104bc10406ef</date>
+                    <name>2</name>
+                </room>
+                <room id="1d89bf96-2324-4e03-b076-ab4c4ffb382d">
+                    <date>c6d32144-6e39-45a5-9b3d-104bc10406ef</date>
+                    <name>3</name>
+                </room>
+                <room id="e2516511-46b4-4e25-b9ca-83fc79c3d858">
+                    <date>c6d32144-6e39-45a5-9b3d-104bc10406ef</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="fa01b3c4-eb82-4b3c-b19c-cb4854092135">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-24</date>
+            <rooms>
+                <room id="4aa245a9-b3f9-43d8-98cf-f6576c47e821">
+                    <date>fa01b3c4-eb82-4b3c-b19c-cb4854092135</date>
+                    <name>1</name>
+                </room>
+                <room id="a442cf3a-d112-4511-bb6b-59711a848a90">
+                    <bookings id="d2b37c22-8a06-4921-b3ba-df2f17e497b9">
+                        <brutto-earnings>234.0</brutto-earnings>
+                        <guestName>Test7</guestName>
+                        <room>a442cf3a-d112-4511-bb6b-59711a848a90</room>
+                        <source>Booking</source>
+                    </bookings>
+                    <date>fa01b3c4-eb82-4b3c-b19c-cb4854092135</date>
+                    <name>2</name>
+                </room>
+                <room id="122c0015-48b0-4373-b595-0f6b106088cb">
+                    <date>fa01b3c4-eb82-4b3c-b19c-cb4854092135</date>
+                    <name>3</name>
+                </room>
+                <room id="90333dbd-79d5-479e-8055-b9a6789a18bf">
+                    <date>fa01b3c4-eb82-4b3c-b19c-cb4854092135</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="089924d8-9776-4402-a9ee-8dec69fe2b52">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-25</date>
+            <rooms>
+                <room id="6e5a9460-becf-4b4f-98d0-a19b238d294e">
+                    <date>089924d8-9776-4402-a9ee-8dec69fe2b52</date>
+                    <name>1</name>
+                </room>
+                <room id="a164c12e-7cc6-4339-98be-37a5da26878a">
+                    <date>089924d8-9776-4402-a9ee-8dec69fe2b52</date>
+                    <name>2</name>
+                </room>
+                <room id="f95d322b-4c76-4fc3-9689-60b3d87513e2">
+                    <date>089924d8-9776-4402-a9ee-8dec69fe2b52</date>
+                    <name>3</name>
+                </room>
+                <room id="4b099328-1925-4ec4-a79a-4eedc5ebf2ab">
+                    <date>089924d8-9776-4402-a9ee-8dec69fe2b52</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="4492ce4f-2dbe-4103-bf9e-0991343f32f1">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-26</date>
+            <rooms>
+                <room id="91a6d8a1-b2ea-4aee-b876-476cf3e072f9">
+                    <date>4492ce4f-2dbe-4103-bf9e-0991343f32f1</date>
+                    <name>1</name>
+                </room>
+                <room id="43b3cb21-dbd2-41a3-b3a3-d9280bc0311e">
+                    <date>4492ce4f-2dbe-4103-bf9e-0991343f32f1</date>
+                    <name>2</name>
+                </room>
+                <room id="487b5554-77f1-4965-96fe-7f912a62b116">
+                    <date>4492ce4f-2dbe-4103-bf9e-0991343f32f1</date>
+                    <name>3</name>
+                </room>
+                <room id="d61f14b2-36da-4ce2-8d0b-f23e3818ea48">
+                    <date>4492ce4f-2dbe-4103-bf9e-0991343f32f1</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+        <date id="1e5a3ef2-7546-4c64-9254-b56193a2e31d">
+            <data-model>640d0071-9d00-406f-8b9e-340ff8228414</data-model>
+            <date>2017-03-27</date>
+            <rooms>
+                <room id="626d5171-eccd-46d7-aa38-5927a15452f3">
+                    <date>1e5a3ef2-7546-4c64-9254-b56193a2e31d</date>
+                    <name>1</name>
+                </room>
+                <room id="7eb2c16f-efa1-4190-88a1-a1a7bb898066">
+                    <date>1e5a3ef2-7546-4c64-9254-b56193a2e31d</date>
+                    <name>2</name>
+                </room>
+                <room id="f45e78db-080c-43c7-a6ae-2e90a6ed6847">
+                    <date>1e5a3ef2-7546-4c64-9254-b56193a2e31d</date>
+                    <name>3</name>
+                </room>
+                <room id="bbd4a876-2e39-4414-87f0-e8fffb605a11">
+                    <date>1e5a3ef2-7546-4c64-9254-b56193a2e31d</date>
+                    <name>4</name>
+                </room>
+            </rooms>
+        </date>
+    </dates>
+    <modelConfiguration>
+        <nightCounting>DAY_BEFORE</nightCounting>
+    </modelConfiguration>
+</data>
