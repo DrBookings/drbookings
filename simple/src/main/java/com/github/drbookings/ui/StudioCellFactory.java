@@ -82,7 +82,7 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 		    setStyle("");
 		    setGraphic(null);
 		} else {
-		    setGraphic(buildCellContentFast(item.getRoom(id)));
+		    setGraphic(buildCellContentFast(item.getRoom(id).get()));
 		    setStyle("-fx-padding: 0 0 0 0;");
 		}
 	    }

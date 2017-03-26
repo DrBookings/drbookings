@@ -1,11 +1,30 @@
-.table-row-cell .table-cell {
-    -fx-border-width: 0px;
+.copyable-label, .copyable-label:focused {
+    -fx-background-color: transparent ;
+    -fx-background-insets: 0px ;
 }
+.table-row-cell .table-cell {
+    -fx-border-width: 0.0px;
+}
+
+.needs-payment {
+    -fx-background-color: rgba(255,127,80,0.5);
+}
+
+.all-payed {
+   -fx-background-color: rgba(50,205,50,0.5);
+}
+
 .table-row-cell:empty .table-cell {
-    -fx-border-width: 0px;
+    -fx-border-width: 0.0px;
 }
 .table-row-cell:contains-selection {
-    -fx-background: palegreen ;
+    -fx-background: gold ;
+    -fx-opacity: 1 !important;
+    
+}
+.table-row-cell:selected .table-cell:selected {
+    -fx-background-color: gold;
+    -fx-text-fill: black;
 }
 .table-column {
   -fx-alignment: CENTER;
@@ -13,12 +32,72 @@
 #rowHeading {
   -fx-alignment: CENTER_LEFT;
 }
-.opace.table-cell {
-  -fx-opacity:0.7;
+.check-in { 
+  -fx-background-color: darkorange;
 }
-.center-left.table-cell { 
-  -fx-alignment: CENTER_LEFT;
+.source-background-airbnb {
+	-fx-background-color:  rgba(255.0,90.0,95.0,0.3);
 }
-.bold-font.table-cell { 
-  -fx-font-weight: bold;
+.source-background-booking {
+	-fx-background-color: rgba(8.0,152.0,255.0,0.3);
+}
+.source-background-other {
+	-fx-background-color: rgba(214.0,214.0,214.0,0.3);
+}
+.occupancy-low.table-cell {
+	-fx-background-color: coral;
+	-fx-opacity: 0.5;
+}
+.occupancy-medium.table-cell {
+	-fx-background-color: orange;
+	-fx-opacity: 0.5;
+}
+.occupancy-high.table-cell {
+	-fx-background-color: limegreen;
+	-fx-opacity: 0.5;
+}
+.occupancy-default.table-cell {
+	-fx-opacity: 0.5;
+}
+.warning-box-middle {
+	-fx-border-width: 0 3 0 3;
+	-fx-border-color: red;
+	-fx-border-style: solid;
+}
+
+.warning-box-top {
+	-fx-border-width: 3 3 0 3;
+	-fx-border-color: red;
+	-fx-border-style: solid;
+}
+
+.warning-box-bottom {
+	-fx-border-width: 0 3 3 3;
+	-fx-border-color: red;
+	-fx-border-style: solid;
+}
+
+.warning-text {
+	-fx-text-fill: deeppink;
+	-fx-font-weight: bold;
+}
+
+.cleaning-warning {
+	-fx-background-color: red;
+	-fx-font-weight: bold;
+}
+.cleaning {
+	-fx-background-color: khaki;
+}
+.entry-stay {
+	-fx-opacity:0.3;
+}
+.table-row-cell.now {
+	-fx-background-color: gold;
+	-fx-font-weight: bold;
+	-fx-opacity: 1  !important;
+}
+.table-row-cell.end-of-month {
+	-fx-background-color: darkgray;
+	-fx-opacity: 1  !important;
 }

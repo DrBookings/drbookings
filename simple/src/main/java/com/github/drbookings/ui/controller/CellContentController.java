@@ -1,13 +1,14 @@
 package com.github.drbookings.ui.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.Bookings;
 import com.github.drbookings.model.bean.BookingBean;
+import com.github.drbookings.model.bean.BookingBeans;
 import com.github.drbookings.model.bean.RoomBean;
 import com.github.drbookings.ui.Styles;
 
@@ -26,25 +27,25 @@ public class CellContentController implements Initializable {
 
     private static Node buildEntryCheckIn(final BookingBean bookingBean) {
 
-	final Label l = getNewLabel("Check-in " + bookingBean.getGuestName());
+	final Label l = getNewLabel("Check-in\n" + bookingBean.getGuestName());
 	if (bookingBean.getRoom().getDateBean().getDataModel().getConnectedPrevious(bookingBean.getRoom())
 		.isPresent()) {
 	    final RoomBean rb = bookingBean.getRoom().getDateBean().getDataModel()
 		    .getConnectedPrevious(bookingBean.getRoom()).get();
-	    if (Bookings.guestNameView(rb.getBookings()).contains(bookingBean.getGuestName())) {
+	    if (BookingBeans.guestNameView(rb.getAllBookings()).contains(bookingBean.getGuestName())) {
+
 		// ignore same guest check-in
+
 		return l;
 	    }
 	}
-	l.setStyle("-fx-background-color: darkorange;");
+	l.getStyleClass().add("check-in");
+
 	return l;
     }
 
     private static Node buildEntryCheckOut(final BookingBean booking) {
-	final Label l = getNewLabel("Check-out " + booking.getGuestName());
-	if (booking.getBruttoEarnings() <= 0) {
-	    l.setStyle("-fx-text-fill: deeppink;-fx-font-weight: bold;");
-	}
+	final Label l = getNewLabel(booking.getGuestName() + "\n" + "Check-out");
 	return l;
     }
 
@@ -53,21 +54,25 @@ public class CellContentController implements Initializable {
 	String s = "Cleaning " + rb.getCleaning();
 	if (rb.isNeedsCleaning()) {
 	    s = "No Cleaning";
-	    l.setStyle("-fx-background-color: red;-fx-font-weight: bold;");
+	    if (rb.getDate().isAfter(LocalDate.now().minusDays(7))) {
+		l.getStyleClass().add("cleaning-warning");
+	    }
 	} else {
-	    l.setStyle("-fx-background-color: khaki;");
+	    l.getStyleClass().add("cleaning");
 	}
+
 	l.setText(s);
 	return l;
     }
 
     private static Node buildEntryStay(final BookingBean booking) {
 	final Label l = getNewLabel(booking.getGuestName());
-	if (booking.getBruttoEarnings() <= 0) {
-	    l.setStyle("-fx-text-fill: deeppink;-fx-font-weight: bold;");
-	} else {
-	    l.setStyle("-fx-opacity:0.5;");
+
+	if (!LocalDate.now().equals(booking.getDate()) && !booking.getDate()
+		.equals(booking.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
+	    l.getStyleClass().add("entry-stay");
 	}
+
 	return l;
 
     }
@@ -142,7 +147,7 @@ public class CellContentController implements Initializable {
 	guestNamesCheckIn.getChildren().clear();
 
 	BookingBean last = null;
-	for (final BookingBean bb : roomBean.getBookings()) {
+	for (final BookingBean bb : roomBean.getFilteredBookings()) {
 	    if (bb.isCheckOut()) {
 		guestNamesCheckOut.getChildren().add(buildEntryCheckOut(bb));
 	    } else if (bb.isCheckIn()) {
@@ -153,10 +158,18 @@ public class CellContentController implements Initializable {
 	    last = bb;
 	}
 
-	if (last != null) {
-	    cellContainer.setStyle(Styles.getBackgroundStyleSource(last.getSource()));
+	if (roomBean.isWarning()) {
+	    if (roomBean.hasCheckIn()) {
+		cellContainer.getStyleClass().add("warning-box-top");
+	    } else if (roomBean.hasCheckOut()) {
+		cellContainer.getStyleClass().add("warning-box-bottom");
+	    } else {
+		cellContainer.getStyleClass().add("warning-box-middle");
+	    }
+	} else if (last != null) {
+	    cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(last.getSource()));
 	}
-	cellContainer.requestLayout();
+	// cellContainer.requestLayout();
     }
 
     public void setGuestNamesCheckIn(final VBox guestNamesCheckIn) {

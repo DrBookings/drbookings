@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class Dates {
+public class LocalDates {
 
     public static Pair<LocalDate, LocalDate> getFirstAndLastDayOfMonth(final int month) {
 	final int year = LocalDate.now().getYear();

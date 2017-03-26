@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ui;
 
 import java.util.Collection;
 

@@ -6,7 +6,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-public class AuslastungCellFactory implements Callback<TableColumn<DateBean, Number>, TableCell<DateBean, Number>> {
+public class OccupancyCellFactory implements Callback<TableColumn<DateBean, Number>, TableCell<DateBean, Number>> {
 
     @Override
     public TableCell<DateBean, Number> call(final TableColumn<DateBean, Number> param) {
@@ -16,23 +16,21 @@ public class AuslastungCellFactory implements Callback<TableColumn<DateBean, Num
 	    protected void updateItem(final Number item, final boolean empty) {
 
 		super.updateItem(item, empty);
+		getStyleClass().removeAll("occupancy-low", "occupancy-medium", "occupancy-high", "occupancy-default");
 		if (empty || item == null) {
 		    setText(null);
 		    setStyle("");
 		    setGraphic(null);
 		} else {
 		    setText(String.format("%4.0f%%", item.floatValue() * 100));
-		    if (item.floatValue() < 0.33) {
-			setStyle("-fx-background-color:coral;-fx-alignment: CENTER;-fx-opacity:0.6;");
-		    } else if (item.floatValue() < 0.50) {
-			setStyle("-fx-background-color:orange;-fx-alignment: CENTER;-fx-opacity:0.5;");
-		    } else if (item.floatValue() > 0.90) {
-			setStyle("-fx-background-color:limegreen;-fx-alignment: CENTER;-fx-opacity:0.6;");
-		    } else if (item.floatValue() > 0.66) {
-			setStyle("-fx-background-color:yellowgreen;-fx-alignment: CENTER;-fx-opacity:0.6;");
+		    if (item.floatValue() < 0.40) {
+			getStyleClass().add("occupancy-low");
+		    } else if (item.floatValue() > 0.60) {
+			getStyleClass().add("occupancy-high");
 		    } else {
-			setStyle("-fx-alignment: CENTER;-fx-opacity:0.6;");
+			getStyleClass().add("occupancy-medium");
 		    }
+		    // System.err.println(getStyleClass());
 		}
 	    }
 	};
