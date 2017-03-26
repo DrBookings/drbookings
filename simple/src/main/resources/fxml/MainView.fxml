@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
+<?import javafx.scene.control.ProgressBar?>
 
 <VBox styleClass="root" fx:id="node" xmlns:fx="http://javafx.com/fxml/1"
 	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.MainController">
@@ -20,18 +21,17 @@
 				</Menu>
 				<Menu text="View">
 					<items>
-						<MenuItem text="Show Cleaning Plan"
-							onAction="#handleMenuItemCleaningPlan" />
+						<MenuItem text="Show Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
 					</items>
 				</Menu>
 				<Menu text="Settings">
 					<items>
-						<MenuItem text="Colors"
-							onAction="#handleMenuItemSettingsColors" />
+						<MenuItem text="Colors" onAction="#handleMenuItemSettingsColors" />
 					</items>
 				</Menu>
 			</menus>
 		</MenuBar>
+
 		<GridPane hgap="10" vgap="10" VBox.vgrow="ALWAYS">
 			<stylesheets>
 				<URL value="@/css/root.css" />
@@ -40,13 +40,27 @@
 				<Insets bottom="10" left="10" right="10" top="10" />
 			</padding>
 			<children>
+			<Label fx:id="progressLabel" maxWidth="Infinity" visible="false"
+					GridPane.columnSpan="1" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+				<ProgressBar fx:id="progressBar" maxWidth="Infinity" visible="false"
+					GridPane.columnSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
-					text="Add Booking" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-				<Label fx:id="labelStatus" GridPane.columnIndex="1"
-					GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" maxWidth="Infinity" />
+					text="Add Booking" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+
+				<Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+					text="Filter Bookings" />
+
+				<TextField fx:id="guestNameFilterInput" GridPane.hgrow="ALWAYS"
+					GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+				<Label fx:id="labelStatus" GridPane.columnIndex="0"
+					GridPane.rowIndex="2" GridPane.hgrow="ALWAYS" maxWidth="Infinity"
+					GridPane.columnSpan="3" />
+
 				<TableView fx:id="tableView" editable="true" maxWidth="Infinity"
-					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-					GridPane.vgrow="ALWAYS" GridPane.columnSpan="2">
+					GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3"
+					GridPane.vgrow="ALWAYS" GridPane.columnSpan="3">
 					<columnResizePolicy>
 						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 					</columnResizePolicy>
@@ -76,16 +90,15 @@
 								<PropertyValueFactory property="self" />
 							</cellValueFactory>
 						</TableColumn>
-						<TableColumn fx:id="cAuslastung" prefWidth="30"
-							text="Auslastung">
+						<TableColumn fx:id="cAuslastung" prefWidth="30" text="Occupancy">
 							<cellValueFactory>
 								<PropertyValueFactory property="self" />
 							</cellValueFactory>
 						</TableColumn>
 						<TableColumn fx:id="cBruttoEarningsPerNightTotal"
-							prefWidth="30" text="Earnings per Day">
+							prefWidth="30" text="Net Earnings">
 							<cellValueFactory>
-								<PropertyValueFactory property="totalEarningsPerNight" />
+								<PropertyValueFactory property="totalEarningsPerDay" />
 							</cellValueFactory>
 						</TableColumn>
 					</columns>

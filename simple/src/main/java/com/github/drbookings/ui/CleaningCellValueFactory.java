@@ -17,7 +17,7 @@ public class CleaningCellValueFactory implements Callback<CellDataFeatures<DateB
 
     @Override
     public ObservableValue<String> call(final CellDataFeatures<DateBean, String> param) {
-	final RoomBean room = param.getValue().getRoom(id);
+	final RoomBean room = param.getValue().getRoom(id).get();
 	return room.cleaningProperty();
     }
 

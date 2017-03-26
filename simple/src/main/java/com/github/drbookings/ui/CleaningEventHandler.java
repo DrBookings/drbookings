@@ -23,7 +23,7 @@ public class CleaningEventHandler implements EventHandler<CellEditEvent<DateBean
     public void handle(final CellEditEvent<DateBean, String> event) {
 	final DateBean bean = event.getTableView().getItems().get(event.getTablePosition().getRow());
 
-	final RoomBean room = bean.getRoom(id);
+	final RoomBean room = bean.getRoom(id).get();
 
 	if (logger.isDebugEnabled()) {
 	    logger.debug(bean + " and " + room);

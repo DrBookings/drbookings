@@ -1,4 +1,4 @@
-package com.github.drbookings;
+package com.github.drbookings.ser;
 
 import java.time.LocalDate;
 

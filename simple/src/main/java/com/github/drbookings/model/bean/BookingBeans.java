@@ -1,5 +1,6 @@
-package com.github.drbookings.model;
+package com.github.drbookings.model.bean;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -7,20 +8,41 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.github.drbookings.model.bean.BookingBean;
-import com.github.drbookings.model.bean.RoomBean;
+public class BookingBeans {
 
-public class Bookings {
+    public static List<BookingBean> checkInView(final List<BookingBean> bookings) {
+	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
+    }
+
+    public static List<BookingBean> checkOutView(final List<BookingBean> bookings) {
+	return bookings.stream().filter(b -> b.isCheckOut()).collect(Collectors.toList());
+    }
+
+    public static List<LocalDate> datesView(final List<BookingBean> bookings) {
+	return bookings.stream().map(b -> b.getDate()).collect(Collectors.toList());
+    }
 
     public static List<BookingBean> getAll(final Collection<? extends RoomBean> rooms) {
 	final List<BookingBean> result = new ArrayList<>();
 	for (final RoomBean rb : rooms) {
-	    result.addAll(rb.getBookings());
+	    result.addAll(rb.getAllBookings());
 	}
 	return result;
     }
 
-    public static String getRegexAllElse() {
+    public static List<BookingBean> getCheckInBookings(final Collection<? extends BookingBean> bookings) {
+	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
+    }
+
+    public static String getRegexAirbnb() {
+	return "(?i)airbnb";
+    }
+
+    public static String getRegexBooking() {
+	return "(?i)booking";
+    }
+
+    public static String getRegexOther() {
 	return "(?!airbnb|booking)";
     }
 
@@ -52,14 +74,6 @@ public class Bookings {
 	    rooms.add(bb.getRoom());
 	}
 	return rooms;
-    }
-
-    public static List<BookingBean> viewCheckIn(final List<BookingBean> bookings) {
-	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
-    }
-
-    public static List<BookingBean> viewCheckOut(final List<BookingBean> bookings) {
-	return bookings.stream().filter(b -> b.isCheckOut()).collect(Collectors.toList());
     }
 
 }

@@ -16,7 +16,7 @@ public class Rooms {
     public static List<BookingBean> bookingsView(final Collection<? extends RoomBean> data) {
 	final List<BookingBean> result = new ArrayList<>();
 	for (final RoomBean rb : data) {
-	    result.addAll(rb.getBookings());
+	    result.addAll(rb.getFilteredBookings());
 	}
 	return result;
     }
