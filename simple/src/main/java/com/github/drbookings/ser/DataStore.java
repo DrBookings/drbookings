@@ -1,49 +1,44 @@
 package com.github.drbookings.ser;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.github.drbookings.model.bean.BookingBean;
+import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.ser.BookingBeanSer;
+import com.github.drbookings.model.ser.CleaningBeanSer;
+import com.github.drbookings.ui.controller.CleaningEntry;
 
 @XmlRootElement
 public class DataStore {
 
-    public DataStore(final Collection<? extends BookingBean> data) {
-	for (final BookingBean bb : data) {
-	    this.data.add(transform(bb));
-	}
+    public static CleaningBeanSer transform(final CleaningEntry c) {
+	final CleaningBeanSer b = new CleaningBeanSer();
+	b.date = c.getDate();
+	b.name = c.getElement().getName();
+	b.room = c.getRoom().getName();
+	return b;
     }
 
-    public static BookingBeanSer transform(final BookingBean bb) {
+    public static BookingBeanSer transform(final Booking bb) {
+
 	final BookingBeanSer result = new BookingBeanSer();
-	Objects.requireNonNull(bb.getRoom());
-	Objects.requireNonNull(bb.getDate());
-	result.date = bb.getDate();
-	result.grossEarnings = bb.getGrossEarnings();
-	result.guestName = bb.getGuestName();
+	result.checkInDate = bb.getCheckIn();
+	result.checkOutDate = bb.getCheckOut();
+	result.bookingId = bb.getId();
+	// result.grossEarnings = bb.getGrossEarnings();
+	result.grossEarningsExpression = bb.getGrossEarningsExpression();
+	result.guestName = bb.getGuest().getName();
 	result.roomName = bb.getRoom().getName();
-	result.source = bb.getSource();
+	result.source = bb.getBookingOrigin().getName();
 	result.welcomeMailSend = bb.isWelcomeMailSend();
 	result.serviceFee = bb.getServiceFee();
 	result.checkInNote = bb.getCheckInNote();
-	result.paymentDone = bb.isMoneyReceived();
-	return result;
-    }
+	result.paymentDone = bb.isPaymentDone();
 
-    public static BookingBean transform(final BookingBeanSer bb) {
-	final BookingBean result = BookingBean.create(bb.guestName, bb.roomName, bb.date);
-	result.setBruttoEarnings(bb.grossEarnings);
-	result.setServiceFee(bb.serviceFee);
-	result.setSource(bb.source);
-	result.setWelcomeMailSend(bb.welcomeMailSend);
-	result.setCheckInNote(bb.checkInNote);
-	result.setPaymentDone(bb.paymentDone);
 	return result;
     }
 
@@ -53,18 +48,18 @@ public class DataStore {
 
     @XmlElementWrapper(name = "bookings")
     @XmlElement(name = "booking")
-    public List<BookingBeanSer> getData() {
-	return data;
+    public List<BookingBeanSer> getBookingsSer() {
+	return bookings;
     }
 
-    private final List<BookingBeanSer> data = new ArrayList<>();
-
-    public List<BookingBean> getBookings() {
-	final List<BookingBean> result = new ArrayList<>();
-	for (final BookingBeanSer bbs : data) {
-	    result.add(transform(bbs));
-	}
-	return result;
+    @XmlElementWrapper(name = "cleanings")
+    @XmlElement(name = "cleaning")
+    public List<CleaningBeanSer> getCleaningsSer() {
+	return cleanings;
     }
+
+    private final List<BookingBeanSer> bookings = new ArrayList<>();
+
+    private final List<CleaningBeanSer> cleanings = new ArrayList<>();
 
 }

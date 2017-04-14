@@ -4,7 +4,5 @@ public class Room extends Named {
 
     public Room(final String name) {
 	super(name);
-
     }
-
 }

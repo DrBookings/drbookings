@@ -7,11 +7,8 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.DateRange;
 import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.bean.BookingBean;
-import com.github.drbookings.model.data.manager.BookingManager;
-import com.github.drbookings.model.manager.DataModel;
+import com.github.drbookings.model.data.manager.MainManager;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,19 +21,17 @@ import javafx.stage.Stage;
 
 public class AddBookingController implements Initializable {
 
-    public BookingManager getBookingManager() {
-	return bookingManager;
+    public MainManager getManager() {
+	return manager;
     }
 
-    public void setBookingManager(final BookingManager bookingManager) {
-	this.bookingManager = bookingManager;
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(AddBookingController.class);
 
-    private DataModel dataModel;
-
-    private BookingManager bookingManager;
+    private MainManager manager;
 
     @FXML
     Button buttonOK;
@@ -56,33 +51,15 @@ public class AddBookingController implements Initializable {
     @FXML
     TextField textFieldGuestName;
 
-    public DataModel getDataModel() {
-	return dataModel;
-    }
-
     @FXML
     void handleButtonOK(final ActionEvent event) {
 	final boolean valid = validateInput();
 	if (valid) {
 	    try {
-		final DateRange dateRange = new DateRange(datePickerCheckIn.getValue(), datePickerCheckOut.getValue());
-		getBookingManager().addBooking(textFieldGuestName.getText().trim(),
-			comboBoxRoom.getSelectionModel().getSelectedItem(), datePickerCheckIn.getValue(),
-			datePickerCheckOut.getValue());
-		for (final LocalDate date : dateRange) {
-		    // if (logger.isDebugEnabled()) {
-		    // logger.debug("Building booking for " + date);
-		    // }
-		    getDataModel().add(BookingBean
-			    .create(textFieldGuestName.getText().trim(),
-				    comboBoxRoom.getSelectionModel().getSelectedItem(), date)
-			    .setSource(textFieldSource.getText().trim()));
 
-		}
-
-		// if (logger.isDebugEnabled()) {
-		// logger.debug("Adding booking ");
-		// }
+		getManager().addBooking(datePickerCheckIn.getValue(), datePickerCheckOut.getValue(),
+			textFieldGuestName.getText().trim(), comboBoxRoom.getSelectionModel().getSelectedItem(),
+			textFieldSource.getText().trim());
 
 	    } catch (final OverbookingException e) {
 		if (logger.isDebugEnabled()) {
@@ -118,10 +95,6 @@ public class AddBookingController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 	comboBoxRoom.getItems().addAll("1", "2", "3", "4");
-    }
-
-    public void setDataModel(final DataModel dataModel) {
-	this.dataModel = dataModel;
     }
 
     private boolean validateInput() {

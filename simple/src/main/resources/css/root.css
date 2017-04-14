@@ -2,6 +2,12 @@
     -fx-background-color: transparent ;
     -fx-background-insets: 0px ;
 }
+
+#status-label {
+	  -fx-font-weight: bold;
+	  -fx-alignment: center;
+}
+
 .table-row-cell .table-cell {
     -fx-border-width: 0.0px;
 }

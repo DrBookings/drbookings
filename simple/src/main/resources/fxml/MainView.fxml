@@ -54,7 +54,7 @@
 				<TextField fx:id="guestNameFilterInput" GridPane.hgrow="ALWAYS"
 					GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
-				<Label fx:id="labelStatus" GridPane.columnIndex="0"
+				<Label fx:id="statusLabel" id="status-label" GridPane.columnIndex="0" text="no data"
 					GridPane.rowIndex="2" GridPane.hgrow="ALWAYS" maxWidth="Infinity"
 					GridPane.columnSpan="3" />
 
@@ -98,7 +98,7 @@
 						<TableColumn fx:id="cBruttoEarningsPerNightTotal"
 							prefWidth="30" text="Net Earnings">
 							<cellValueFactory>
-								<PropertyValueFactory property="totalEarningsPerDay" />
+								<PropertyValueFactory property="totalNetEarnings" />
 							</cellValueFactory>
 						</TableColumn>
 					</columns>

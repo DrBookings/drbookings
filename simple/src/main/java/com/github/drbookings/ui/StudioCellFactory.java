@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.bean.DateBean;
-import com.github.drbookings.model.bean.RoomBean;
+import com.github.drbookings.ui.beans.DateBean;
+import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.controller.CellContentController;
 
 import javafx.fxml.FXMLLoader;
@@ -27,6 +27,7 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 	this.id = id;
     }
 
+    @SuppressWarnings("unused")
     private Node buildCellContent(final RoomBean roomBean) {
 	try {
 	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/CellContentView.fxml"));
@@ -46,12 +47,14 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 	final VBox parent = new VBox(0);
 	c.setCellContainer(parent);
 
-	VBox vbox = new VBox();
-	c.setGuestNamesCheckIn(vbox);
-	parent.getChildren().add(vbox);
+	VBox vbox;
 
 	vbox = new VBox();
 	c.setGuestNamesCheckOut(vbox);
+	parent.getChildren().add(vbox);
+
+	vbox = new VBox();
+	c.setGuestNamesCheckIn(vbox);
 	parent.getChildren().add(vbox);
 
 	vbox = new VBox();
@@ -82,7 +85,7 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 		    setStyle("");
 		    setGraphic(null);
 		} else {
-		    setGraphic(buildCellContentFast(item.getRoom(id).get()));
+		    setGraphic(buildCellContentFast(item.getRoom(id)));
 		    setStyle("-fx-padding: 0 0 0 0;");
 		}
 	    }
