@@ -1,6 +1,6 @@
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.bean.DateBean;
+import com.github.drbookings.ui.beans.DateBean;
 
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;

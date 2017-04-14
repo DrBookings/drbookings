@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataStore>
+    <bookings>
+        <booking guestName="testGuest" source="testOrigin" grossEarnings="0.0" welcomeMailSend="false" date="2017-04-03" roomName="testRoom" serviceFee="0.0" paymentDone="false"/>
+        <booking guestName="testGuest" source="testOrigin" grossEarnings="0.0" welcomeMailSend="false" date="2017-04-04" roomName="testRoom" serviceFee="0.0" paymentDone="false"/>
+    </bookings>
+    <cleanings/>
+</dataStore>

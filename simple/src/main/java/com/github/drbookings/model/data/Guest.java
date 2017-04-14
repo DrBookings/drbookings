@@ -4,7 +4,6 @@ public class Guest extends Named {
 
     public Guest(final String name) {
 	super(name);
-
     }
 
 }

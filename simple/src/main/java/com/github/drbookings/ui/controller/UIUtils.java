@@ -22,4 +22,9 @@ public class UIUtils {
 
     }
 
+    public static void showError(final Throwable t) {
+	Platform.runLater(() -> doShowError(t.getLocalizedMessage(), t.toString()));
+
+    }
+
 }

@@ -1,9 +1,7 @@
 package com.github.drbookings.ui.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -12,63 +10,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import com.github.drbookings.model.ModelConfiguration.NightCounting;
-import com.github.drbookings.model.bean.BookingBean;
-import com.github.drbookings.model.bean.BookingBeans;
-import com.github.drbookings.model.bean.DateBean;
-import com.github.drbookings.model.bean.RoomBean;
-import com.github.drbookings.model.data.manager.BookingManager;
-import com.github.drbookings.model.manager.DataModel;
-import com.github.drbookings.model.manager.RoomManager;
-import com.github.drbookings.ser.DataStore;
-import com.github.drbookings.ser.MarshallListener;
+import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ser.UnmarshallListener;
+import com.github.drbookings.ser.XMLStorage;
+import com.github.drbookings.ui.BookingFilter;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.OccupancyCellFactory;
 import com.github.drbookings.ui.OccupancyCellValueFactory;
 import com.github.drbookings.ui.StudioCellFactory;
-import com.google.common.collect.LinkedHashMultimap;
+import com.github.drbookings.ui.beans.DateBean;
+import com.github.drbookings.ui.beans.RoomBean;
 import com.google.common.collect.Multimap;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
-import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -128,7 +106,7 @@ public class MainController implements Initializable {
     private TableColumn<DateBean, DateBean> cStudio2;
 
     @FXML
-    private Label labelStatus;
+    private Label statusLabel;
 
     @FXML
     private TableColumn<DateBean, DateBean> cStudio3;
@@ -158,11 +136,15 @@ public class MainController implements Initializable {
 
     private File file;
 
-    private final DataModel dataModel = new DataModel();
+    private final MainManager manager;
 
-    private final BookingManager bookingManager = new BookingManager();
+    public MainManager getManager() {
+	return manager;
+    }
 
-    private final RoomManager roomMananger = new RoomManager();
+    public MainController() {
+	manager = new MainManager();
+    }
 
     private void addBooking() {
 	final ObservableList<RoomBean> dates = CellSelectionManager.getInstance().getSelection();
@@ -188,10 +170,19 @@ public class MainController implements Initializable {
 		logger.debug("Delete in column " + c + ", " + cellData);
 	    }
 	    if (cellData instanceof DateBean) {
-		if (((DateBean) cellData).getBookings().isEmpty()) {
+		final DateBean db = (DateBean) cellData;
+		if (db.getRooms().isEmpty()) {
 
 		} else {
-		    dataModel.removeAll(((DateBean) cellData).getRoom("" + c).get().getFilteredBookings().get(0));
+		    final RoomBean rb = db.getRoom("" + c);
+		    if (rb.isEmpty()) {
+			continue;
+		    }
+		    final List<Booking> bookings = BookingEntry.getBookings(rb.getFilteredBookingEntries());
+		    if (logger.isDebugEnabled()) {
+			logger.debug("Deleting " + bookings);
+			manager.removeBookings(bookings);
+		    }
 		}
 	    }
 	}
@@ -199,25 +190,49 @@ public class MainController implements Initializable {
 
     private void doUpdateStatusLabel() {
 
-	final long bookingDays = dataModel.getNumberOfBookingNights("(?i)booking");
-	final double bookingEarnings = dataModel.getBruttoEarnings("(?i)booking");
-	final long airbnbDays = dataModel.getNumberOfBookingNights("(?i)airbnb");
-	final int distinctAirbnbStays = dataModel.getNumberOfDistinctBookings("(?i)airbnb");
-	final int distinctBookingStays = dataModel.getNumberOfDistinctBookings("(?i)booking");
-	final int distinctBookingOther = dataModel.getNumberOfDistinctBookings(BookingBeans.getRegexOther());
-	final int distinctBookingsAll = dataModel.getNumberOfDistinctBookings();
-	final double airbnbEarnings = dataModel.getBruttoEarnings("(?i)airbnb");
-	final long otherDays = dataModel.getNumberOfBookingNights("(?!airbnb|booking)");
-	final double otherEarnings = dataModel.getBruttoEarnings("(?!airbnb|booking)");
-	labelStatus.setText("Booking: " + bookingDays + "/" + distinctBookingStays + " ("
-		+ decimalFormat.format(bookingEarnings) + "€), Airbnb: " + airbnbDays + "/" + distinctAirbnbStays + " ("
-		+ decimalFormat.format(airbnbEarnings) + "€), Other: " + otherDays + "/" + distinctBookingOther + " ("
-		+ decimalFormat.format(otherEarnings) + "€), Total: " + (airbnbDays + bookingDays + otherDays) + "/"
-		+ distinctBookingsAll + " (" + decimalFormat.format(airbnbEarnings + bookingEarnings + otherEarnings)
-		+ "€)");
-	labelStatus.setAlignment(Pos.CENTER);
-	labelStatus.setStyle("-fx-font-weight: bold;");
+	final BookingsByOrigin bo = new BookingsByOrigin(manager.getBookingEntries().stream()
+		.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList()));
+	statusLabel.textProperty()
+		.set(getStatusLabelString(bo.getBookingBookings(), bo.getAirbnbBookings(), bo.getOtherBookings()));
 
+    }
+
+    private static String getStatusLabelString(final Collection<BookingEntry> bookingBookings,
+	    final Collection<BookingEntry> airbnbBookings, final Collection<BookingEntry> otherBookings) {
+	final StringBuilder sb = new StringBuilder();
+	sb.append("Booking nights: ");
+	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
+		.collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Airbnb nights: ");
+	sb.append(airbnbBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> airbnbBookings2 = airbnbBookings.stream().map(b -> b.getElement())
+		.collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Other nights: ");
+	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Av. Net Earnings / Day: ");
+	final OptionalDouble av = Stream
+		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
+		.mapToDouble(b -> b.getNetEarnings()).average();
+	if (av.isPresent()) {
+	    sb.append(String.format("%3.2f€", av.getAsDouble()));
+	} else {
+	    sb.append(String.format("%3.2f€", 0));
+	}
+	return sb.toString();
     }
 
     @SuppressWarnings("rawtypes")
@@ -232,9 +247,9 @@ public class MainController implements Initializable {
 		    logger.debug("Selection changed to " + cell);
 		}
 		if (cell instanceof DateBean) {
-		    final Optional<RoomBean> room = ((DateBean) cell).getRoom(c + "");
-		    if (room.isPresent()) {
-			cells.add(room.get());
+		    final RoomBean room = ((DateBean) cell).getRoom("" + c);
+		    if (room != null) {
+			cells.add(room);
 		    }
 		}
 	    }
@@ -274,8 +289,6 @@ public class MainController implements Initializable {
     private Callback<TableView<DateBean>, TableRow<DateBean>> getRowFactory() {
 	return param -> {
 
-	    final PseudoClass rowContainsSelectedCell = PseudoClass.getPseudoClass("contains-selection");
-
 	    final TableRow<DateBean> row = new TableRow<DateBean>() {
 		@Override
 		protected void updateItem(final DateBean item, final boolean empty) {
@@ -296,6 +309,8 @@ public class MainController implements Initializable {
 		}
 	    };
 
+	    // final PseudoClass rowContainsSelectedCell =
+	    // PseudoClass.getPseudoClass("contains-selection");
 	    // final BooleanBinding containsSelection =
 	    // Bindings.createBooleanBinding(
 	    // () -> rowsWithSelectedCells.contains(row.getIndex()),
@@ -333,8 +348,30 @@ public class MainController implements Initializable {
 		new FileChooser.ExtensionFilter("All Files", "*"));
 	fileChooser.setTitle("Open Resource File");
 	file = fileChooser.showOpenDialog(node.getScene().getWindow());
+
 	if (file != null) {
-	    restoreState();
+	    try {
+		final long elementsToRead = XMLStorage.countElements("booking", file);
+		final UnmarshallListener l = new UnmarshallListener();
+		progressBar.progressProperty().bind(l.bookingCountProperty().divide(elementsToRead));
+		progressLabel.setText("Reading " + elementsToRead + " bookings..");
+		new Thread(() -> {
+		    try {
+			setWorking(true);
+			new XMLStorage(getManager()).setListener(l).load(file);
+		    } catch (final Exception e) {
+			logger.error(e.getLocalizedMessage(), e);
+			UIUtils.showError(e);
+		    } finally {
+			setWorking(false);
+		    }
+		}).start();
+
+	    } catch (final Exception e) {
+		if (logger.isErrorEnabled()) {
+		    logger.error(e.getLocalizedMessage(), e);
+		}
+	    }
 	}
 
     }
@@ -360,7 +397,7 @@ public class MainController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
 
 	guestNameFilterInput.textProperty().addListener(
-		(ChangeListener<String>) (observable, oldValue, newValue) -> dataModel.applyGuestNameFilter(newValue));
+		(ChangeListener<String>) (observable, oldValue, newValue) -> manager.applyGuestNameFilter(newValue));
 	initTableView();
 	cDate.setCellFactory(column -> {
 	    return new TableCell<DateBean, LocalDate>() {
@@ -388,20 +425,8 @@ public class MainController implements Initializable {
 			setText(null);
 		    } else {
 
-			if (this.getTableRow().getItem() != null && this.getTableRow().getItem() instanceof DateBean) {
-			    final DateBean db = (DateBean) this.getTableRow().getItem();
-			    if (db.getPaymentsReceived() >= db.getBookings().size()) {
-				this.getStyleClass().add("all-payed");
-				// System.err.println("all payed");
-			    } else {
-				this.getStyleClass().add("needs-payment");
-			    }
-			    final String percentString = String.format("%4.0f%%",
-				    db.getPaymentsReceived() / +(float) db.getBookings().size() * 100);
-			    setText(decimalFormat.format(item) + "\n" + percentString);
-			} else {
-			    setText(decimalFormat.format(item));
-			}
+			setText(decimalFormat.format(item));
+
 		    }
 		}
 
@@ -427,7 +452,7 @@ public class MainController implements Initializable {
 	    }
 	});
 	tableView.setRowFactory(getRowFactory());
-	dataModel.getData().addListener((ListChangeListener<DateBean>) c -> {
+	manager.getUIData().addListener((ListChangeListener<DateBean>) c -> {
 	    updateStatusLabel();
 	});
 	initDataFile();
@@ -442,7 +467,8 @@ public class MainController implements Initializable {
 		    rowsWithSelectedCells.addAll(rows);
 		});
 
-	tableView.setItems(dataModel.getData());
+	// tableView.setItems(dataModel.getData());
+	tableView.setItems(manager.getUIData());
 	tableView.getSelectionModel().setCellSelectionEnabled(true);
 	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	initTableViewContextMenus();
@@ -467,124 +493,6 @@ public class MainController implements Initializable {
 		menu.show(tableView, t.getScreenX(), t.getScreenY());
 	    }
 	});
-    }
-
-    private void makeBackup() {
-	if (file.exists() && file.length() != 0) {
-	    try {
-		FileUtils.copyFile(file, new File(file.getParentFile(), file.getName() + ".bak"));
-	    } catch (final IOException e) {
-		if (logger.isErrorEnabled()) {
-		    logger.error(e.getLocalizedMessage(), e);
-		}
-	    }
-	}
-    }
-
-    private void restoreState() {
-	if (logger.isInfoEnabled()) {
-	    logger.info("Loading state from " + file.getAbsolutePath());
-	}
-
-	final UnmarshallListener listener = new UnmarshallListener();
-
-	progressLabel.textProperty()
-		.bind(Bindings.createStringBinding(buildProgressString(listener), listener.bookingCountProperty()));
-
-	new Thread(() -> {
-	    try {
-		setWorking(true);
-
-		final long counter = countElements(file);
-
-		if (logger.isDebugEnabled()) {
-		    logger.debug(counter + " total elements to process");
-		}
-
-		Platform.runLater(() -> {
-		    progressBar.progressProperty().bind(Bindings.createDoubleBinding(() -> {
-			final double result = listener.getBookingCount() / counter;
-			return result;
-		    }, listener.bookingCountProperty()));
-		});
-
-		final JAXBContext jc = JAXBContext.newInstance(DataStore.class);
-		final Unmarshaller jaxbMarshaller = jc.createUnmarshaller();
-
-		jaxbMarshaller.setListener(listener);
-		final List<BookingBean> data = ((DataStore) jaxbMarshaller.unmarshal(file)).getBookings();
-		Platform.runLater(() -> {
-		    progressLabel.textProperty().unbind();
-		    progressLabel.textProperty().set("Rendering..");
-		});
-		Platform.runLater(() -> {
-		    try {
-			dataModel.setAll(data);
-		    } catch (final Exception e) {
-			if (logger.isErrorEnabled()) {
-			    logger.error(e.getLocalizedMessage(), e);
-			}
-		    }
-		    updateStatusLabel();
-		});
-
-	    } catch (final Exception e1) {
-		if (logger.isErrorEnabled()) {
-		    logger.error(e1.getLocalizedMessage(), e1);
-		}
-	    } finally {
-		setWorking(false);
-	    }
-
-	}).start();
-    }
-
-    private long countElements(final File file2) throws SAXException, IOException, ParserConfigurationException {
-	final String tagName = "booking";
-	final InputStream in = new FileInputStream(file);
-
-	final SAXParserFactory spf = SAXParserFactory.newInstance();
-	final SAXParser saxParser = spf.newSAXParser();
-	final AtomicInteger counter = new AtomicInteger();
-	saxParser.parse(in, new DefaultHandler() {
-	    @Override
-	    public void startElement(final String uri, final String localName, final String qName,
-		    final Attributes attributes) {
-		// System.err.println(uri);
-		// System.err.println(localName);
-		// System.err.println(qName);
-		if (qName.equals(tagName)) {
-		    counter.incrementAndGet();
-		}
-	    }
-
-	});
-	return counter.longValue();
-    }
-
-    public void saveState() {
-	if (file == null || dataModel.getData().isEmpty()) {
-	    return;
-	}
-	makeBackup();
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Saving state to " + file);
-	}
-	try {
-	    final JAXBContext jc = JAXBContext.newInstance(DataStore.class);
-	    final Marshaller jaxbMarshaller = jc.createMarshaller();
-	    jaxbMarshaller.setListener(new MarshallListener());
-	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	    jaxbMarshaller.marshal(dataModel.toDataStore(), file);
-	} catch (final Exception e1) {
-	    logger.error(e1.getLocalizedMessage(), e1);
-	}
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Saving state done");
-	}
-	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
-	userPrefs.put(defaultDataFileNameKey, file.getAbsolutePath());
-
     }
 
     private void setWorking(final boolean working) {
@@ -616,8 +524,7 @@ public class MainController implements Initializable {
 	    stage.setTitle("Add Booking");
 	    stage.setScene(scene);
 	    final AddBookingController c = loader.getController();
-	    c.setDataModel(dataModel);
-	    c.setBookingManager(bookingManager);
+	    c.setManager(manager);
 	    c.datePickerCheckIn.setValue(date);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
@@ -631,21 +538,7 @@ public class MainController implements Initializable {
     }
 
     private void showCleaningPlan() {
-	final LocalDate now = LocalDate.now();
-	final List<DateBean> dates = dataModel.getData();
-	final Map<String, Multimap<LocalDate, String>> cleaningRoomMap = new LinkedHashMap<>();
-	for (final DateBean db : dates) {
-	    for (final RoomBean rb : db) {
-		if (rb.hasCleaning()) {
-		    Multimap<LocalDate, String> m = cleaningRoomMap.get(rb.getCleaning());
-		    if (m == null) {
-			m = LinkedHashMultimap.create();
-			cleaningRoomMap.put(rb.getCleaning(), m);
-		    }
-		    m.put(db.getDate(), rb.getName());
-		}
-	    }
-	}
+
 	final Alert alert = new Alert(AlertType.INFORMATION);
 	alert.setTitle("Cleaning Plan");
 	final TextArea label = new TextArea();
@@ -654,7 +547,7 @@ public class MainController implements Initializable {
 	label.setPrefHeight(400);
 	label.setPrefWidth(400);
 	label.getStyleClass().add("copyable-label");
-	label.setText(getCleaningPlanString(cleaningRoomMap));
+	label.setText("ToDo");
 	alert.setHeaderText("Cleaning Plan");
 	alert.setContentText(null);
 	alert.getDialogPane().setContent(label);
@@ -669,7 +562,7 @@ public class MainController implements Initializable {
 	    final Scene scene = new Scene(root);
 	    stage.setTitle("Room Details");
 	    stage.setScene(scene);
-	    stage.setWidth(400);
+	    stage.setWidth(600);
 	    stage.setHeight(400);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
@@ -692,7 +585,6 @@ public class MainController implements Initializable {
     }
 
     private void updateStatusLabel() {
-	dataModel.getModelConfiguration().setNightCounting(NightCounting.DAY_BEFORE);
 	Platform.runLater(() -> doUpdateStatusLabel());
 
     }

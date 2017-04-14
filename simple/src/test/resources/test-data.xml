@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dataStore>
-    <bookings>
-        <booking guestName="testGuest" source="" grossEarnings="0.0" welcomeMailSend="false" date="2017-03-24" roomName="testRoom" serviceFee="0.0" paymentDone="false"/>
-    </bookings>
+    <bookings/>
 </dataStore>

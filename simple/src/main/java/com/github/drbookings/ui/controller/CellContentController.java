@@ -2,15 +2,15 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.bean.BookingBean;
-import com.github.drbookings.model.bean.BookingBeans;
-import com.github.drbookings.model.bean.RoomBean;
 import com.github.drbookings.ui.Styles;
+import com.github.drbookings.ui.beans.RoomBean;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,56 +23,42 @@ import javafx.scene.layout.VBox;
 
 public class CellContentController implements Initializable {
 
+    @SuppressWarnings("unused")
     private static Logger logger = LoggerFactory.getLogger(CellContentController.class);
 
-    private static Node buildEntryCheckIn(final BookingBean bookingBean) {
-
-	final Label l = getNewLabel("Check-in\n" + bookingBean.getGuestName());
-	if (bookingBean.getRoom().getDateBean().getDataModel().getConnectedPrevious(bookingBean.getRoom())
-		.isPresent()) {
-	    final RoomBean rb = bookingBean.getRoom().getDateBean().getDataModel()
-		    .getConnectedPrevious(bookingBean.getRoom()).get();
-	    if (BookingBeans.guestNameView(rb.getAllBookings()).contains(bookingBean.getGuestName())) {
-
-		// ignore same guest check-in
-
-		return l;
-	    }
-	}
+    private static Node buildEntryCheckIn(final BookingEntry e) {
+	final Label l = getNewLabel("Check-in " + e.getElement().getGuest().getName());
 	l.getStyleClass().add("check-in");
-
 	return l;
     }
 
-    private static Node buildEntryCheckOut(final BookingBean booking) {
-	final Label l = getNewLabel(booking.getGuestName() + "\n" + "Check-out");
+    private static Node buildEntryCheckOut(final BookingEntry e) {
+	final Label l = getNewLabel("Check-out " + e.getElement().getGuest().getName());
 	return l;
     }
 
     private static Node buildEntryCleaning(final RoomBean rb) {
 	final Label l = getNewLabel("");
-	String s = "Cleaning " + rb.getCleaning();
-	if (rb.isNeedsCleaning()) {
+	final String s;
+	if (rb.needsCleaning()) {
 	    s = "No Cleaning";
 	    if (rb.getDate().isAfter(LocalDate.now().minusDays(7))) {
 		l.getStyleClass().add("cleaning-warning");
 	    }
 	} else {
+	    s = "Cleaning " + rb.getCleaningEntry().getElement().getName();
 	    l.getStyleClass().add("cleaning");
 	}
-
 	l.setText(s);
 	return l;
     }
 
-    private static Node buildEntryStay(final BookingBean booking) {
-	final Label l = getNewLabel(booking.getGuestName());
-
+    private static Node buildEntryStay(final BookingEntry booking) {
+	final Label l = getNewLabel(booking.getElement().getGuest().getName());
 	if (!LocalDate.now().equals(booking.getDate()) && !booking.getDate()
 		.equals(booking.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
 	    l.getStyleClass().add("entry-stay");
 	}
-
 	return l;
 
     }
@@ -133,12 +119,12 @@ public class CellContentController implements Initializable {
 	this.cleaning = cleaning;
     }
 
-    public void setData(final RoomBean roomBean) {
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("Updating cell content for " + roomBean);
-	// }
-	if (roomBean.hasCleaning() || roomBean.isNeedsCleaning()) {
-	    cleaning.getChildren().add(buildEntryCleaning(roomBean));
+    public void setData(final RoomBean rb) {
+	if (rb == null) {
+	    return;
+	}
+	if (rb.hasCleaning() || rb.needsCleaning()) {
+	    cleaning.getChildren().add(buildEntryCleaning(rb));
 	} else {
 	    cleaning.getChildren().clear();
 	}
@@ -146,30 +132,31 @@ public class CellContentController implements Initializable {
 	guestNamesStay.getChildren().clear();
 	guestNamesCheckIn.getChildren().clear();
 
-	BookingBean last = null;
-	for (final BookingBean bb : roomBean.getFilteredBookings()) {
-	    if (bb.isCheckOut()) {
-		guestNamesCheckOut.getChildren().add(buildEntryCheckOut(bb));
-	    } else if (bb.isCheckIn()) {
+	BookingEntry last = null;
+	for (final BookingEntry bb : rb.getFilteredBookingEntries().stream()
+		.sorted(Comparator.comparing(BookingEntry::isCheckOut)).collect(Collectors.toList())) {
+	    if (bb.isCheckIn()) {
 		guestNamesCheckIn.getChildren().add(buildEntryCheckIn(bb));
+	    } else if (bb.isCheckOut()) {
+		guestNamesCheckOut.getChildren().add(buildEntryCheckOut(bb));
 	    } else {
 		guestNamesStay.getChildren().add(buildEntryStay(bb));
 	    }
 	    last = bb;
 	}
 
-	if (roomBean.isWarning()) {
-	    if (roomBean.hasCheckIn()) {
+	if (rb.isWarning()) {
+	    if (rb.hasCheckIn()) {
 		cellContainer.getStyleClass().add("warning-box-top");
-	    } else if (roomBean.hasCheckOut()) {
+	    } else if (rb.hasCheckOut()) {
 		cellContainer.getStyleClass().add("warning-box-bottom");
 	    } else {
 		cellContainer.getStyleClass().add("warning-box-middle");
 	    }
 	} else if (last != null) {
-	    cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(last.getSource()));
+	    cellContainer.getStyleClass()
+		    .add(Styles.getBackgroundStyleSource(last.getElement().getBookingOrigin().getName()));
 	}
-	// cellContainer.requestLayout();
     }
 
     public void setGuestNamesCheckIn(final VBox guestNamesCheckIn) {

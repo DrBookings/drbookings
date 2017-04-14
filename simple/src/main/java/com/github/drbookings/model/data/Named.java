@@ -1,51 +1,32 @@
 package com.github.drbookings.model.data;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Named extends IDed {
 
-    @Override
-    public int hashCode() {
-	final int prime = 31;
-	int result = super.hashCode();
-	result = prime * result + (name == null ? 0 : name.hashCode());
-	return result;
-    }
+    private final StringProperty name = new SimpleStringProperty();
 
     @Override
-    public boolean equals(final Object obj) {
-	if (this == obj) {
-	    return true;
-	}
-	if (!super.equals(obj)) {
-	    return false;
-	}
-	if (!(obj instanceof Named)) {
-	    return false;
-	}
-	final Named other = (Named) obj;
-	if (name == null) {
-	    if (other.name != null) {
-		return false;
-	    }
-	} else if (!name.equals(other.name)) {
-	    return false;
-	}
-	return true;
+    public String toString() {
+	return getName();
     }
-
-    private String name;
 
     public Named(final String name) {
 	super();
+	setName(name);
+    }
 
-	this.name = name;
+    public StringProperty nameProperty() {
+	return this.name;
     }
 
     public String getName() {
-	return name;
+	return this.nameProperty().get();
     }
 
     public void setName(final String name) {
-	this.name = name;
+	this.nameProperty().set(name);
     }
 
 }

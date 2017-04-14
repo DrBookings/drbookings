@@ -7,7 +7,15 @@
 	<name>DrBookings</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<github-user> drbookings</github-user>
+		<github-repo> drbookings</github-repo>
 	</properties>
+	<scm>
+		<connection>scm:git:https://github.com/${github-user}/${github-repo}.git</connection>
+		<developerConnection>scm:git:git@github.com:${github-user}/${github-repo}.git</developerConnection>
+		<url>https://github.com/${github-user}/${github-repo}</url>
+		<tag>HEAD</tag>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
