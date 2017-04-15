@@ -57,7 +57,7 @@
 				<TextField fx:id="guestNameFilterInput" GridPane.hgrow="ALWAYS"
 					GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
-				<Label fx:id="statusLabel" id="status-label"
+				<Label fx:id="statusLabel" id="status-label" wrapText="true"
 					GridPane.columnIndex="0" text="no data" GridPane.rowIndex="2"
 					GridPane.hgrow="ALWAYS" maxWidth="Infinity" GridPane.columnSpan="3" />
 

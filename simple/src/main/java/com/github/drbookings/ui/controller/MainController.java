@@ -86,41 +86,48 @@ public class MainController implements Initializable {
     private static String getStatusLabelString(final Collection<BookingEntry> bookingBookings,
 	    final Collection<BookingEntry> airbnbBookings, final Collection<BookingEntry> otherBookings) {
 	final StringBuilder sb = new StringBuilder();
-	sb.append("Airbnb nights: ");
+	sb.append("Airbnb:");
 	sb.append(airbnbBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
+	sb.append("(");
 	// we want total payment, since payment is done once
 	final Set<Booking> airbnbBookings2 = airbnbBookings.stream().map(b -> b.getElement())
 		.collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(decimalFormat.format(airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", Booking nights: ");
+	sb.append(", \tBooking:");
 	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
+	sb.append("(");
 	// we want total payment, since payment is done once
 	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
 		.collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(decimalFormat.format(bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", Other nights: ");
+	sb.append(", \tOther:");
 	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
+	sb.append("(");
 	// we want total payment, since payment is done once
 	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(decimalFormat.format(otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", Total nights: ");
+	sb.append(", \tTotal:");
 	sb.append(
 		Stream.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
 			.filter(b -> !b.isCheckOut()).count());
-	sb.append(", Av. Net Earnings / Day: ");
+	sb.append("(");
+	sb.append(
+		decimalFormat.format(Stream
+			.concat(bookingBookings2.stream(),
+				Stream.concat(airbnbBookings2.stream(), otherBookings2.stream()))
+			.mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", \tAv.NetEarnings/Day:");
 	final OptionalDouble av = Stream
 		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
 		.mapToDouble(b -> b.getNetEarnings()).average();
 	if (av.isPresent()) {
-	    sb.append(String.format("%3.2f€", av.getAsDouble()));
+	    sb.append(decimalFormat.format(av.getAsDouble()));
 	} else {
-	    sb.append(String.format("%3.2f€", 0.0));
+	    sb.append(decimalFormat.format(0.0));
 	}
 	return sb.toString();
     }

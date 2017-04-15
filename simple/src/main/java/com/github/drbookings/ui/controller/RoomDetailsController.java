@@ -218,7 +218,7 @@ public class RoomDetailsController implements Initializable {
 	if (cleaning.getText() != null && cleaning.getText().trim().length() > 0) {
 	    room.setCleaning(cleaning.getText().trim());
 	} else {
-	    room.setCleaningEntry(null);
+	    room.removeCleaningEntry();
 	}
     }
 

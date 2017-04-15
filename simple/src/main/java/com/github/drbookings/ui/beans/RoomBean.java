@@ -243,9 +243,6 @@ public class RoomBean extends WarnableBean {
     }
 
     public void setCleaningEntry(final CleaningEntry cleaningEntry) {
-	if (cleaningEntry == null) {
-	    manager.removeCleaning(cleaningEntry);
-	}
 	this.cleaningEntryProperty().set(cleaningEntry);
     }
 
@@ -272,6 +269,14 @@ public class RoomBean extends WarnableBean {
 
     public void setNeedsCleaning(final boolean needsCleaning) {
 	this.needsCleaningProperty().set(needsCleaning);
+    }
+
+    public void removeCleaningEntry() {
+	if (getCleaningEntry() != null) {
+	    manager.removeCleaning(getCleaningEntry());
+	    // setCleaningEntry(null);
+	}
+
     }
 
 }

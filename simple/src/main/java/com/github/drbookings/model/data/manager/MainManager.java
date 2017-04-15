@@ -96,7 +96,7 @@ public class MainManager {
     protected synchronized void addBookingEntry(final LocalDate date, final Booking booking) {
 	final BookingEntry bookingEntry = new BookingEntry(date, booking);
 	bookingEntries.put(date, bookingEntry);
-	addUiData(bookingEntry);
+	addUiDataBooking(bookingEntry);
     }
 
     public synchronized void addCleaning(final LocalDate date, final String cleaningName, final String roomName) {
@@ -108,10 +108,10 @@ public class MainManager {
 	final CleaningEntry cleaningEntry = new CleaningEntry(date, room, cleaning);
 	cleaningEntries.put(date, cleaningEntry);
 	cleaningEntriesList.add(cleaningEntry);
-	addUiData(cleaningEntry);
+	addUiDataCleaning(cleaningEntry);
     }
 
-    private void addUiData(final BookingEntry bookingEntry) {
+    private void addUiDataBooking(final BookingEntry bookingEntry) {
 	final Room room = bookingEntry.getRoom();
 	DateBean db = uiDataMap.get(bookingEntry.getDate());
 	if (db == null) {
@@ -122,7 +122,7 @@ public class MainManager {
 	db.getRoom(room.getName()).addBookingEntry(bookingEntry);
     }
 
-    private void addUiData(final CleaningEntry cleaningEntry) {
+    private void addUiDataCleaning(final CleaningEntry cleaningEntry) {
 	final Room room = cleaningEntry.getRoom();
 	DateBean db = uiDataMap.get(cleaningEntry.getDate());
 	if (db == null) {
@@ -131,6 +131,18 @@ public class MainManager {
 	    uiDataMap.put(db.getDate(), db);
 	}
 	db.getRoom(room.getName()).setCleaningEntry(cleaningEntry);
+    }
+
+    private void removeUiDataCleaning(final CleaningEntry cleaningEntry) {
+	final Room room = cleaningEntry.getRoom();
+	final DateBean db = uiDataMap.get(cleaningEntry.getDate());
+	if (db == null) {
+	    if (logger.isWarnEnabled()) {
+		logger.warn("No date entry found for " + cleaningEntry);
+	    }
+	} else {
+	    db.getRoom(room.getName()).setCleaningEntry(null);
+	}
     }
 
     public synchronized void applyGuestNameFilter(final String guestNameFilterString) {
@@ -193,15 +205,11 @@ public class MainManager {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Bookings now " + bookings);
 	}
-	removeUiData(bookings);
+	removeUiDataBooking(bookings);
 	return result;
     }
 
-    private void removeUiData(final Booking booking) {
-	removeUiData(Arrays.asList(booking));
-    }
-
-    private void removeUiData(final Collection<? extends Booking> bookings) {
+    private void removeUiDataBooking(final Collection<? extends Booking> bookings) {
 	for (final DateBean e : uiData) {
 	    for (final RoomBean r : e.getRooms()) {
 		for (final Iterator<BookingEntry> it = r.getBookingEntries().iterator(); it.hasNext();) {
@@ -232,8 +240,12 @@ public class MainManager {
     }
 
     public void removeCleaning(final CleaningEntry cleaningEntry) {
+
+	System.err.println(cleaningEntries.size());
 	cleaningEntries.values().remove(cleaningEntry);
+	System.err.println(cleaningEntries.size());
 	cleaningEntriesList.remove(cleaningEntry);
+	removeUiDataCleaning(cleaningEntry);
     }
 
 }
