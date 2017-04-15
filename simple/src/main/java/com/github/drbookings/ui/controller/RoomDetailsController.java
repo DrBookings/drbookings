@@ -36,7 +36,7 @@ public class RoomDetailsController implements Initializable {
     private Button buttonSave;
 
     @FXML
-    private Label checkOut;
+    private Label bookings;
 
     @FXML
     private CheckBox paymentDoneButton;
@@ -46,9 +46,6 @@ public class RoomDetailsController implements Initializable {
 
     @FXML
     private TextField nettoEarningsOutput;
-
-    @FXML
-    private Label checkIn;
 
     @FXML
     private TextField cleaning;
@@ -150,8 +147,8 @@ public class RoomDetailsController implements Initializable {
 	    bruttoEarningsLabel.setText(null);
 	    bruttoEarningsInput.setText(null);
 	} else {
-	    bruttoEarningsLabel.setText("Gross earnings for " + booking.getElement().getGuest() + " ("
-		    + booking.getElement().getNumberOfNights() + " total nights)");
+	    bruttoEarningsLabel
+		    .setText("Gross earnings (" + booking.getElement().getNumberOfNights() + " total nights)");
 	    bruttoEarningsInput.setText("" + booking.getElement().getGrossEarnings());
 	    bruttoEarningsInputExpression.setText(booking.getElement().getGrossEarningsExpression());
 	}
@@ -163,7 +160,7 @@ public class RoomDetailsController implements Initializable {
 	    checkInNoteLabel.setText(null);
 	    checkInNoteInput.setText(null);
 	} else {
-	    checkInNoteLabel.setText("Check-in note for " + booking.getElement().getGuest());
+	    checkInNoteLabel.setText("Check-in note");
 	    checkInNoteInput.setText(booking.getElement().getCheckInNote());
 	}
     }
@@ -173,11 +170,15 @@ public class RoomDetailsController implements Initializable {
 	    nettoEarningsLabel.setText(null);
 	    nettoEarningsOutput.setText(null);
 	} else {
-	    nettoEarningsLabel.setText("Daily net earnings for " + booking.getElement().getGuest() + " ("
-		    + booking.getElement().getNumberOfNights() + " total nights)");
+	    nettoEarningsLabel
+		    .setText("Daily net earnings (" + booking.getElement().getNumberOfNights() + " total nights)");
 	    nettoEarningsOutput.setText(decimalFormat.format(booking.getNetEarnings()));
 	}
 
+    }
+
+    private static String buildBookingsLabelString(final RoomBean rb) {
+	return rb.getDate().toString();
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {
@@ -187,8 +188,10 @@ public class RoomDetailsController implements Initializable {
 	if (list.isEmpty()) {
 	    return;
 	}
+
 	// Show only first entry
 	room = list.get(0);
+	bookings.setText(buildBookingsLabelString(room));
 	// Show only first booking;
 	booking = selectBooking();
 	final Set<String> guestNameView = BookingEntry.guestNameView(getBookings());
@@ -209,18 +212,6 @@ public class RoomDetailsController implements Initializable {
 	updateUIWelcomeMail();
 	updateUIPayment();
 
-	final List<BookingEntry> ci = BookingEntry.checkInView(getBookings());
-	final List<BookingEntry> co = BookingEntry.checkOutView(getBookings());
-	if (ci.isEmpty()) {
-	    checkIn.setText("");
-	} else {
-	    checkIn.setText(BookingEntry.guestNameView(ci).toString());
-	}
-	if (co.isEmpty()) {
-	    checkOut.setText("");
-	} else {
-	    checkOut.setText(BookingEntry.guestNameView(co).toString());
-	}
     }
 
     private void updateModelCleaning() {

@@ -66,31 +66,29 @@
 	-fx-opacity: 0.5;
 }
 .warning-box-middle {
-	-fx-border-width: 0 3 0 3;
+	-fx-border-width: 0 2 0 2;
 	-fx-border-color: red;
 	-fx-border-style: solid;
 }
 
 .warning-box-top {
-	-fx-border-width: 3 3 0 3;
+	-fx-border-width: 2 2 0 2;
 	-fx-border-color: red;
 	-fx-border-style: solid;
 }
 
 .warning-box-bottom {
-	-fx-border-width: 0 3 3 3;
+	-fx-border-width: 0 2 2 2;
 	-fx-border-color: red;
 	-fx-border-style: solid;
 }
 
 .warning-text {
 	-fx-text-fill: deeppink;
-	-fx-font-weight: bold;
 }
 
 .cleaning-warning {
 	-fx-background-color: red;
-	-fx-font-weight: bold;
 }
 .cleaning {
 	-fx-background-color: khaki;
