@@ -27,13 +27,13 @@ public class CellContentController implements Initializable {
     private static Logger logger = LoggerFactory.getLogger(CellContentController.class);
 
     private static Node buildEntryCheckIn(final BookingEntry e) {
-	final Label l = getNewLabel("Check-in " + e.getElement().getGuest().getName());
+	final Label l = getNewLabel(e.getElement().getGuest().getName());
 	l.getStyleClass().add("check-in");
 	return l;
     }
 
     private static Node buildEntryCheckOut(final BookingEntry e) {
-	final Label l = getNewLabel("Check-out " + e.getElement().getGuest().getName());
+	final Label l = getNewLabel(e.getElement().getGuest().getName());
 	return l;
     }
 

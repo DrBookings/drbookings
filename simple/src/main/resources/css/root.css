@@ -70,21 +70,15 @@
 	-fx-opacity: 0.5;
 }
 .warning-box-middle {
-	-fx-border-width: 0 2 0 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: orangered;
 }
 
 .warning-box-top {
-	-fx-border-width: 2 2 0 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: orangered;
 }
 
 .warning-box-bottom {
-	-fx-border-width: 0 2 2 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: orangered;
 }
 
 .warning-text {
@@ -98,7 +92,7 @@
 	-fx-background-color: khaki;
 }
 .entry-stay {
-	-fx-opacity:0.3;
+	-fx-opacity:0.75;
 }
 .table-row-cell.now {
 	-fx-background-color: gold;
