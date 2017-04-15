@@ -1,12 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.drbookings</groupId>
 	<artifactId>drbookings</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>DrBookings</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		  <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 		<github-user>drbookings</github-user>
 		<github-repo>drbookings</github-repo>
 		<bintray-user>kerner1000</bintray-user>
@@ -20,9 +21,9 @@
 	</scm>
 	<distributionManagement>
 		<repository>
-		<id>local-release-repo</id>
-		<name>drbookings-local</name>
-		<url>file://${user.home}/local-maven-repository</url>
+			<id>local-release-repo</id>
+			<name>drbookings-local</name>
+			<url>file://${user.home}/local-maven-repository</url>
 		</repository>
 	</distributionManagement>
 	<build>
@@ -47,9 +48,12 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Build-Time>${maven.build.timestamp}</Build-Time>
+						</manifestEntries>
 					</archive>
 					<finalName>DrBookings-${project.version}</finalName>
-					 <appendAssemblyId>false</appendAssemblyId>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -57,7 +61,7 @@
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
-						</goals>	
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
@@ -102,6 +106,11 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jcabi</groupId>
+			<artifactId>jcabi-manifests</artifactId>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 </project>

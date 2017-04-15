@@ -9,10 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.OptionalDouble;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -35,7 +32,7 @@ import com.github.drbookings.ui.OccupancyCellValueFactory;
 import com.github.drbookings.ui.StudioCellFactory;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
-import com.google.common.collect.Multimap;
+import com.jcabi.manifests.Manifests;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -83,6 +80,48 @@ public class MainController implements Initializable {
     private static final DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, E");
 
     private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
+
+    private static String getStatusLabelString(final Collection<BookingEntry> bookingBookings,
+	    final Collection<BookingEntry> airbnbBookings, final Collection<BookingEntry> otherBookings) {
+	final StringBuilder sb = new StringBuilder();
+	sb.append("Airbnb nights: ");
+	sb.append(airbnbBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> airbnbBookings2 = airbnbBookings.stream().map(b -> b.getElement())
+		.collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Booking nights: ");
+	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
+		.collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Other nights: ");
+	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Total nights: ");
+	sb.append(
+		Stream.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
+			.filter(b -> !b.isCheckOut()).count());
+	sb.append(", Av. Net Earnings / Day: ");
+	final OptionalDouble av = Stream
+		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
+		.mapToDouble(b -> b.getNetEarnings()).average();
+	if (av.isPresent()) {
+	    sb.append(String.format("%3.2f€", av.getAsDouble()));
+	} else {
+	    sb.append(String.format("%3.2f€", 0.0));
+	}
+	return sb.toString();
+    }
 
     @FXML
     private Node node;
@@ -137,10 +176,6 @@ public class MainController implements Initializable {
     private File file;
 
     private final MainManager manager;
-
-    public MainManager getManager() {
-	return manager;
-    }
 
     public MainController() {
 	manager = new MainManager();
@@ -197,48 +232,6 @@ public class MainController implements Initializable {
 
     }
 
-    private static String getStatusLabelString(final Collection<BookingEntry> bookingBookings,
-	    final Collection<BookingEntry> airbnbBookings, final Collection<BookingEntry> otherBookings) {
-	final StringBuilder sb = new StringBuilder();
-	sb.append("Airbnb nights: ");
-	sb.append(airbnbBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
-	// we want total payment, since payment is done once
-	final Set<Booking> airbnbBookings2 = airbnbBookings.stream().map(b -> b.getElement())
-		.collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
-	sb.append(")");
-	sb.append(", Booking nights: ");
-	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
-	// we want total payment, since payment is done once
-	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
-		.collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
-	sb.append(")");
-	sb.append(", Other nights: ");
-	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
-	// we want total payment, since payment is done once
-	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
-	sb.append(")");
-	sb.append(", Total nights: ");
-	sb.append(
-		Stream.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
-			.filter(b -> !b.isCheckOut()).count());
-	sb.append(", Av. Net Earnings / Day: ");
-	final OptionalDouble av = Stream
-		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
-		.mapToDouble(b -> b.getNetEarnings()).average();
-	if (av.isPresent()) {
-	    sb.append(String.format("%3.2f€", av.getAsDouble()));
-	} else {
-	    sb.append(String.format("%3.2f€", 0.0));
-	}
-	return sb.toString();
-    }
-
     @SuppressWarnings("rawtypes")
     private ListChangeListener<TablePosition> getCellSelectionListener() {
 	return change -> {
@@ -261,33 +254,8 @@ public class MainController implements Initializable {
 	};
     }
 
-    private String getCleaningPlanString(final Map<String, Multimap<LocalDate, String>> cleaningMap) {
-	final StringBuilder sb = new StringBuilder();
-	for (final Entry<String, Multimap<LocalDate, String>> e : cleaningMap.entrySet()) {
-	    sb.append(e.getKey());
-	    sb.append("\t");
-	    for (final Iterator<Entry<LocalDate, Collection<String>>> eeIt = e.getValue().asMap().entrySet()
-		    .iterator(); eeIt.hasNext();) {
-		final Entry<LocalDate, Collection<String>> ee = eeIt.next();
-		final LocalDate v = ee.getKey();
-		sb.append(v.format(myDateFormatter));
-		for (final Iterator<String> itS = ee.getValue().iterator(); itS.hasNext();) {
-		    final String s = itS.next();
-		    sb.append(",\tF");
-		    sb.append(s);
-		    if (itS.hasNext()) {
-			sb.append(" ");
-		    }
-		}
-		if (eeIt.hasNext()) {
-		    sb.append("\n");
-		    sb.append("\t\t");
-		}
-
-	    }
-	    sb.append("\n");
-	}
-	return sb.toString();
+    public MainManager getManager() {
+	return manager;
     }
 
     private Callback<TableView<DateBean>, TableRow<DateBean>> getRowFactory() {
@@ -330,6 +298,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleButtonAddBooking(final ActionEvent event) {
 	Platform.runLater(() -> showAddBookingDialog());
+    }
+
+    @FXML
+    private void handleMenuItemAbout(final ActionEvent event) {
+	Platform.runLater(() -> showAbout());
     }
 
     @FXML
@@ -383,6 +356,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItemSettingsColors(final ActionEvent event) {
 
+    }
+
+    @FXML
+    private void handleMenuItemSettingsGeneral(final ActionEvent event) {
+	Platform.runLater(() -> showSettingsGeneral());
     }
 
     private void handleTableSelectEvent(final MouseEvent event) {
@@ -513,6 +491,26 @@ public class MainController implements Initializable {
 	guestNameFilterInput.setDisable(working);
     }
 
+    private void showAbout() {
+
+	final Alert alert = new Alert(AlertType.INFORMATION);
+	alert.setTitle("About DrBookings");
+	final TextArea label = new TextArea();
+
+	label.setEditable(false);
+	label.setPrefHeight(400);
+	label.setPrefWidth(400);
+	label.getStyleClass().add("copyable-label");
+
+	label.setText(
+		new StringBuilder().append("Application version\t").append(Manifests.read("Implementation-Version"))
+			.append("\n").append("Build time\t").append(Manifests.read("Build-Time")).toString());
+	alert.setHeaderText("proudly brought to you by kerner1000");
+	alert.setContentText(null);
+	alert.getDialogPane().setContent(label);
+	alert.showAndWait();
+    }
+
     private void showAddBookingDialog() {
 	showAddBookingDialog(null, null);
     }
@@ -580,6 +578,10 @@ public class MainController implements Initializable {
 	} catch (final IOException e) {
 	    logger.error(e.getLocalizedMessage(), e);
 	}
+    }
+
+    private void showSettingsGeneral() {
+
     }
 
     public void shutDown() {
