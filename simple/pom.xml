@@ -20,7 +20,7 @@
 	</scm>
 	<distributionManagement>
 		<repository>
-		<id>local</id>
+		<id>local-release-repo</id>
 		<name>drbookings-local</name>
 		<url>file://${user.home}/local-maven-repository</url>
 		</repository>
@@ -48,7 +48,7 @@
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 					</archive>
-					<finalName>${project.artifactId}-${project.version}</finalName>
+					<finalName>DrBookings-${project.version}</finalName>
 					 <appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
