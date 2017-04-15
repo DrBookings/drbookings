@@ -7,7 +7,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
 import com.github.drbookings.ui.controller.CleaningEntry;
@@ -62,4 +64,19 @@ public class DataStore {
 
     private final List<CleaningBeanSer> cleanings = new ArrayList<>();
 
+    public void load(final MainManager manager) throws OverbookingException {
+	for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
+		.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
+	    final Booking b = manager.addBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+		    bb.roomName, bb.source);
+	    // b.setGrossEarnings(bb.grossEarnings);
+	    b.setGrossEarningsExpression(bb.grossEarningsExpression);
+	    b.setWelcomeMailSend(bb.welcomeMailSend);
+	    b.setCheckInNote(bb.checkInNote);
+	    b.setPaymentDone(bb.paymentDone);
+	}
+	for (final CleaningBeanSer cb : getCleaningsSer()) {
+	    manager.addCleaning(cb.date, cb.name, cb.room);
+	}
+    }
 }

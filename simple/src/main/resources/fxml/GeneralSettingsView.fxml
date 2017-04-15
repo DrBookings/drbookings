@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.control.ProgressBar?>
+
+<GridPane hgap="10" vgap="10" styleClass="root"
+	xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.GeneralSettingsController">
+
+	<stylesheets>
+		<URL value="@/css/root.css" />
+	</stylesheets>
+	<padding>
+		<Insets bottom="10" left="10" right="10" top="10" />
+	</padding>
+	<children>
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="0"
+			text="Cleaning Plan look-behind" />
+
+		<TextField fx:id="cleaningPlanLookBehind" GridPane.hgrow="ALWAYS"
+			GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+	</children>
+
+
+
+</GridPane>
