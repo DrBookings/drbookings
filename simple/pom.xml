@@ -2,10 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.drbookings</groupId>
 	<artifactId>drbookings</artifactId>
-	<version>0.2.2-SNAPSHOT</version>
+	<version>0.2.3-SNAPSHOT</version>
 	<name>DrBookings</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		  <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 		<github-user>drbookings</github-user>
 		<github-repo>drbookings</github-repo>
 		<bintray-user>kerner1000</bintray-user>
@@ -18,11 +19,11 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-		<!-- <repository> -->
-		<!-- <id>bintray-drbookings-drbookings</id> -->
-		<!-- <name>drbookings-drbookings</name> -->
-		<!-- <url>https://api.bintray.com/maven/drbookings/drbookings/com.github.drbookings/;publish=1</url> -->
-		<!-- </repository> -->
+		<repository>
+		<id>local</id>
+		<name>drbookings-local</name>
+		<url>file:///home/alex/bin</url>
+		</repository>
 	</distributionManagement>
 	<build>
 		<plugins>
@@ -47,8 +48,8 @@
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 					</archive>
-					<appendAssemblyId>false</appendAssemblyId>
-					<finalName>DrBookings-${version}</finalName>
+					<finalName>${project.artifactId}-${project.version}</finalName>
+					 <appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -56,7 +57,7 @@
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
-						</goals>
+						</goals>	
 					</execution>
 				</executions>
 			</plugin>
@@ -66,28 +67,6 @@
 				<configuration>
 					<useReleaseProfile>false</useReleaseProfile>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>de.jutzig</groupId>
-				<artifactId>github-release-plugin</artifactId>
-				<version>1.1.1</version>
-				<configuration>
-					<description>test</description>
-					<releaseName>test release</releaseName>
-					<tag>${project.version}</tag>
-
-					<!-- If your project has additional artifacts, such as ones produced 
-						by the maven-assembly-plugin, you can define the following (requires version 
-						1.1.1 of the plugin or higher): -->
-					<fileSets>
-						<fileSet>
-							<directory>${project.build.directory}</directory>
-							<includes>
-								<include>${project.artifactId}*.jar</include>
-							</includes>
-						</fileSet>
-					</fileSets>
 				</configuration>
 			</plugin>
 		</plugins>
