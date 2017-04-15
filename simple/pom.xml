@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.drbookings</groupId>
 	<artifactId>drbookings</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.1-SNAPSHOT</version>
 	<name>DrBookings</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<github-user> drbookings</github-user>
-		<github-repo> drbookings</github-repo>
-		<bintray-user> kerner1000</bintray-user>
-		<bintray-repo> kerner1000</bintray-repo>
+		<github-user>drbookings</github-user>
+		<github-repo>drbookings</github-repo>
+		<bintray-user>kerner1000</bintray-user>
+		<bintray-repo>kerner1000</bintray-repo>
 	</properties>
 	<scm>
 		<connection>scm:git:https://github.com/${github-user}/${github-repo}.git</connection>
@@ -19,11 +19,11 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-		<repository>
-			<id>bintray-drbookings-drbookings</id>
-			<name>drbookings-drbookings</name>
-			<url>https://api.bintray.com/maven/drbookings/drbookings/com.github.drbookings/;publish=1</url>
-		</repository>
+		<!-- <repository> -->
+		<!-- <id>bintray-drbookings-drbookings</id> -->
+		<!-- <name>drbookings-drbookings</name> -->
+		<!-- <url>https://api.bintray.com/maven/drbookings/drbookings/com.github.drbookings/;publish=1</url> -->
+		<!-- </repository> -->
 	</distributionManagement>
 	<build>
 		<plugins>
@@ -66,8 +66,29 @@
 				<version>2.4.1</version>
 				<configuration>
 					<useReleaseProfile>false</useReleaseProfile>
-					<releaseProfiles>release</releaseProfiles>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.1.1</version>
+				<configuration>
+					<description>test</description>
+					<releaseName>test release</releaseName>
+					<tag>${project.version}</tag>
+
+					<!-- If your project has additional artifacts, such as ones produced 
+						by the maven-assembly-plugin, you can define the following (requires version 
+						1.1.1 of the plugin or higher): -->
+					<fileSets>
+						<fileSet>
+							<directory>${project.build.directory}</directory>
+							<includes>
+								<include>${project.artifactId}*.jar</include>
+							</includes>
+						</fileSet>
+					</fileSets>
 				</configuration>
 			</plugin>
 		</plugins>
