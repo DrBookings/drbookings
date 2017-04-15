@@ -148,7 +148,7 @@ public class MainController implements Initializable {
 
     private void addBooking() {
 	final ObservableList<RoomBean> dates = CellSelectionManager.getInstance().getSelection();
-	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate()));
+	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate(), dates.get(0).getName()));
     }
 
     private Callable<String> buildProgressString(final UnmarshallListener listener) {
@@ -200,21 +200,21 @@ public class MainController implements Initializable {
     private static String getStatusLabelString(final Collection<BookingEntry> bookingBookings,
 	    final Collection<BookingEntry> airbnbBookings, final Collection<BookingEntry> otherBookings) {
 	final StringBuilder sb = new StringBuilder();
-	sb.append("Booking nights: ");
-	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
-	sb.append(" (");
-	// we want total payment, since payment is done once
-	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
-		.collect(Collectors.toSet());
-	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
-	sb.append(")");
-	sb.append(", Airbnb nights: ");
+	sb.append("Airbnb nights: ");
 	sb.append(airbnbBookings.stream().filter(b -> !b.isCheckOut()).count());
 	sb.append(" (");
 	// we want total payment, since payment is done once
 	final Set<Booking> airbnbBookings2 = airbnbBookings.stream().map(b -> b.getElement())
 		.collect(Collectors.toSet());
 	sb.append(String.format("%6.2f€", airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
+	sb.append(")");
+	sb.append(", Booking nights: ");
+	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
+	sb.append(" (");
+	// we want total payment, since payment is done once
+	final Set<Booking> bookingBookings2 = bookingBookings.stream().map(b -> b.getElement())
+		.collect(Collectors.toSet());
+	sb.append(String.format("%6.2f€", bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
 	sb.append(", Other nights: ");
 	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
@@ -223,6 +223,10 @@ public class MainController implements Initializable {
 	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
 	sb.append(String.format("%6.2f€", otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
+	sb.append(", Total nights: ");
+	sb.append(
+		Stream.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
+			.filter(b -> !b.isCheckOut()).count());
 	sb.append(", Av. Net Earnings / Day: ");
 	final OptionalDouble av = Stream
 		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
@@ -230,7 +234,7 @@ public class MainController implements Initializable {
 	if (av.isPresent()) {
 	    sb.append(String.format("%3.2f€", av.getAsDouble()));
 	} else {
-	    sb.append(String.format("%3.2f€", 0));
+	    sb.append(String.format("%3.2f€", 0.0));
 	}
 	return sb.toString();
     }
@@ -510,10 +514,10 @@ public class MainController implements Initializable {
     }
 
     private void showAddBookingDialog() {
-	showAddBookingDialog(null);
+	showAddBookingDialog(null, null);
     }
 
-    private void showAddBookingDialog(final LocalDate date) {
+    private void showAddBookingDialog(final LocalDate date, final String roomName) {
 	try {
 	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AddBookingView.fxml"));
 	    final Parent root = loader.load();
@@ -526,6 +530,7 @@ public class MainController implements Initializable {
 	    final AddBookingController c = loader.getController();
 	    c.setManager(manager);
 	    c.datePickerCheckIn.setValue(date);
+	    c.comboBoxRoom.getSelectionModel().select(roomName);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
 	    stage.initModality(Modality.WINDOW_MODAL);
@@ -547,7 +552,7 @@ public class MainController implements Initializable {
 	label.setPrefHeight(400);
 	label.setPrefWidth(400);
 	label.getStyleClass().add("copyable-label");
-	label.setText("ToDo");
+	label.setText(new CleaningPlan(manager.getCleaningEntries()).toString());
 	alert.setHeaderText("Cleaning Plan");
 	alert.setContentText(null);
 	alert.getDialogPane().setContent(label);
