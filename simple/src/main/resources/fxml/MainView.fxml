@@ -28,6 +28,7 @@
 					<items>
 						<MenuItem text="General" onAction="#handleMenuItemSettingsGeneral" />
 						<MenuItem text="Colors" onAction="#handleMenuItemSettingsColors" />
+						<MenuItem text="About" onAction="#handleMenuItemAbout" />
 					</items>
 				</Menu>
 			</menus>
