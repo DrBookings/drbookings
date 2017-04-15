@@ -51,7 +51,7 @@ public class DrBookingsApplication extends Application {
 
 	    if (result.get() == buttonTypeOne) {
 		try {
-		    new XMLStorage(mainController.getManager()).save();
+		    new XMLStorage().save(mainController.getManager());
 		} catch (final Exception e) {
 		    logger.error(e.getLocalizedMessage(), e);
 		}

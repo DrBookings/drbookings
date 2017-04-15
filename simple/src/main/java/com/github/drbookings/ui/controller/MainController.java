@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.UnmarshallListener;
 import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.BookingFilter;
@@ -35,6 +36,7 @@ import com.github.drbookings.ui.beans.RoomBean;
 import com.jcabi.manifests.Manifests;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -328,19 +330,28 @@ public class MainController implements Initializable {
 
 	if (file != null) {
 	    try {
-		final long elementsToRead = XMLStorage.countElements("booking", file);
 		final UnmarshallListener l = new UnmarshallListener();
-		progressBar.progressProperty().bind(l.bookingCountProperty().divide(elementsToRead));
-		progressLabel.setText("Reading " + elementsToRead + " bookings..");
+		progressLabel.textProperty()
+			.bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
 		new Thread(() -> {
 		    try {
 			setWorking(true);
-			new XMLStorage(getManager()).setListener(l).load(file);
+			final DataStore ds = new XMLStorage().setListener(l).load(file);
+			Platform.runLater(() -> {
+			    progressLabel.textProperty().unbind();
+			    progressLabel.setText("Rendering..");
+			    try {
+				ds.load(getManager());
+			    } catch (final Exception e) {
+				logger.error(e.getLocalizedMessage(), e);
+				UIUtils.showError(e);
+			    } finally {
+				setWorking(false);
+			    }
+			});
 		    } catch (final Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 			UIUtils.showError(e);
-		    } finally {
-			setWorking(false);
 		    }
 		}).start();
 
@@ -348,6 +359,8 @@ public class MainController implements Initializable {
 		if (logger.isErrorEnabled()) {
 		    logger.error(e.getLocalizedMessage(), e);
 		}
+	    } finally {
+		setWorking(false);
 	    }
 	}
 
@@ -502,9 +515,18 @@ public class MainController implements Initializable {
 	label.setPrefWidth(400);
 	label.getStyleClass().add("copyable-label");
 
-	label.setText(
-		new StringBuilder().append("Application version\t").append(Manifests.read("Implementation-Version"))
-			.append("\n").append("Build time\t").append(Manifests.read("Build-Time")).toString());
+	final StringBuilder sb = new StringBuilder();
+
+	try {
+	    sb.append("Application version\t").append(Manifests.read("Implementation-Version")).append("\n");
+	    sb.append("Build time\t\t").append(Manifests.read("Build-Time")).append("\n");
+	} catch (final Exception e) {
+	    if (logger.isInfoEnabled()) {
+		logger.error("Failed to add manifest entry", e.getLocalizedMessage());
+	    }
+	}
+
+	label.setText(sb.toString());
 	alert.setHeaderText("proudly brought to you by kerner1000");
 	alert.setContentText(null);
 	alert.getDialogPane().setContent(label);
@@ -581,7 +603,19 @@ public class MainController implements Initializable {
     }
 
     private void showSettingsGeneral() {
-
+	try {
+	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GeneralSettingsView.fxml"));
+	    final Parent root = loader.load();
+	    final Stage stage = new Stage();
+	    final Scene scene = new Scene(root);
+	    stage.setTitle("General Settings");
+	    stage.setScene(scene);
+	    stage.setWidth(600);
+	    stage.setHeight(400);
+	    stage.show();
+	} catch (final IOException e) {
+	    logger.error(e.getLocalizedMessage(), e);
+	}
     }
 
     public void shutDown() {

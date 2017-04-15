@@ -82,8 +82,12 @@ public class MainManager {
 	final Room room = roomProvider.getOrCreateElement(roomName);
 	final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
 	final Booking booking = new Booking(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
+	return addBooking(booking);
+    }
+
+    protected synchronized Booking addBooking(final Booking booking) {
 	bookings.add(booking);
-	for (final LocalDate d : new DateRange(checkInDate, checkOutDate)) {
+	for (final LocalDate d : new DateRange(booking.getCheckIn(), booking.getCheckOut())) {
 	    addBookingEntry(d, booking);
 	}
 	return booking;

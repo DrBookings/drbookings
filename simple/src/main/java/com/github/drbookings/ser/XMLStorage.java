@@ -26,8 +26,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.ser.BookingBeanSer;
-import com.github.drbookings.model.ser.CleaningBeanSer;
 import com.github.drbookings.ui.controller.CleaningEntry;
 
 public class XMLStorage {
@@ -41,14 +39,9 @@ public class XMLStorage {
 	return this;
     }
 
-    private final MainManager manager;
     private static Logger logger = LoggerFactory.getLogger(XMLStorage.class);
     private File file;
     private UnmarshallListener listener;
-
-    public XMLStorage(final MainManager manager) {
-	this.manager = manager;
-    }
 
     public void makeBackup() {
 	if (file.exists() && file.length() != 0) {
@@ -66,8 +59,8 @@ public class XMLStorage {
 	}
     }
 
-    public void save() throws InterruptedException, ExecutionException {
-	doSave();
+    public void save(final MainManager manager) throws InterruptedException, ExecutionException {
+	doSave(manager);
 
     }
 
@@ -90,7 +83,7 @@ public class XMLStorage {
 	return counter.longValue();
     }
 
-    protected void doLoad()
+    protected DataStore doLoad()
 	    throws OverbookingException, SAXException, IOException, ParserConfigurationException, JAXBException {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Loading data from " + file);
@@ -101,26 +94,14 @@ public class XMLStorage {
 	    jaxbMarshaller.setListener(listener);
 	}
 	final DataStore ds = (DataStore) jaxbMarshaller.unmarshal(file);
-	for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> ds.getBookingsSer().stream()
-		.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
-	    final Booking b = manager.addBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
-		    bb.roomName, bb.source);
-	    // b.setGrossEarnings(bb.grossEarnings);
-	    b.setGrossEarningsExpression(bb.grossEarningsExpression);
-	    b.setWelcomeMailSend(bb.welcomeMailSend);
-	    b.setCheckInNote(bb.checkInNote);
-	    b.setPaymentDone(bb.paymentDone);
-	}
-	for (final CleaningBeanSer cb : ds.getCleaningsSer()) {
-	    manager.addCleaning(cb.date, cb.name, cb.room);
-	}
+	return ds;
     }
 
     private static final String defaultDataFileNameKey = "data";
 
     private static final String defaultFileName = "bookings.xml";
 
-    protected void doSave() {
+    protected void doSave(final MainManager manager) {
 	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
 	final String dir = userPrefs.get(defaultDataFileNameKey, System.getProperty("user.home"));
 	file = new File(dir, defaultFileName);
@@ -156,10 +137,10 @@ public class XMLStorage {
 	return ds;
     }
 
-    public void load(final File file)
+    public DataStore load(final File file)
 	    throws OverbookingException, SAXException, IOException, ParserConfigurationException, JAXBException {
 	this.file = file;
-	doLoad();
+	return doLoad();
     }
 
 }

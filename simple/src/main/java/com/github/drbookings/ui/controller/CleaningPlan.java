@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.github.drbookings.model.settings.SettingsManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -34,12 +35,16 @@ public class CleaningPlan {
 	    sb.append(entry.getKey());
 	    sb.append("\n");
 	    final List<CleaningEntry> entries = new ArrayList<>(entry.getValue());
-	    entries.stream().sorted().filter(e -> e.getDate().isAfter(LocalDate.now().minusWeeks(1))).forEach(e -> {
-		sb.append(myDateFormatter.format(e.getDate()));
-		sb.append("\t");
-		sb.append(e.getRoom());
-		sb.append("\n");
-	    });
+	    entries.stream().sorted()
+		    .filter(e -> e.getDate()
+			    .isAfter(LocalDate.now()
+				    .minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
+		    .forEach(e -> {
+			sb.append(myDateFormatter.format(e.getDate()));
+			sb.append("\t");
+			sb.append(e.getRoom());
+			sb.append("\n");
+		    });
 	    // Collections.sort(entries);
 	    // for (final CleaningEntry e : entries) {
 	    // sb.append(myDateFormatter.format(e.getDate()));
