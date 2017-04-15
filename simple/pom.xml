@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.drbookings</groupId>
 	<artifactId>drbookings</artifactId>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<name>DrBookings</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,7 +22,7 @@
 		<repository>
 		<id>local</id>
 		<name>drbookings-local</name>
-		<url>file:///home/alex/bin</url>
+		<url>file://${user.home}/local-maven-repository</url>
 		</repository>
 	</distributionManagement>
 	<build>
