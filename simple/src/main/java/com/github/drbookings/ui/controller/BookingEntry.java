@@ -40,7 +40,7 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 
     @Override
     public String toString() {
-	return "date:" + getDate() + ",room:" + getRoom();
+	return "date:" + getDate() + ",room:" + getRoom() + ",guest:" + getElement().getGuest();
     }
 
     /**

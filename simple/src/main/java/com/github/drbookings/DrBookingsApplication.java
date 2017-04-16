@@ -1,10 +1,13 @@
 package com.github.drbookings;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.controller.MainController;
 
@@ -16,6 +19,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class DrBookingsApplication extends Application {
@@ -36,7 +40,11 @@ public class DrBookingsApplication extends Application {
 	final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 	final Parent root = loader.load();
 	final Scene scene = new Scene(root, 900, 800);
-	stage.setTitle("Dr.Bookings " + getClass().getPackage().getImplementationVersion());
+	String s = getClass().getPackage().getImplementationVersion();
+	if (s == null) {
+	    s = "dev version";
+	}
+	stage.setTitle("Dr.Bookings " + s);
 	stage.setScene(scene);
 	stage.setOnCloseRequest(event -> {
 	    final Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -51,7 +59,19 @@ public class DrBookingsApplication extends Application {
 
 	    if (result.get() == buttonTypeOne) {
 		try {
-		    new XMLStorage().save(mainController.getManager());
+		    final FileChooser fileChooser = new FileChooser();
+		    final File file = SettingsManager.getInstance().getDataFile();
+		    fileChooser.setInitialDirectory(file.getParentFile());
+		    fileChooser.getExtensionFilters().addAll(
+			    new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
+			    new FileChooser.ExtensionFilter("All Files", "*"));
+		    fileChooser.setTitle("Select File");
+		    fileChooser.setInitialFileName(file.getName());
+		    final File file2 = fileChooser.showOpenDialog(scene.getWindow());
+		    if (file2 != null) {
+			SettingsManager.getInstance().setDataFile(file2);
+			new XMLStorage().save(mainController.getManager(), file2);
+		    }
 		} catch (final Exception e) {
 		    logger.error(e.getLocalizedMessage(), e);
 		}

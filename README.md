@@ -11,6 +11,8 @@
 
 ## Screenshots
 
-![alt text](screenshots/drbookings001.png)
+![alt text](screenshots/drbookings01.png)
 
-![alt text](screenshots/drbookings002.png)
+![alt text](screenshots/drbookings02.png =200x)
+
+![alt text](screenshots/drbookings03.png =200x)

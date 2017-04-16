@@ -14,7 +14,6 @@ import java.util.OptionalDouble;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.UnmarshallListener;
 import com.github.drbookings.ser.XMLStorage;
@@ -74,10 +74,6 @@ import javafx.util.Callback;
 public class MainController implements Initializable {
 
     private final static Logger logger = LoggerFactory.getLogger(MainController.class);
-
-    private static final String defaultDataFileNameKey = "data";
-
-    private static final String defaultDataFileName = "booking-data.xml";
 
     private static final DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, E");
 
@@ -181,8 +177,6 @@ public class MainController implements Initializable {
     private TextField guestNameFilterInput;
 
     private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
-
-    private File file;
 
     private final MainManager manager;
 
@@ -326,17 +320,18 @@ public class MainController implements Initializable {
 	    logger.debug("MenuItem Open");
 	}
 	final FileChooser fileChooser = new FileChooser();
-	if (file != null) {
-	    fileChooser.setInitialDirectory(file.getParentFile());
-	}
+	final File file = SettingsManager.getInstance().getDataFile();
+	fileChooser.setInitialDirectory(file.getParentFile());
 	fileChooser.getExtensionFilters().addAll(
 		new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
 		new FileChooser.ExtensionFilter("All Files", "*"));
 	fileChooser.setTitle("Open Resource File");
-	file = fileChooser.showOpenDialog(node.getScene().getWindow());
+	fileChooser.setInitialFileName(file.getName());
+	final File file2 = fileChooser.showOpenDialog(node.getScene().getWindow());
 
-	if (file != null) {
+	if (file2 != null) {
 	    try {
+		SettingsManager.getInstance().setDataFile(file2);
 		final UnmarshallListener l = new UnmarshallListener();
 		progressLabel.textProperty()
 			.bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
@@ -385,14 +380,6 @@ public class MainController implements Initializable {
 
     private void handleTableSelectEvent(final MouseEvent event) {
 	Platform.runLater(() -> showRoomDetailsDialog());
-    }
-
-    private void initDataFile() {
-	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
-	final String fileString = userPrefs.get(defaultDataFileNameKey,
-		System.getProperty("user.home") + File.separator + defaultDataFileName);
-	file = new File(fileString);
-
     }
 
     @Override
@@ -457,7 +444,7 @@ public class MainController implements Initializable {
 	manager.getUIData().addListener((ListChangeListener<DateBean>) c -> {
 	    updateStatusLabel();
 	});
-	initDataFile();
+
     }
 
     private void initTableView() {

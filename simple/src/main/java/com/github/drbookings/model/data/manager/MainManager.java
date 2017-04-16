@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,10 +118,36 @@ public class MainManager {
 	DateBean db = uiDataMap.get(bookingEntry.getDate());
 	if (db == null) {
 	    db = new DateBean(bookingEntry.getDate(), this);
-	    uiData.add(db);
-	    uiDataMap.put(db.getDate(), db);
+	    addDateBean(db);
 	}
 	db.getRoom(room.getName()).addBookingEntry(bookingEntry);
+	fillMissing();
+    }
+
+    private void fillMissing() {
+	final List<LocalDate> dates = new ArrayList<>(uiDataMap.keySet());
+	Collections.sort(dates);
+	final Collection<LocalDate> toAdd = new HashSet<>();
+	LocalDate last = null;
+	for (final LocalDate d : dates) {
+	    if (last != null) {
+		if (d.equals(last.plusDays(1))) {
+		    // ok
+		} else {
+		    toAdd.addAll(new DateRange(last.plusDays(1), d.minusDays(1)).toList());
+		}
+	    }
+	    last = d;
+	}
+	for (final LocalDate d : toAdd) {
+	    addDateBean(new DateBean(d, this));
+	}
+
+    }
+
+    private void addDateBean(final DateBean db) {
+	uiData.add(db);
+	uiDataMap.put(db.getDate(), db);
     }
 
     private void addUiDataCleaning(final CleaningEntry cleaningEntry) {
@@ -174,6 +202,7 @@ public class MainManager {
     }
 
     public synchronized boolean needsCleaning(final String roomName, final LocalDate date) {
+	System.err.println("Checking for room " + roomName + " on " + date);
 	final List<LocalDate> dates = new ArrayList<>(cleaningEntries.asMap().keySet());
 	if (!dates.isEmpty()) {
 	    Collections.sort(dates, Comparator.reverseOrder());
@@ -182,6 +211,16 @@ public class MainManager {
 		return true;
 	    }
 	    for (final LocalDate d : new DateRange(date, lastDate)) {
+
+		if (!date.equals(d)) {
+		    final Collection<BookingEntry> bookings = bookingEntries.get(d).stream()
+			    .filter(b -> b.getRoom().getName().equals(roomName)).collect(Collectors.toList());
+		    if (!bookings.isEmpty()) {
+			// another booking in between
+			return true;
+		    }
+		}
+
 		final Collection<CleaningEntry> e = cleaningEntries.get(d);
 		if (e != null && !e.isEmpty() && CleaningEntry.roomNameView(e).contains(roomName)) {
 		    return false;
@@ -197,7 +236,13 @@ public class MainManager {
     }
 
     public synchronized boolean removeBookings(final List<Booking> bookings) {
-	bookingEntries.values().removeAll(bookings);
+	this.bookings.removeAll(bookings);
+	for (final Iterator<BookingEntry> it = bookingEntries.values().iterator(); it.hasNext();) {
+	    final BookingEntry be = it.next();
+	    if (bookings.contains(be.getElement())) {
+		it.remove();
+	    }
+	}
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Booking entries now " + bookingEntries);
 	}
