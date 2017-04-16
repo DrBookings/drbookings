@@ -1,6 +1,6 @@
 # Dr.Bookings
 
-### Booking managment within a rich graphical interface.
+### Booking managment through a rich graphical interface.
 
 ## Features
 
