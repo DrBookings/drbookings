@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataStore>
+    <bookings>
+        <booking guestName="Test1" source="" welcomeMailSend="true" checkInDate="2017-04-17" checkOutDate="2017-04-20" roomName="1" serviceFee="0.0" paymentDone="false" bookingId="aeef8e8f-e354-4271-876b-e7ff9cbdfe2a" grossEarningsExpression="3*42"/>
+        <booking guestName="Test2" source="" welcomeMailSend="true" checkInDate="2017-04-25" checkOutDate="2017-04-27" roomName="1" serviceFee="0.0" paymentDone="false" bookingId="92ab1c0d-91d9-4f5a-9926-10f199cb3fce" grossEarningsExpression="85"/>
+        <booking guestName="Test3" source="" welcomeMailSend="true" checkInDate="2017-04-12" checkOutDate="2017-04-18" roomName="2" serviceFee="0.0" paymentDone="false" bookingId="57fa83e9-bf8e-4b1f-8eb8-c5e5c2d1a328" grossEarningsExpression="290"/>
+        <booking guestName="Test4" source="Booking" welcomeMailSend="true" checkInDate="2017-04-18" checkOutDate="2017-04-25" roomName="2" serviceFee="0.0" paymentDone="false" bookingId="de028dc5-a5ad-46c9-85d7-34526f835dbd" grossEarningsExpression="290"/>
+        <booking guestName="Test5" source="Airbnb" welcomeMailSend="true" checkInDate="2017-04-09" checkOutDate="2017-04-12" roomName="4" serviceFee="0.0" paymentDone="false" bookingId="68a9c9d8-6339-4759-b9b1-f28fd3b06007" grossEarningsExpression="120"/>
+        <booking guestName="Test6" source="" welcomeMailSend="true" checkInDate="2017-04-19" checkOutDate="2017-04-24" roomName="4" serviceFee="0.0" paymentDone="false" bookingId="af5bcf23-ae4e-4c83-9272-e37afc2fcd5b"/>
+    </bookings>
+    <cleanings>
+        <cleaning name="Hilda" date="2017-04-27" room="2"/>
+        <cleaning name="Hilda" date="2017-04-24" room="4"/>
+        <cleaning name="Paula" date="2017-04-23" room="1"/>
+        <cleaning name="Hilda" date="2017-04-18" room="2"/>
+    </cleanings>
+</dataStore>
