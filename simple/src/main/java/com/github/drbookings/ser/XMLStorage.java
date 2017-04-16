@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.prefs.Preferences;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -40,10 +39,10 @@ public class XMLStorage {
     }
 
     private static Logger logger = LoggerFactory.getLogger(XMLStorage.class);
-    private File file;
+
     private UnmarshallListener listener;
 
-    public void makeBackup() {
+    public void makeBackup(final File file) {
 	if (file.exists() && file.length() != 0) {
 	    try {
 		final File backupFile = new File(file.getParentFile(), file.getName() + ".bak");
@@ -59,8 +58,8 @@ public class XMLStorage {
 	}
     }
 
-    public void save(final MainManager manager) throws InterruptedException, ExecutionException {
-	doSave(manager);
+    public void save(final MainManager manager, final File file) throws InterruptedException, ExecutionException {
+	doSave(manager, file);
 
     }
 
@@ -83,7 +82,7 @@ public class XMLStorage {
 	return counter.longValue();
     }
 
-    protected DataStore doLoad()
+    protected DataStore doLoad(final File file)
 	    throws OverbookingException, SAXException, IOException, ParserConfigurationException, JAXBException {
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Loading data from " + file);
@@ -97,15 +96,8 @@ public class XMLStorage {
 	return ds;
     }
 
-    private static final String defaultDataFileNameKey = "data";
-
-    private static final String defaultFileName = "bookings.xml";
-
-    protected void doSave(final MainManager manager) {
-	final Preferences userPrefs = Preferences.userNodeForPackage(getClass());
-	final String dir = userPrefs.get(defaultDataFileNameKey, System.getProperty("user.home"));
-	file = new File(dir, defaultFileName);
-	makeBackup();
+    protected void doSave(final MainManager manager, final File file) {
+	makeBackup(file);
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Saving data to " + file);
 	}
@@ -117,13 +109,11 @@ public class XMLStorage {
 	    jaxbMarshaller.marshal(buildDataStore(manager), file);
 	} catch (final Exception e1) {
 	    logger.error(e1.getLocalizedMessage(), e1);
-	    userPrefs.remove(defaultDataFileNameKey);
 	    return;
 	}
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Saving state successful");
 	}
-	userPrefs.put(defaultDataFileNameKey, dir);
     }
 
     public static DataStore buildDataStore(final MainManager manager) {
@@ -139,8 +129,7 @@ public class XMLStorage {
 
     public DataStore load(final File file)
 	    throws OverbookingException, SAXException, IOException, ParserConfigurationException, JAXBException {
-	this.file = file;
-	return doLoad();
+	return doLoad(file);
     }
 
 }

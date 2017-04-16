@@ -82,8 +82,8 @@ public class RoomBean extends WarnableBean {
     protected void bindProperties() {
 	filteredBookingEntriesProperty().bind(Bindings.createObjectBinding(filterBookings(),
 		bookingFilterStringProperty(), bookingEntriesProperty()));
-	needsCleaningProperty()
-		.bind(Bindings.createObjectBinding(calulateNeedsCleaning(), manager.cleaningEntriesListProperty()));
+	needsCleaningProperty().bind(Bindings.createObjectBinding(calulateNeedsCleaning(),
+		manager.cleaningEntriesListProperty(), manager.getUIData()));
 	super.bindProperties();
 
     }
