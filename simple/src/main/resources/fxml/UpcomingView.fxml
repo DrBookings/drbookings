@@ -9,23 +9,16 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.ProgressBar?>
 
-<VBox spacing="8" styleClass="root" xmlns:fx="http://javafx.com/fxml/1"
-	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.UpcomingController">
-
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.UpcomingController"
+	vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToWidth="true">
 	<stylesheets>
 		<URL value="@/css/upcoming.css" />
 	</stylesheets>
-	<padding>
-		<Insets top="8" right="8" bottom="8" left="8" />
-	</padding>
-	<children>
+	<VBox fx:id="box" spacing="8" styleClass="root">
+		<padding>
+			<Insets top="8" right="8" bottom="8" left="8" />
+		</padding>
+	</VBox>
+</ScrollPane>
 
-		<TextFlow fx:id="summary"  />
-		<TextFlow fx:id="checkInNotes" />
-		<TextFlow fx:id="checkOutNotes" />
-
-	</children>
-
-
-
-</VBox>

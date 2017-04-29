@@ -35,10 +35,10 @@
 		<TextField fx:id="cleaning" GridPane.columnIndex="1"
 			GridPane.rowIndex="1" />
 
-		<Label text="Guest names" GridPane.columnIndex="0"
+		<Label text="Guests" GridPane.columnIndex="0"
 			GridPane.rowIndex="2" maxWidth="Infinity" />
 
-		<Label fx:id="guestNames" GridPane.columnIndex="1"
+		<Label fx:id="guestNames" GridPane.columnIndex="1" wrapText="true"
 			GridPane.rowIndex="2" maxWidth="Infinity" />
 
 		<Label fx:id="bruttoEarningsLabel" maxWidth="Infinity" wrapText="true"

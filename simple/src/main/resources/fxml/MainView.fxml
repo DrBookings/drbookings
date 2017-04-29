@@ -26,7 +26,7 @@
 				</Menu>
 				<Menu text="View">
 					<items>
-						<MenuItem text="Show Upcoming Events" onAction="#handleMenuItemUpcomingEvents" />
+						<MenuItem text="What's Next" onAction="#handleMenuItemUpcomingEvents" />
 						<MenuItem text="Show Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
 
 					</items>

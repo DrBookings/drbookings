@@ -31,6 +31,10 @@ public class SettingsManager {
 
     public static final String DEFAULT_FILE_NAME = "booking-data.xml";
 
+    private static final String whatsNextLookAheadKey = "whatsNextLookAheadKey";
+
+    private static final int DEFAULT_WHATS_NEXT_LOOKAHEAD_DAYS = 3;
+
     public static SettingsManager getInstance() {
 	return InstanceHolder.instance;
     }
@@ -94,6 +98,10 @@ public class SettingsManager {
 
     public void setDataFile(final File file) {
 	prefs.put(fileKey, file.getAbsolutePath());
+    }
+
+    public int getWhatsNextLookAhead() {
+	return prefs.getInt(SettingsManager.whatsNextLookAheadKey, DEFAULT_WHATS_NEXT_LOOKAHEAD_DAYS);
     }
 
 }
