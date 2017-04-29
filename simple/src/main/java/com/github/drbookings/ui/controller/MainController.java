@@ -20,14 +20,20 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.ical.AirbnbICalParser;
+import com.github.drbookings.ical.ICalBookingFactory;
+import com.github.drbookings.ical.XlsxBookingFactory;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.UnmarshallListener;
 import com.github.drbookings.ser.XMLStorage;
+import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingFilter;
+import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CellSelectionManager;
+import com.github.drbookings.ui.CleaningPlan;
 import com.github.drbookings.ui.OccupancyCellFactory;
 import com.github.drbookings.ui.OccupancyCellValueFactory;
 import com.github.drbookings.ui.StudioCellFactory;
@@ -42,6 +48,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -90,7 +98,7 @@ public class MainController implements Initializable {
 		.collect(Collectors.toSet());
 	sb.append(decimalFormat.format(airbnbBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", \tBooking:");
+	sb.append("\tBooking:");
 	sb.append(bookingBookings.stream().filter(b -> !b.isCheckOut()).count());
 	sb.append("(");
 	// we want total payment, since payment is done once
@@ -98,14 +106,14 @@ public class MainController implements Initializable {
 		.collect(Collectors.toSet());
 	sb.append(decimalFormat.format(bookingBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", \tOther:");
+	sb.append("\tOther:");
 	sb.append(otherBookings.stream().filter(b -> !b.isCheckOut()).count());
 	sb.append("(");
 	// we want total payment, since payment is done once
 	final Set<Booking> otherBookings2 = otherBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet());
 	sb.append(decimalFormat.format(otherBookings2.stream().mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", \tTotal:");
+	sb.append("\tTotal:");
 	sb.append(
 		Stream.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
 			.filter(b -> !b.isCheckOut()).count());
@@ -116,7 +124,7 @@ public class MainController implements Initializable {
 				Stream.concat(airbnbBookings2.stream(), otherBookings2.stream()))
 			.mapToDouble(b -> b.getNetEarnings()).sum()));
 	sb.append(")");
-	sb.append(", \tAv.NetEarnings/Day:");
+	sb.append("\tAv.NetEarnings/Day:");
 	final OptionalDouble av = Stream
 		.concat(bookingBookings.stream(), Stream.concat(airbnbBookings.stream(), otherBookings.stream()))
 		.mapToDouble(b -> b.getNetEarnings()).average();
@@ -216,10 +224,10 @@ public class MainController implements Initializable {
 		    if (rb.isEmpty()) {
 			continue;
 		    }
-		    final List<Booking> bookings = BookingEntry.getBookings(rb.getFilteredBookingEntries());
+		    final Booking booking = rb.getFilteredBookingEntries().get(0).getElement();
 		    if (logger.isDebugEnabled()) {
-			logger.debug("Deleting " + bookings);
-			manager.removeBookings(bookings);
+			logger.debug("Deleting " + booking);
+			manager.removeBooking(booking);
 		    }
 		}
 	    }
@@ -309,63 +317,151 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void handleMenuItemUpcomingEvents(final ActionEvent event) {
+	Platform.runLater(() -> showUpcomingEvents());
+    }
+
+    private void showUpcomingEvents() {
+	try {
+	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UpcomingView.fxml"));
+	    final Parent root = loader.load();
+	    final Stage stage = new Stage();
+	    final Scene scene = new Scene(root);
+	    stage.setTitle("What's next");
+	    stage.setScene(scene);
+	    stage.setWidth(600);
+	    stage.setHeight(400);
+	    final UpcomingController c = loader.getController();
+	    c.setManager(getManager());
+	    stage.show();
+	} catch (final IOException e) {
+	    logger.error(e.getLocalizedMessage(), e);
+	}
+    }
+
+    @FXML
     private void handleMenuItemCleaningPlan(final ActionEvent event) {
 	Platform.runLater(() -> showCleaningPlan());
 
     }
 
+    private class OpenFileService extends Service<DataStore> {
+
+	private final File file;
+
+	public OpenFileService(final File file, final UnmarshallListener l) {
+	    super();
+	    this.file = file;
+	    this.l = l;
+	    setOnScheduled(e -> {
+		setWorking(true);
+	    });
+	    setOnSucceeded(e -> {
+		progressLabel.textProperty().unbind();
+		progressLabel.setText("Rendering..");
+		try {
+		    getValue().load(getManager());
+		} catch (final Exception e1) {
+		    logger.error(e1.getLocalizedMessage(), e1);
+		}
+		setWorking(false);
+	    });
+
+	    setOnFailed(e -> {
+		setWorking(false);
+		if (logger.isErrorEnabled()) {
+		    final Throwable t = getException();
+		    logger.error(t.getLocalizedMessage(), t);
+		}
+	    });
+	}
+
+	private final UnmarshallListener l;
+
+	@Override
+	protected Task<DataStore> createTask() {
+	    return new Task<DataStore>() {
+
+		@Override
+		protected DataStore call() throws Exception {
+		    SettingsManager.getInstance().setDataFile(file);
+		    final DataStore ds = new XMLStorage().setListener(l).load(file);
+		    return ds;
+		};
+	    };
+	}
+    }
+
     @FXML
     private void handleMenuItemOpen(final ActionEvent event) {
+	Platform.runLater(() -> openFile());
+
+    }
+
+    private void openFile() {
 	if (logger.isDebugEnabled()) {
-	    logger.debug("MenuItem Open");
+	    logger.debug("Opening DrBookings xml");
 	}
 	final FileChooser fileChooser = new FileChooser();
 	final File file = SettingsManager.getInstance().getDataFile();
 	fileChooser.setInitialDirectory(file.getParentFile());
 	fileChooser.getExtensionFilters().addAll(
-		new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
+		new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml", "*.XML")),
 		new FileChooser.ExtensionFilter("All Files", "*"));
 	fileChooser.setTitle("Open Resource File");
 	fileChooser.setInitialFileName(file.getName());
 	final File file2 = fileChooser.showOpenDialog(node.getScene().getWindow());
-
 	if (file2 != null) {
-	    try {
-		SettingsManager.getInstance().setDataFile(file2);
-		final UnmarshallListener l = new UnmarshallListener();
-		progressLabel.textProperty()
-			.bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
-		new Thread(() -> {
-		    try {
-			setWorking(true);
-			final DataStore ds = new XMLStorage().setListener(l).load(file);
-			Platform.runLater(() -> {
-			    progressLabel.textProperty().unbind();
-			    progressLabel.setText("Rendering..");
-			    try {
-				ds.load(getManager());
-			    } catch (final Exception e) {
-				logger.error(e.getLocalizedMessage(), e);
-				UIUtils.showError(e);
-			    } finally {
-				setWorking(false);
-			    }
-			});
-		    } catch (final Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
-			UIUtils.showError(e);
-		    }
-		}).start();
+	    final UnmarshallListener l = new UnmarshallListener();
+	    progressLabel.textProperty()
+		    .bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
+	    new OpenFileService(file2, l).start();
 
-	    } catch (final Exception e) {
+	}
+    }
+
+    @FXML
+    private void handleMenuItemOpenBookingExcel(final ActionEvent event) {
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Opening Booking Excel");
+	}
+	final FileChooser fileChooser = new FileChooser();
+	fileChooser.getExtensionFilters().addAll(
+		new FileChooser.ExtensionFilter("Excel", Arrays.asList("*.xls", "*.XLS")),
+		new FileChooser.ExtensionFilter("All Files", "*"));
+	fileChooser.setTitle("Open Booking Excel");
+	final File file = fileChooser.showOpenDialog(node.getScene().getWindow());
+	if (file != null) {
+	    final BookingReaderService reader = new BookingReaderService(getManager(), new XlsxBookingFactory(file));
+	    reader.start();
+	}
+    }
+
+    @FXML
+    private void handleMenuItemOpenAirbnbICal(final ActionEvent event) {
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Opening Airbnb iCal");
+	}
+
+	final FileChooser fileChooser = new FileChooser();
+	fileChooser.getExtensionFilters().addAll(
+		new FileChooser.ExtensionFilter("iCal", Arrays.asList("*.ics", "*.ICS")),
+		new FileChooser.ExtensionFilter("All Files", "*"));
+	fileChooser.setTitle("Open Airbnb iCal");
+	final File file = fileChooser.showOpenDialog(node.getScene().getWindow());
+	if (file != null) {
+
+	    try {
+		final BookingReaderService reader = new BookingReaderService(getManager(), new ICalBookingFactory(file,
+			new AirbnbICalParser(SettingsManager.getInstance().getRoomNameMappings())));
+		reader.start();
+	    } catch (ClassNotFoundException | IOException e) {
 		if (logger.isErrorEnabled()) {
 		    logger.error(e.getLocalizedMessage(), e);
 		}
-	    } finally {
-		setWorking(false);
 	    }
-	}
 
+	}
     }
 
     @FXML
@@ -376,6 +472,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItemSettingsGeneral(final ActionEvent event) {
 	Platform.runLater(() -> showSettingsGeneral());
+    }
+
+    @FXML
+    private void handleMenuItemSettingsICal(final ActionEvent event) {
+	Platform.runLater(() -> showSettingsICal());
     }
 
     private void handleTableSelectEvent(final MouseEvent event) {
@@ -420,6 +521,7 @@ public class MainController implements Initializable {
 		}
 
 	    };
+
 	});
 	cDate.getStyleClass().addAll("center-left");
 	cBruttoEarningsPerNightTotal.getStyleClass().add("opace");
@@ -582,7 +684,7 @@ public class MainController implements Initializable {
 	    stage.setTitle("Room Details");
 	    stage.setScene(scene);
 	    stage.setWidth(600);
-	    stage.setHeight(400);
+	    stage.setHeight(600);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
 	    stage.initModality(Modality.NONE);
@@ -603,6 +705,22 @@ public class MainController implements Initializable {
 	    final Stage stage = new Stage();
 	    final Scene scene = new Scene(root);
 	    stage.setTitle("General Settings");
+	    stage.setScene(scene);
+	    stage.setWidth(600);
+	    stage.setHeight(400);
+	    stage.show();
+	} catch (final IOException e) {
+	    logger.error(e.getLocalizedMessage(), e);
+	}
+    }
+
+    private void showSettingsICal() {
+	try {
+	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ICalSettingsView.fxml"));
+	    final Parent root = loader.load();
+	    final Stage stage = new Stage();
+	    final Scene scene = new Scene(root);
+	    stage.setTitle("iCal Settings");
 	    stage.setScene(scene);
 	    stage.setWidth(600);
 	    stage.setHeight(400);

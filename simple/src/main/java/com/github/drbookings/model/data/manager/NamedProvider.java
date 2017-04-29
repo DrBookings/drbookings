@@ -53,6 +53,9 @@ public abstract class NamedProvider<T extends Named> {
     }
 
     public synchronized T addElement(final String name) {
+	// if (name == null || name.length() < 1) {
+	// throw new IllegalArgumentException("No name given");
+	// }
 	final List<T> elements = getElementsByName(name);
 	T element;
 	if (elements.isEmpty()) {

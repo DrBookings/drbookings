@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
 
@@ -34,6 +35,7 @@ public class CellContentController implements Initializable {
 
     private static Node buildEntryCheckOut(final BookingEntry e) {
 	final Label l = getNewLabel(e.getElement().getGuest().getName());
+	l.getStyleClass().add("check-in");
 	return l;
     }
 
@@ -153,7 +155,8 @@ public class CellContentController implements Initializable {
 	    } else {
 		cellContainer.getStyleClass().add("warning-box-middle");
 	    }
-	} else if (last != null) {
+	}
+	if (last != null) {
 	    cellContainer.getStyleClass()
 		    .add(Styles.getBackgroundStyleSource(last.getElement().getBookingOrigin().getName()));
 	}

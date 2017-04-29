@@ -39,7 +39,7 @@ public class DrBookingsApplication extends Application {
 	}
 	final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 	final Parent root = loader.load();
-	final Scene scene = new Scene(root, 900, 800);
+	final Scene scene = new Scene(root, 1000, 800);
 	String s = getClass().getPackage().getImplementationVersion();
 	if (s == null) {
 	    s = "dev version";
@@ -67,7 +67,7 @@ public class DrBookingsApplication extends Application {
 			    new FileChooser.ExtensionFilter("All Files", "*"));
 		    fileChooser.setTitle("Select File");
 		    fileChooser.setInitialFileName(file.getName());
-		    final File file2 = fileChooser.showOpenDialog(scene.getWindow());
+		    final File file2 = fileChooser.showSaveDialog(scene.getWindow());
 		    if (file2 != null) {
 			SettingsManager.getInstance().setDataFile(file2);
 			new XMLStorage().save(mainController.getManager(), file2);

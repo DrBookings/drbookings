@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -23,10 +24,10 @@ import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.Cleaning;
 import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.data.Room;
+import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.ui.CleaningEntry;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
-import com.github.drbookings.ui.controller.BookingEntry;
-import com.github.drbookings.ui.controller.CleaningEntry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -80,6 +81,14 @@ public class MainManager {
 
     public synchronized Booking addBooking(final String id, final LocalDate checkInDate, final LocalDate checkOutDate,
 	    final String guestName, final String roomName, final String originName) throws OverbookingException {
+	Objects.requireNonNull(checkInDate);
+	Objects.requireNonNull(checkOutDate);
+	if (guestName == null || guestName.length() < 1) {
+	    throw new IllegalArgumentException("No guest name given");
+	}
+	if (roomName == null || roomName.length() < 1) {
+	    throw new IllegalArgumentException("No room name given");
+	}
 	final Guest guest = guestProvider.getOrCreateElement(guestName);
 	final Room room = roomProvider.getOrCreateElement(roomName);
 	final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
@@ -202,7 +211,6 @@ public class MainManager {
     }
 
     public synchronized boolean needsCleaning(final String roomName, final LocalDate date) {
-	System.err.println("Checking for room " + roomName + " on " + date);
 	final List<LocalDate> dates = new ArrayList<>(cleaningEntries.asMap().keySet());
 	if (!dates.isEmpty()) {
 	    Collections.sort(dates, Comparator.reverseOrder());
@@ -244,11 +252,11 @@ public class MainManager {
 	    }
 	}
 	if (logger.isDebugEnabled()) {
-	    logger.debug("Booking entries now " + bookingEntries);
+	    logger.debug("Booking entries now " + bookingEntries.size());
 	}
 	final boolean result = this.bookings.removeAll(bookings);
 	if (logger.isDebugEnabled()) {
-	    logger.debug("Bookings now " + bookings);
+	    logger.debug("Bookings now " + this.bookings.size());
 	}
 	removeUiDataBooking(bookings);
 	return result;

@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.controller.BookingEntry;
+import com.github.drbookings.ui.BookingEntry;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -149,6 +149,9 @@ public class DateBean implements Comparable<DateBean> {
     }
 
     public RoomBean getRoom(final String name) {
+	if (name == null || name.length() < 1) {
+	    throw new IllegalArgumentException("No name given");
+	}
 	for (final RoomBean rb : getRooms()) {
 	    if (rb.getName().equals(name)) {
 		return rb;

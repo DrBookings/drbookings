@@ -4,12 +4,13 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CellSelectionManager;
+import com.github.drbookings.ui.GuestNameAndBookingOriginView;
 import com.github.drbookings.ui.beans.RoomBean;
 
 import javafx.application.Platform;
@@ -61,10 +62,13 @@ public class RoomDetailsController implements Initializable {
     private Label bruttoEarningsLabel;
 
     @FXML
-    private Label checkInNoteLabel;
+    private TextArea checkInNoteInput;
 
     @FXML
-    private TextArea checkInNoteInput;
+    private TextArea checkOutNoteInput;
+
+    @FXML
+    private TextArea specialRequestNoteInput;
 
     @FXML
     private Label guestNames;
@@ -102,7 +106,7 @@ public class RoomDetailsController implements Initializable {
 	}
 	updateModelCleaning();
 	updateModelBruttoEarnings();
-	updateModelCheckInNote();
+	updateModelNotes();
 	updateModelWelcomeMail();
 	updateModelPayment();
     }
@@ -114,17 +118,18 @@ public class RoomDetailsController implements Initializable {
 		// final double result =
 		// parseGrossEarnings(bruttoEarningsInputExpression.getText().trim());
 		// getBookings().get(0).getElement().setGrossEarnings(result);
-		getBookings().get(0).getElement()
-			.setGrossEarningsExpression(bruttoEarningsInputExpression.getText().trim());
+		getBookings().get(0).getElement().setGrossEarningsExpression(bruttoEarningsInputExpression.getText());
 	    } catch (final NumberFormatException e) {
 		UIUtils.showError("Invalid input", e.getLocalizedMessage());
 	    }
 	}
     }
 
-    private void updateModelCheckInNote() {
+    private void updateModelNotes() {
 	if (!getBookings().isEmpty()) {
 	    getBookings().get(0).getElement().setCheckInNote(checkInNoteInput.getText());
+	    getBookings().get(0).getElement().setCheckOutNote(checkOutNoteInput.getText());
+	    getBookings().get(0).getElement().setSpecialRequestNote(specialRequestNoteInput.getText());
 	}
     }
 
@@ -157,11 +162,13 @@ public class RoomDetailsController implements Initializable {
 
     private void updateUICheckInNote() {
 	if (getBookings().isEmpty()) {
-	    checkInNoteLabel.setText(null);
 	    checkInNoteInput.setText(null);
+	    checkOutNoteInput.setText(null);
+	    specialRequestNoteInput.setText(null);
 	} else {
-	    checkInNoteLabel.setText("Check-in note");
 	    checkInNoteInput.setText(booking.getElement().getCheckInNote());
+	    checkOutNoteInput.setText(booking.getElement().getCheckOutNote());
+	    specialRequestNoteInput.setText(booking.getElement().getSpecialRequestNote());
 	}
     }
 
@@ -178,7 +185,7 @@ public class RoomDetailsController implements Initializable {
     }
 
     private static String buildBookingsLabelString(final RoomBean rb) {
-	return rb.getDate().toString();
+	return "Room: " + rb.getName() + ", " + rb.getDate().toString();
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {
@@ -194,7 +201,8 @@ public class RoomDetailsController implements Initializable {
 	bookings.setText(buildBookingsLabelString(room));
 	// Show only first booking;
 	booking = selectBooking();
-	final Set<String> guestNameView = BookingEntry.guestNameView(getBookings());
+	final GuestNameAndBookingOriginView guestNameView = new GuestNameAndBookingOriginView(getBookings());
+
 	if (guestNameView.isEmpty()) {
 	    guestNames.setText(null);
 	} else {

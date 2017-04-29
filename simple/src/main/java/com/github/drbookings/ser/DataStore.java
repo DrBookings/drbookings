@@ -1,21 +1,27 @@
 package com.github.drbookings.ser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
-import com.github.drbookings.ui.controller.CleaningEntry;
+import com.github.drbookings.ui.CleaningEntry;
 
 @XmlRootElement
 public class DataStore {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
 
     public static CleaningBeanSer transform(final CleaningEntry c) {
 	final CleaningBeanSer b = new CleaningBeanSer();
@@ -40,12 +46,20 @@ public class DataStore {
 	result.serviceFee = bb.getServiceFee();
 	result.checkInNote = bb.getCheckInNote();
 	result.paymentDone = bb.isPaymentDone();
+	result.specialRequestNote = bb.getSpecialRequestNote();
+	result.checkOutNote = bb.getCheckOutNote();
 
 	return result;
     }
 
     public DataStore() {
 
+    }
+
+    public DataStore setBookingSer(final Collection<? extends BookingBeanSer> bookings) {
+	this.bookings.clear();
+	this.bookings.addAll(bookings);
+	return this;
     }
 
     @XmlElementWrapper(name = "bookings")
@@ -67,13 +81,21 @@ public class DataStore {
     public void load(final MainManager manager) throws OverbookingException {
 	for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
 		.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
-	    final Booking b = manager.addBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
-		    bb.roomName, bb.source);
-	    // b.setGrossEarnings(bb.grossEarnings);
-	    b.setGrossEarningsExpression(bb.grossEarningsExpression);
-	    b.setWelcomeMailSend(bb.welcomeMailSend);
-	    b.setCheckInNote(bb.checkInNote);
-	    b.setPaymentDone(bb.paymentDone);
+	    try {
+		final Booking b = manager.addBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+			bb.roomName, bb.source);
+		// b.setGrossEarnings(bb.grossEarnings);
+		b.setGrossEarningsExpression(bb.grossEarningsExpression);
+		b.setWelcomeMailSend(bb.welcomeMailSend);
+		b.setCheckInNote(bb.checkInNote);
+		b.setPaymentDone(bb.paymentDone);
+		b.setSpecialRequestNote(bb.specialRequestNote);
+		b.setCheckOutNote(bb.checkOutNote);
+	    } catch (final Exception e) {
+		if (logger.isErrorEnabled()) {
+		    logger.error(e.getLocalizedMessage(), e);
+		}
+	    }
 	}
 	for (final CleaningBeanSer cb : getCleaningsSer()) {
 	    manager.addCleaning(cb.date, cb.name, cb.room);

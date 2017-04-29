@@ -2,8 +2,6 @@ package com.github.drbookings.ui;
 
 import java.util.function.Predicate;
 
-import com.github.drbookings.ui.controller.BookingEntry;
-
 public class BookingFilter implements Predicate<BookingEntry> {
 
     private String filterString;
