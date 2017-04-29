@@ -152,8 +152,7 @@ public class RoomDetailsController implements Initializable {
 	    bruttoEarningsLabel.setText(null);
 	    bruttoEarningsInput.setText(null);
 	} else {
-	    bruttoEarningsLabel
-		    .setText("Gross earnings (" + booking.getElement().getNumberOfNights() + " total nights)");
+	    bruttoEarningsLabel.setText("Gross earnings");
 	    bruttoEarningsInput.setText("" + booking.getElement().getGrossEarnings());
 	    bruttoEarningsInputExpression.setText(booking.getElement().getGrossEarningsExpression());
 	}
@@ -177,8 +176,7 @@ public class RoomDetailsController implements Initializable {
 	    nettoEarningsLabel.setText(null);
 	    nettoEarningsOutput.setText(null);
 	} else {
-	    nettoEarningsLabel
-		    .setText("Daily net earnings (" + booking.getElement().getNumberOfNights() + " total nights)");
+	    nettoEarningsLabel.setText("Daily net earnings");
 	    nettoEarningsOutput.setText(decimalFormat.format(booking.getNetEarnings()));
 	}
 
