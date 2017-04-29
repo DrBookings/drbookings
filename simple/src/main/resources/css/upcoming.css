@@ -1,0 +1,13 @@
+.root{
+    -fx-font-size: 12pt;
+}
+
+.info-label {
+	  -fx-font-weight: bold;
+}
+.guest-message {
+	  -fx-font-style: italic;
+}
+.emphasis{
+	  -fx-font-weight: bold;
+}

@@ -21,11 +21,20 @@
 	</padding>
 	<children>
 		<Label GridPane.columnIndex="0" GridPane.rowIndex="0"
-			text="Cleaning Plan look-behind" />
+			text="Cleaning Plan Look-Behind [days]" />
 
-		<TextField fx:id="cleaningPlanLookBehind" GridPane.hgrow="ALWAYS"
+		<TextField fx:id="cleaningPlanLookBehind" GridPane.hgrow="SOMETIMES"
 			GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="1"
+			text="Cleaning Fee Per Stay [€]" />
+
+		<TextField fx:id="cleaningFee" GridPane.hgrow="SOMETIMES"
+			GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+
+		<Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
+			onAction="#handleActionSaveSettings"></Button>
 	</children>
 
 

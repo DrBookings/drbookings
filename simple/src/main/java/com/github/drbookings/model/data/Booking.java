@@ -55,6 +55,10 @@ public class Booking extends IDed {
 
     private final StringProperty checkInNote = new SimpleStringProperty();
 
+    private final StringProperty checkOutNote = new SimpleStringProperty();
+
+    private final StringProperty specialRequestNote = new SimpleStringProperty();
+
     private final BooleanProperty welcomeMailSend = new SimpleBooleanProperty(false);
 
     private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
@@ -253,6 +257,30 @@ public class Booking extends IDed {
 
     public BooleanProperty welcomeMailSendProperty() {
 	return this.welcomeMailSend;
+    }
+
+    public StringProperty specialRequestNoteProperty() {
+	return this.specialRequestNote;
+    }
+
+    public String getSpecialRequestNote() {
+	return this.specialRequestNoteProperty().get();
+    }
+
+    public void setSpecialRequestNote(final String specialRequestNote) {
+	this.specialRequestNoteProperty().set(specialRequestNote);
+    }
+
+    public StringProperty checkOutNoteProperty() {
+	return this.checkOutNote;
+    }
+
+    public String getCheckOutNote() {
+	return this.checkOutNoteProperty().get();
+    }
+
+    public void setCheckOutNote(final String checkOutNote) {
+	this.checkOutNoteProperty().set(checkOutNote);
     }
 
 }

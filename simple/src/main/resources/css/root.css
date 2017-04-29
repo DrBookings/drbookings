@@ -70,15 +70,21 @@
 	-fx-opacity: 0.5;
 }
 .warning-box-middle {
-	-fx-background-color: orangered;
+	-fx-border-width: 0 2 0 2;
+	-fx-border-color: red;
+	-fx-border-style: solid;
 }
 
 .warning-box-top {
-	-fx-background-color: orangered;
+	-fx-border-width: 2 2 0 2;
+	-fx-border-color: red;
+	-fx-border-style: solid;
 }
 
 .warning-box-bottom {
-	-fx-background-color: orangered;
+	-fx-border-width: 0 2 2 2;
+	-fx-border-color: red;
+	-fx-border-style: solid;
 }
 
 .warning-text {

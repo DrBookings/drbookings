@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.TemporalQueries;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingFilter;
-import com.github.drbookings.ui.controller.BookingEntry;
-import com.github.drbookings.ui.controller.CleaningEntry;
+import com.github.drbookings.ui.CleaningEntry;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -103,9 +103,9 @@ public class RoomBean extends WarnableBean {
 
 	    final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonth);
 
-	    if (getDate().isAfter(LocalDate.now()) && needsCleaning()) {
-		return true;
-	    }
+	    // if (getDate().isAfter(LocalDate.now()) && needsCleaning()) {
+	    // return true;
+	    // }
 
 	    final boolean payment = filteredBookingEntriesProperty().stream()
 		    .filter(b -> b.getElement().isPaymentDone()).count() == filteredBookingEntriesProperty().size();

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.github.drbookings.model.data.Cleaning;
 import com.github.drbookings.model.data.Room;
+import com.github.drbookings.ui.CleaningEntry;
 
 public class CleaningEntryTest {
 

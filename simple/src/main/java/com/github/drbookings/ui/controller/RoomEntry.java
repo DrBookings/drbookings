@@ -3,6 +3,7 @@ package com.github.drbookings.ui.controller;
 import java.time.LocalDate;
 
 import com.github.drbookings.model.data.Room;
+import com.github.drbookings.ui.DateEntry;
 
 public class RoomEntry extends DateEntry<Room> {
 

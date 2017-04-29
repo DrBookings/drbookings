@@ -50,4 +50,13 @@ public class BookingBeanSer {
     @XmlAttribute
     public String grossEarningsExpression;
 
+    @XmlAttribute
+    public String externalId;
+
+    @XmlAttribute
+    public String specialRequestNote;
+
+    @XmlAttribute
+    public String checkOutNote;
+
 }

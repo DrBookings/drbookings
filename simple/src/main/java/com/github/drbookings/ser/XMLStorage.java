@@ -25,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.controller.CleaningEntry;
+import com.github.drbookings.ui.CleaningEntry;
 
 public class XMLStorage {
 

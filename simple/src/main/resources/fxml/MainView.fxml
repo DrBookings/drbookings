@@ -16,17 +16,25 @@
 			<menus>
 				<Menu text="File">
 					<items>
-						<MenuItem fx:id="menuItemOpen" text="Open" onAction="#handleMenuItemOpen" />
+						<MenuItem fx:id="menuItemOpen" text="Open DrBookings XML"
+							onAction="#handleMenuItemOpen" />
+						<MenuItem fx:id="menuItemOpen" text="Open Airbnb iCal"
+							onAction="#handleMenuItemOpenAirbnbICal" />
+						<MenuItem fx:id="menuItemOpen" text="Open Booking Excel"
+							onAction="#handleMenuItemOpenBookingExcel" />
 					</items>
 				</Menu>
 				<Menu text="View">
 					<items>
+						<MenuItem text="Show Upcoming Events" onAction="#handleMenuItemUpcomingEvents" />
 						<MenuItem text="Show Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
+
 					</items>
 				</Menu>
 				<Menu text="Settings">
 					<items>
 						<MenuItem text="General" onAction="#handleMenuItemSettingsGeneral" />
+						<MenuItem text="iCal" onAction="#handleMenuItemSettingsICal" />
 						<MenuItem text="Colors" onAction="#handleMenuItemSettingsColors" />
 						<MenuItem text="About" onAction="#handleMenuItemAbout" />
 					</items>
@@ -44,9 +52,9 @@
 			<children>
 				<Label fx:id="progressLabel" maxWidth="Infinity" visible="false"
 					GridPane.columnSpan="1" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-				<ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="-1"
-					visible="false" GridPane.columnSpan="2" GridPane.columnIndex="1"
-					GridPane.rowIndex="0" />
+				<ProgressBar fx:id="progressBar" maxWidth="Infinity"
+					progress="-1" visible="false" GridPane.columnSpan="2"
+					GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
 					text="Add Booking" GridPane.columnIndex="0" GridPane.rowIndex="1" />
