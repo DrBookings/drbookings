@@ -35,7 +35,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
 
 public class BookingDetailsController implements Initializable {
 
@@ -44,7 +43,7 @@ public class BookingDetailsController implements Initializable {
 	final TextFlow checkOut = LocalDates.getDateText(be.getElement().getCheckOut());
 	final TextFlow year = LocalDates.getYearText(be.getElement().getCheckOut());
 	final TextFlow tf = new TextFlow();
-	tf.getChildren().addAll(checkIn, new Text(" ➤\n"), checkOut, new Text("\n"), year);
+	tf.getChildren().addAll(checkIn, new Text("\n"), checkOut, new Text("\n"), year);
 	// tf.getChildren().addAll(checkIn, new Text(" ➤ "), checkOut);
 	// HBox.setHgrow(tf, Priority.SOMETIMES);
 	content.getChildren().add(tf);
@@ -119,11 +118,13 @@ public class BookingDetailsController implements Initializable {
     }
 
     private void addRow1(final Pane content, final BookingEntry be) {
-	final HBox box = new HBox();
-	box.setFillHeight(true);
-	addCheckInNote(box, be);
-	addCheckOutNote(box, be);
-	content.getChildren().add(box);
+	final HBox box0 = new HBox();
+	final HBox box1 = new HBox();
+	box0.setFillHeight(true);
+	box1.setFillHeight(true);
+	addCheckInNote(box0, be);
+	addCheckOutNote(box1, be);
+	content.getChildren().addAll(box0, box1);
 
     }
 
@@ -252,8 +253,8 @@ public class BookingDetailsController implements Initializable {
 	for (final Entry<Booking, CheckBox> en : booking2WelcomeMail.entrySet()) {
 	    en.getKey().setWelcomeMailSend(en.getValue().isSelected());
 	}
-	final Stage stage = (Stage) content.getScene().getWindow();
-	stage.close();
+	// final Stage stage = (Stage) content.getScene().getWindow();
+	// stage.close();
     }
 
     @Override
