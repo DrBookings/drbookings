@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.BookingDetailsController"
+	vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToWidth="true">
+	<stylesheets>
+		<URL value="@/css/root.css" />
+		<URL value="@/css/bookingDetails.css" />
+	</stylesheets>
+	<VBox>
+		<padding>
+			<Insets top="8" right="8" bottom="8" left="8" />
+		</padding>
+		<VBox fx:id="content" fillWidth="true" spacing="8">
+			<padding>
+				<Insets top="8" bottom="8" />
+			</padding>
+		</VBox>
+		<Button text="Save" onAction="#handleActionSaveBookingDetails" defaultButton="true" />
+	</VBox>
+
+</ScrollPane>
