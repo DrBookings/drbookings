@@ -162,8 +162,7 @@ public class Booking extends IDed {
     }
 
     public long getNumberOfDays() {
-	final long daysElapsed = ChronoUnit.DAYS.between(LocalDate.of(2017, 06, 01), LocalDate.of(2017, 07, 01));
-	System.err.println(daysElapsed);
+	final long daysElapsed = ChronoUnit.DAYS.between(getCheckIn(), getCheckOut());
 	return daysElapsed + 1;
     }
 
