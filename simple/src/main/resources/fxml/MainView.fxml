@@ -31,6 +31,8 @@
 					<items>
 						<MenuItem text="What's Next" onAction="#handleMenuItemUpcomingEvents" />
 						<MenuItem text="Show Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
+						<MenuItem text="Show Booking Details" onAction="#handleMenuItemBookingDetails" />
+						<MenuItem text="Show Room Details" onAction="#handleMenuItemRoomDetails" />
 
 					</items>
 				</Menu>

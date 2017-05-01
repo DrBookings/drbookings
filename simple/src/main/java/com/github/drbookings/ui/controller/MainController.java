@@ -313,6 +313,16 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void handleMenuItemBookingDetails(final ActionEvent event) {
+	Platform.runLater(() -> BookingDetailsDialogBuilder.doShowBookingDetails());
+    }
+
+    @FXML
+    private void handleMenuItemRoomDetails(final ActionEvent event) {
+	Platform.runLater(() -> showRoomDetailsDialog());
+    }
+
+    @FXML
     private void handleMenuItemAbout(final ActionEvent event) {
 	Platform.runLater(() -> showAbout());
     }

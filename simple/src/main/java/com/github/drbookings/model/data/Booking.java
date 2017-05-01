@@ -2,7 +2,7 @@ package com.github.drbookings.model.data;
 
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -161,14 +161,14 @@ public class Booking extends IDed {
 	return this.netEarningsProperty().get();
     }
 
-    public int getNumberOfDays() {
-	final Period period = Period.between(getCheckIn(), getCheckOut());
-	final int daysElapsed = period.getDays();
+    public long getNumberOfDays() {
+	final long daysElapsed = ChronoUnit.DAYS.between(LocalDate.of(2017, 06, 01), LocalDate.of(2017, 07, 01));
+	System.err.println(daysElapsed);
 	return daysElapsed + 1;
     }
 
-    public int getNumberOfNights() {
-	final int daysElapsed = getNumberOfDays();
+    public long getNumberOfNights() {
+	final long daysElapsed = getNumberOfDays();
 	return daysElapsed - 1;
     }
 

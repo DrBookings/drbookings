@@ -1,6 +1,5 @@
 package com.github.drbookings.ui.controller;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -21,10 +20,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -87,24 +83,7 @@ public class RoomDetailsController implements Initializable {
     }
 
     private void showBookingDetails() {
-	Platform.runLater(() -> doShowBookingDetails());
-    }
-
-    private void doShowBookingDetails() {
-	try {
-	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BookingDetailsView.fxml"));
-	    final Parent root = loader.load();
-	    final Stage stage = new Stage();
-	    final Scene scene = new Scene(root);
-	    stage.setTitle("Booking Details");
-	    stage.setScene(scene);
-	    stage.setWidth(400);
-	    stage.setHeight(600);
-	    final BookingDetailsController c = loader.getController();
-	    stage.show();
-	} catch (final IOException e) {
-	    logger.error(e.getLocalizedMessage(), e);
-	}
+	Platform.runLater(() -> BookingDetailsDialogBuilder.doShowBookingDetails());
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {
