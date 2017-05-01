@@ -17,3 +17,5 @@
 ![alt text](screenshots/drbookings02.png)
 
 ![alt text](screenshots/drbookings03.png)
+
+![alt text](screenshots/upcoming-events.png)
