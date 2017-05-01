@@ -50,15 +50,11 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 	VBox vbox;
 
 	vbox = new VBox();
-	c.setGuestNamesCheckOut(vbox);
+	c.setGuestNames1(vbox);
 	parent.getChildren().add(vbox);
 
 	vbox = new VBox();
-	c.setGuestNamesCheckIn(vbox);
-	parent.getChildren().add(vbox);
-
-	vbox = new VBox();
-	c.setGuestNamesStay(vbox);
+	c.setGuestNames0(vbox);
 	parent.getChildren().add(vbox);
 
 	vbox = new VBox();
