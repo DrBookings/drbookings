@@ -15,9 +15,8 @@
 
 
 	<children>
-		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckIn" alignment="CENTER"/>
-		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesStay" alignment="CENTER"/>
-		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNamesCheckOut" alignment="CENTER"/>
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNames0" alignment="CENTER"/>
+		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="guestNames1" alignment="CENTER"/>
 		<VBox spacing="0" VBox.vgrow="always" maxWidth="Infinity" fx:id="cleaning" alignment="CENTER"/>
 	</children>
 

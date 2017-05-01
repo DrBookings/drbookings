@@ -74,13 +74,10 @@ public class CellContentController implements Initializable {
     }
 
     @FXML
-    private VBox guestNamesCheckIn;
+    private VBox guestNames0;
 
     @FXML
-    private VBox guestNamesCheckOut;
-
-    @FXML
-    private VBox guestNamesStay;
+    private VBox guestNames1;
 
     @FXML
     private VBox cleaning;
@@ -96,16 +93,12 @@ public class CellContentController implements Initializable {
 	return cleaning;
     }
 
-    public VBox getGuestNamesCheckIn() {
-	return guestNamesCheckIn;
+    public VBox getGuestNames0() {
+	return guestNames0;
     }
 
-    public VBox getGuestNamesCheckOut() {
-	return guestNamesCheckOut;
-    }
-
-    public VBox getGuestNamesStay() {
-	return guestNamesStay;
+    public VBox getGuestNames1() {
+	return guestNames1;
     }
 
     @Override
@@ -129,22 +122,30 @@ public class CellContentController implements Initializable {
 	    cleaning.getChildren().add(buildEntryCleaning(rb));
 	} else {
 	    cleaning.getChildren().clear();
+	    cleaning.getChildren().add(getNewLabel(null));
 	}
-	guestNamesCheckOut.getChildren().clear();
-	guestNamesStay.getChildren().clear();
-	guestNamesCheckIn.getChildren().clear();
+	guestNames1.getChildren().clear();
+	guestNames0.getChildren().clear();
 
 	BookingEntry last = null;
 	for (final BookingEntry bb : rb.getFilteredBookingEntries().stream()
 		.sorted(Comparator.comparing(BookingEntry::isCheckOut)).collect(Collectors.toList())) {
 	    if (bb.isCheckIn()) {
-		guestNamesCheckIn.getChildren().add(buildEntryCheckIn(bb));
+		guestNames0.getChildren().add(buildEntryCheckIn(bb));
 	    } else if (bb.isCheckOut()) {
-		guestNamesCheckOut.getChildren().add(buildEntryCheckOut(bb));
+		guestNames1.getChildren().add(buildEntryCheckOut(bb));
 	    } else {
-		guestNamesStay.getChildren().add(buildEntryStay(bb));
+		guestNames0.getChildren().add(buildEntryStay(bb));
 	    }
 	    last = bb;
+	}
+
+	if (guestNames0.getChildren().isEmpty()) {
+	    guestNames0.getChildren().add(getNewLabel(null));
+	}
+
+	if (guestNames1.getChildren().isEmpty()) {
+	    guestNames1.getChildren().add(getNewLabel(null));
 	}
 
 	if (rb.isWarning()) {
@@ -162,16 +163,12 @@ public class CellContentController implements Initializable {
 	}
     }
 
-    public void setGuestNamesCheckIn(final VBox guestNamesCheckIn) {
-	this.guestNamesCheckIn = guestNamesCheckIn;
+    public void setGuestNames0(final VBox guestNamesCheckIn) {
+	this.guestNames0 = guestNamesCheckIn;
     }
 
-    public void setGuestNamesCheckOut(final VBox guestNamesCheckOut) {
-	this.guestNamesCheckOut = guestNamesCheckOut;
-    }
-
-    public void setGuestNamesStay(final VBox guestNamesStay) {
-	this.guestNamesStay = guestNamesStay;
+    public void setGuestNames1(final VBox guestNamesCheckOut) {
+	this.guestNames1 = guestNamesCheckOut;
     }
 
 }
