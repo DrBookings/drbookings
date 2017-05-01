@@ -16,4 +16,9 @@ public class TemporalQueries {
 	final LocalDate ref = LocalDate.now().minusMonths(1);
 	return Month.from(temporal) == Month.from(ref) && Year.from(temporal).equals(Year.from(ref));
     }
+
+    public static boolean isPreviousMonthOrEarlier(final TemporalAccessor temporal) {
+	final LocalDate ref = LocalDate.now().minusMonths(1);
+	return Month.from(temporal).compareTo(Month.from(ref)) <= 0 && Year.from(temporal).equals(Year.from(ref));
+    }
 }

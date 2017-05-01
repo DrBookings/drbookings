@@ -182,7 +182,7 @@ public class MainManager {
 	}
     }
 
-    public synchronized void applyGuestNameFilter(final String guestNameFilterString) {
+    public synchronized void applyFilter(final String guestNameFilterString) {
 	for (final DateBean db : uiData) {
 	    for (final RoomBean rb : db.getRooms()) {
 		rb.setBookingFilterString(guestNameFilterString);

@@ -17,80 +17,32 @@
 	<padding>
 		<Insets top="4" right="4" bottom="4" left="4" />
 	</padding>
+
 	<columnConstraints>
-		<ColumnConstraints hgrow="ALWAYS" minWidth="10.0"
-			percentWidth="40.0" prefWidth="100.0" />
-		<ColumnConstraints hgrow="ALWAYS" minWidth="10.0"
-			percentWidth="60.0" prefWidth="100.0" />
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" />
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" />
 	</columnConstraints>
+
 	<children>
 
 		<Label text="Bookings" fx:id="bookings" id="bookings-label"
-			wrapText="true" GridPane.columnIndex="0" GridPane.columnSpan="2"
+			wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="1"
 			GridPane.rowIndex="0" maxWidth="Infinity" />
 
 		<Label text="Cleaning" GridPane.columnIndex="0"
-			GridPane.rowIndex="1" maxWidth="Infinity" />
+			GridPane.rowIndex="1" />
 
 		<TextField fx:id="cleaning" GridPane.columnIndex="1"
 			GridPane.rowIndex="1" />
 
-		<Label text="Guests" GridPane.columnIndex="0"
-			GridPane.rowIndex="2" maxWidth="Infinity" />
+		<Label text="Guests" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 
-		<Label fx:id="guestNames" GridPane.columnIndex="1" wrapText="true"
-			GridPane.rowIndex="2" maxWidth="Infinity" />
+		<Label fx:id="guestNames" maxWidth="Infinity"
+			GridPane.columnIndex="1" wrapText="true" GridPane.rowIndex="2" />
 
-		<Label fx:id="bruttoEarningsLabel" maxWidth="Infinity" wrapText="true"
-			GridPane.columnIndex="0" GridPane.rowIndex="3" />
-
-		<HBox GridPane.columnIndex="1" GridPane.rowIndex="3">
-			<TextField fx:id="bruttoEarningsInputExpression"
-				GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-			<TextField fx:id="bruttoEarningsInput"
-				GridPane.columnIndex="1" GridPane.rowIndex="0" />
-		</HBox>
-
-		<Label fx:id="nettoEarningsLabel" maxWidth="Infinity" wrapText="true"
-			GridPane.columnIndex="0" GridPane.rowIndex="4" />
-
-		<TextField fx:id="nettoEarningsOutput" maxWidth="Infinity"
-			editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-
-		<Label text="Check-in Note" maxWidth="Infinity"
-			GridPane.columnIndex="0" GridPane.rowIndex="5" />
-
-		<TextArea fx:id="checkInNoteInput" wrapText="true"
-			prefHeight="60" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-
-		<Label text="Special Request Note" maxWidth="Infinity"
-			GridPane.columnIndex="0" GridPane.rowIndex="6" />
-
-		<TextArea fx:id="specialRequestNoteInput" wrapText="true"
-			prefHeight="60" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-
-		<Label text="Check-out Note" maxWidth="Infinity"
-			GridPane.columnIndex="0" GridPane.rowIndex="7" />
-
-		<TextArea fx:id="checkOutNoteInput" wrapText="true"
-			prefHeight="60" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-
-
-		<Label text="Welcome Mail sent" maxWidth="Infinity"
-			GridPane.columnIndex="0" GridPane.rowIndex="8" />
-
-		<CheckBox fx:id="welcomeMailSendButton" GridPane.columnIndex="1"
-			GridPane.rowIndex="8" />
-
-		<Label text="Payment done" maxWidth="Infinity"
-			GridPane.columnIndex="0" GridPane.rowIndex="9" />
-
-		<CheckBox fx:id="paymentDoneButton" GridPane.columnIndex="1"
-			GridPane.rowIndex="9" />
 
 		<Button fx:id="buttonSave" text="Save" defaultButton="true"
-			prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="10"
+			prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="3"
 			onAction="#handleButtonSave" />
 	</children>
 </GridPane>

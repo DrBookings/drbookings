@@ -71,11 +71,18 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 
     private void addEvents(final LocalDate date, final Stream<BookingEntry> upcomingBookings) {
 	final VBox box = new VBox(4);
+	if (date.equals(LocalDate.now())) {
+	    box.getStyleClass().add("first-day");
+	} else if (date.equals(LocalDate.now().plusDays(1))) {
+	    box.getStyleClass().add("second-day");
+	} else if (date.isAfter(LocalDate.now().plusDays(1))) {
+	    box.getStyleClass().add("later");
+	}
+
 	final List<Pair<String, String>> checkInNotes = Collections.synchronizedList(new ArrayList<>());
 	final List<Pair<String, String>> checkOutNotes = Collections.synchronizedList(new ArrayList<>());
 	upcomingBookings.forEach(b -> {
 	    if (b.isCheckIn()) {
-
 		checkInNotes
 			.add(new ImmutablePair<String, String>(b.getRoom().getName(), b.getElement().getCheckInNote()));
 	    } else if (b.isCheckOut()) {
@@ -83,6 +90,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 			new ImmutablePair<String, String>(b.getRoom().getName(), b.getElement().getCheckOutNote()));
 	    }
 	});
+	Collections.sort(checkInNotes, (l, r) -> l.getKey().compareTo(r.getKey()));
+	Collections.sort(checkOutNotes, (l, r) -> l.getKey().compareTo(r.getKey()));
 	addSummaryText(date, box, checkInNotes, checkOutNotes);
 	addNotesText(date, box, checkInNotes, checkOutNotes);
 	this.box.getChildren().add(box);
@@ -106,10 +115,12 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    }
 	}
 	if (checkInNotes.size() > 0) {
-	    box.getChildren().add(new Separator());
+	    if (checkOutNotes.size() > 0) {
+		box.getChildren().add(new Separator());
+	    }
 	    for (final Pair<String, String> next : checkInNotes) {
 		final TextFlow tf = new TextFlow();
-		final Text t0 = new Text("Room " + next.getLeft() + ": ");
+		final Text t0 = new Text("Room " + next.getLeft());
 		t0.getStyleClass().add("emphasis");
 		tf.getChildren().add(t0);
 		if (!StringUtils.isBlank(next.getRight())) {
