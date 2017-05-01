@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -43,19 +44,20 @@ public class BookingDetailsController implements Initializable {
 	final TextFlow checkOut = LocalDates.getDateText(be.getElement().getCheckOut());
 	final TextFlow year = LocalDates.getYearText(be.getElement().getCheckOut());
 	final TextFlow tf = new TextFlow();
-	// tf.getChildren().addAll(checkIn, new Text(" ➤ "), checkOut, new
-	// Text("\n"), year);
-	tf.getChildren().addAll(checkIn, new Text(" ➤ "), checkOut);
+	tf.getChildren().addAll(checkIn, new Text(" ➤\n"), checkOut, new Text("\n"), year);
+	// tf.getChildren().addAll(checkIn, new Text(" ➤ "), checkOut);
 	// HBox.setHgrow(tf, Priority.SOMETIMES);
 	content.getChildren().add(tf);
 
     }
 
     private static void addName(final HBox content, final BookingEntry be) {
-	final Label label = new Label(be.getElement().getGuest().getName());
+	final Label label = new Label(
+		be.getElement().getGuest().getName() + "\n" + be.getElement().getBookingOrigin().getName());
 	label.setWrapText(true);
 	content.getChildren().add(label);
-	// HBox.setHgrow(label, Priority.SOMETIMES);
+	HBox.setHgrow(label, Priority.ALWAYS);
+
     }
 
     private static void addNights(final HBox content, final BookingEntry be) {
@@ -105,8 +107,8 @@ public class BookingDetailsController implements Initializable {
 
     }
 
-    private void addRow0(final BookingEntry be) {
-	final HBox box = new HBox(20);
+    private static void addRow0(final Pane content, final BookingEntry be) {
+	final HBox box = new HBox(10);
 	box.setFillHeight(true);
 	addName(box, be);
 	addDates(box, be);
@@ -116,7 +118,7 @@ public class BookingDetailsController implements Initializable {
 
     }
 
-    private void addRow1(final BookingEntry be) {
+    private void addRow1(final Pane content, final BookingEntry be) {
 	final HBox box = new HBox();
 	box.setFillHeight(true);
 	addCheckInNote(box, be);
@@ -125,7 +127,7 @@ public class BookingDetailsController implements Initializable {
 
     }
 
-    private void addRow2(final BookingEntry be) {
+    private void addRow2(final Pane content, final BookingEntry be) {
 	final HBox box = new HBox();
 	box.setFillHeight(true);
 	addSpecialRequestNote(box, be);
@@ -133,8 +135,9 @@ public class BookingDetailsController implements Initializable {
 
     }
 
-    private void addRow3(final BookingEntry be) {
-	final HBox box = new HBox(4);
+    private void addRow3(final Pane content, final BookingEntry be) {
+	final HBox box = new HBox();
+	box.setPadding(new Insets(4));
 	box.setAlignment(Pos.CENTER_LEFT);
 	box.setFillHeight(true);
 	final TextField grossEarningsExpression = new TextField(be.getElement().getGrossEarningsExpression());
@@ -144,12 +147,16 @@ public class BookingDetailsController implements Initializable {
 	final TextFlow tf = new TextFlow(new Text("Gross Earnings: "), grossEarningsExpression, new Text(" = "),
 		grossEarnings, new Label("€"));
 	box.getChildren().addAll(tf);
+	if (be.getElement().getGrossEarnings() <= 0) {
+	    box.getStyleClass().add("warning");
+	}
 	content.getChildren().add(box);
 
     }
 
-    private void addRow4(final BookingEntry be) {
-	final HBox box = new HBox(8);
+    private static void addRow4(final Pane content, final BookingEntry be) {
+	final HBox box = new HBox();
+	box.setPadding(new Insets(4));
 	box.setAlignment(Pos.CENTER_LEFT);
 	box.setFillHeight(true);
 	final TextFlow tf = new TextFlow();
@@ -160,12 +167,16 @@ public class BookingDetailsController implements Initializable {
 	final Text t2 = new Text("€ /day");
 	tf.getChildren().addAll(t0, netEarnings, t1, netEarningsDay, t2);
 	box.getChildren().addAll(tf);
+	if (be.getElement().getNetEarnings() <= 0) {
+	    box.getStyleClass().add("warning");
+	}
 	content.getChildren().add(box);
 
     }
 
-    private void addRow5(final BookingEntry be) {
+    private void addRow5(final Pane content, final BookingEntry be) {
 	final HBox box = new HBox();
+	box.setPadding(new Insets(4));
 	box.setFillHeight(true);
 	final Text t0 = new Text("Welcome Mail sent: ");
 	final CheckBox cb0 = new CheckBox();
@@ -178,6 +189,12 @@ public class BookingDetailsController implements Initializable {
 	final TextFlow tf = new TextFlow();
 	tf.getChildren().addAll(t0, cb0, t1, cb1);
 	box.getChildren().add(tf);
+	if (!be.getElement().isWelcomeMailSend()) {
+	    box.getStyleClass().add("warning");
+	}
+	if (!be.getElement().isPaymentDone()) {
+	    box.getStyleClass().add("warning");
+	}
 	content.getChildren().add(box);
 
     }
@@ -210,6 +227,8 @@ public class BookingDetailsController implements Initializable {
 	booking2CheckOutNote.clear();
 	booking2SpecialRequestNote.clear();
 	booking2GrossEarnings.clear();
+	booking2Payment.clear();
+	booking2WelcomeMail.clear();
 	content.getChildren().clear();
     }
 
@@ -250,21 +269,28 @@ public class BookingDetailsController implements Initializable {
 		.collect(Collectors.toSet());
 	for (final Iterator<BookingEntry> it = bookings.iterator(); it.hasNext();) {
 	    final BookingEntry be = it.next();
-	    addRow0(be);
-	    content.getChildren().add(new Separator());
-	    addRow3(be);
-	    content.getChildren().add(new Separator());
-	    addRow4(be);
-	    content.getChildren().add(new Separator());
-	    addRow5(be);
-	    content.getChildren().add(new Separator());
-	    addRow1(be);
-	    addRow2(be);
-
+	    addBookingEntry(be);
 	    if (it.hasNext()) {
 		addSeparator();
 	    }
 	}
+    }
+
+    private void addBookingEntry(final BookingEntry be) {
+	final VBox box = new VBox(4);
+	box.setPadding(new Insets(4));
+	addRow0(box, be);
+	box.getChildren().add(new Separator());
+	addRow3(box, be);
+	box.getChildren().add(new Separator());
+	addRow4(box, be);
+	box.getChildren().add(new Separator());
+	addRow5(box, be);
+	box.getChildren().add(new Separator());
+	addRow1(box, be);
+	addRow2(box, be);
+	content.getChildren().add(box);
+
     }
 
 }
