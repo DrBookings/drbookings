@@ -1,3 +1,12 @@
+.root{
+    -fx-font-size: 11pt;
+}
+
+.center-text {
+	 -fx-alignment: center;
+	 -fx-text-alignment: center;
+}
+
 .text-input, .text-input:focused {
     -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
 }

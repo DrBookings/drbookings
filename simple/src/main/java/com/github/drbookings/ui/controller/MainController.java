@@ -236,8 +236,9 @@ public class MainController implements Initializable {
 
     private void doUpdateStatusLabel() {
 
-	final BookingsByOrigin bo = new BookingsByOrigin(manager.getBookingEntries().stream()
-		.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList()));
+	final BookingsByOrigin bo = new BookingsByOrigin(
+		manager.getBookingEntries().stream().filter(b -> b.getDate().isBefore(LocalDate.now().plusDays(1)))
+			.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList()));
 	statusLabel.textProperty()
 		.set(getStatusLabelString(bo.getBookingBookings(), bo.getAirbnbBookings(), bo.getOtherBookings()));
 
@@ -487,7 +488,7 @@ public class MainController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
 
 	guestNameFilterInput.textProperty().addListener(
-		(ChangeListener<String>) (observable, oldValue, newValue) -> manager.applyGuestNameFilter(newValue));
+		(ChangeListener<String>) (observable, oldValue, newValue) -> manager.applyFilter(newValue));
 	initTableView();
 	cDate.setCellFactory(column -> {
 	    return new TableCell<DateBean, LocalDate>() {
@@ -683,11 +684,9 @@ public class MainController implements Initializable {
 	    final Scene scene = new Scene(root);
 	    stage.setTitle("Room Details");
 	    stage.setScene(scene);
-	    stage.setWidth(600);
-	    stage.setHeight(600);
+	    stage.setWidth(400);
+	    stage.setHeight(200);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
-	    stage.initOwner(windowStage);
-	    stage.initModality(Modality.NONE);
 	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
 	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
 	    final RoomDetailsController c = loader.getController();

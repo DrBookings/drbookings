@@ -14,8 +14,8 @@
 
 ![alt text](screenshots/drbookings01.png)
 
-![alt text](screenshots/drbookings02.png)
+![alt text](screenshots/room-details.png)
 
-![alt text](screenshots/drbookings03.png)
+![alt text](screenshots/booking-details.png)
 
 ![alt text](screenshots/upcoming-events.png)

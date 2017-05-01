@@ -101,7 +101,7 @@ public class RoomBean extends WarnableBean {
 
 	return () -> {
 
-	    final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonth);
+	    final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
 
 	    // if (getDate().isAfter(LocalDate.now()) && needsCleaning()) {
 	    // return true;

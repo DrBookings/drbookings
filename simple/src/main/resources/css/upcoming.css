@@ -1,10 +1,17 @@
-.root{
-    -fx-font-size: 12pt;
+.first-day {
+	-fx-background-color: coral;
+	 -fx-padding: 10;
 }
 
-.info-label {
-	  -fx-font-weight: bold;
+.second-day {
+	-fx-background-color: sandybrown;
+	 -fx-padding: 10;
 }
+.later {
+	-fx-background-color: wheat;
+	 -fx-padding: 10;
+}
+
 .guest-message {
 	  -fx-font-style: italic;
 }
