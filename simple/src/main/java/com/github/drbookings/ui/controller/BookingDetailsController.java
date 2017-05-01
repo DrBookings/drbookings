@@ -278,7 +278,7 @@ public class BookingDetailsController implements Initializable {
 
     private void addBookingEntry(final BookingEntry be) {
 	final VBox box = new VBox(4);
-	box.setPadding(new Insets(4));
+	// box.setPadding(new Insets(4));
 	addRow0(box, be);
 	box.getChildren().add(new Separator());
 	addRow3(box, be);
