@@ -1,0 +1,7 @@
+.first-line {
+	  -fx-font-weight: bold;
+}
+.large-separator {
+	-fx-background-color: #e79423;
+	-fx-background-radius: 3.0;
+}
