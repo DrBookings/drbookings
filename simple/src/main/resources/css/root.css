@@ -54,6 +54,9 @@
 .check-in { 
   -fx-background-color: darkorange;
 }
+.check-out { 
+  -fx-background-color: mediumseagreen;
+}
 .source-background-airbnb {
 	-fx-background-color:  rgba(255.0,90.0,95.0,0.3);
 }
@@ -79,21 +82,18 @@
 	-fx-opacity: 0.5;
 }
 .warning-box-middle {
-	-fx-border-width: 0 2 0 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: tomato;
+
 }
 
 .warning-box-top {
-	-fx-border-width: 2 2 0 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: tomato;
+	
 }
 
 .warning-box-bottom {
-	-fx-border-width: 0 2 2 2;
-	-fx-border-color: red;
-	-fx-border-style: solid;
+	-fx-background-color: tomato;
+
 }
 
 .warning-text {

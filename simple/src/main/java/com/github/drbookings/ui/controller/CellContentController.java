@@ -35,7 +35,7 @@ public class CellContentController implements Initializable {
 
     private static Node buildEntryCheckOut(final BookingEntry e) {
 	final Label l = getNewLabel(e.getElement().getGuest().getName());
-	l.getStyleClass().add("check-in");
+	l.getStyleClass().add("check-out");
 	return l;
     }
 
