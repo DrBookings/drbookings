@@ -1,4 +1,4 @@
-package com.github.drbookings.ui.controller;
+package com.github.drbookings.ui;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;

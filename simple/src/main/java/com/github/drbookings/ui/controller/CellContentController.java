@@ -48,7 +48,7 @@ public class CellContentController implements Initializable {
 		l.getStyleClass().add("cleaning-warning");
 	    }
 	} else {
-	    s = "Cleaning " + rb.getCleaningEntry().getElement().getName();
+	    s = rb.getCleaningEntry().getElement().getName();
 	    l.getStyleClass().add("cleaning");
 	}
 	l.setText(s);

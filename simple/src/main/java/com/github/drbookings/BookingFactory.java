@@ -1,4 +1,4 @@
-package com.github.drbookings.ical;
+package com.github.drbookings;
 
 import java.util.Collection;
 

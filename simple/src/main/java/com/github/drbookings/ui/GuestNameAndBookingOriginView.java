@@ -16,6 +16,10 @@ public class GuestNameAndBookingOriginView extends BookingEntryView {
 	while (it.hasNext()) {
 	    final BookingEntry b = it.next();
 	    sb.append(b.getElement().getGuest().getName());
+	    sb.append(" (");
+	    sb.append(b.getElement().getBookingOrigin().getName());
+	    sb.append(")");
+
 	    if (it.hasNext()) {
 		sb.append("\n");
 	    }

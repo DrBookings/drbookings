@@ -10,6 +10,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingFactory;
+import com.github.drbookings.io.BookingParser;
 import com.github.drbookings.model.ser.BookingBeanSer;
 
 import biweekly.Biweekly;
@@ -20,11 +22,11 @@ public class ICalBookingFactory implements BookingFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ICalBookingFactory.class);
 
-    private final ICalParser iCalParser;
+    private final BookingParser iCalParser;
 
     private final File file;
 
-    public ICalBookingFactory(final File file, final ICalParser iCalParser) {
+    public ICalBookingFactory(final File file, final BookingParser iCalParser) {
 	super();
 	this.iCalParser = iCalParser;
 	this.file = file;
@@ -42,7 +44,7 @@ public class ICalBookingFactory implements BookingFactory {
 		    if (logger.isInfoEnabled()) {
 			logger.info("Failed to process event ", e);
 		    }
-		    ex.printStackTrace();
+		    // ex.printStackTrace();
 		}
 	    }
 	}
@@ -53,11 +55,13 @@ public class ICalBookingFactory implements BookingFactory {
 	final LocalDate checkIn = iCalParser.getCheckInDate(e);
 	final LocalDate checkOut = iCalParser.getCheckOutDate(e);
 	final String guestName = iCalParser.getGuestName(e);
+	final String id = iCalParser.getExternalID(e);
 	final String roomName = iCalParser.getRoomName(e);
 	if (checkIn == null || checkOut == null || guestName == null || roomName == null) {
 	    throw new NullPointerException();
 	}
 	final BookingBeanSer b = new BookingBeanSer();
+	b.externalId = id;
 	b.checkInDate = checkIn;
 	b.checkOutDate = checkOut;
 	b.guestName = guestName;

@@ -1,4 +1,4 @@
-package com.github.drbookings.ical;
+package com.github.drbookings.excel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

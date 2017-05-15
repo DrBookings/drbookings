@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.NetEarningsCalculator;
+import com.github.drbookings.model.settings.SettingsManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -23,13 +24,11 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Booking extends IDed {
+public class Booking extends IDed implements Comparable<Booking> {
 
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     private static final Logger logger = LoggerFactory.getLogger(Booking.class);
-
-    private static final NetEarningsCalculator netEarningsCalculator = new DefaultNetEarningsCalculator();
 
     private final RoundingMode roundingMode = DEFAULT_ROUNDING_MODE;
 
@@ -94,12 +93,20 @@ public class Booking extends IDed {
 	// }
 	grossEarningsProperty()
 		.bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
-	netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty()));
+	netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
+		SettingsManager.getInstance().cleaningFeesProperty()));
     }
 
     private Callable<Number> calculateNetEarnings() {
+
 	return () -> {
-	    return netEarningsCalculator.calculateNetEarnings((float) getGrossEarnings(), getBookingOrigin().getName());
+	    final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
+	    if (getGuest().getName().contains("Lien")) {
+		final int wait = 0;
+	    }
+	    c.setFees(SettingsManager.getInstance().getCleaningFees());
+	    final float result = c.calculateNetEarnings((float) getGrossEarnings(), getBookingOrigin().getName());
+	    return result;
 	};
     }
 
@@ -280,6 +287,11 @@ public class Booking extends IDed {
 
     public void setCheckOutNote(final String checkOutNote) {
 	this.checkOutNoteProperty().set(checkOutNote);
+    }
+
+    @Override
+    public int compareTo(final Booking o) {
+	return getCheckIn().compareTo(o.getCheckIn());
     }
 
 }

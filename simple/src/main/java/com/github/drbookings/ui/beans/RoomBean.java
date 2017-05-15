@@ -251,6 +251,9 @@ public class RoomBean extends WarnableBean {
     }
 
     public void setCleaning(final String cleaningName) {
+	if (getCleaningEntry() != null) {
+	    manager.removeCleaning(getCleaningEntry());
+	}
 	manager.addCleaning(getDate(), cleaningName, getName());
 
     }

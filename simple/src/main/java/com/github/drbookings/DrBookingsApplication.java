@@ -39,7 +39,7 @@ public class DrBookingsApplication extends Application {
 	}
 	final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 	final Parent root = loader.load();
-	final Scene scene = new Scene(root, 600, 800);
+	final Scene scene = new Scene(root, 700, 800);
 	String s = getClass().getPackage().getImplementationVersion();
 	if (s == null) {
 	    s = "dev version";

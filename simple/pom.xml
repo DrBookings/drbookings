@@ -12,6 +12,8 @@
 		<github-repo>drbookings</github-repo>
 		<bintray-user>kerner1000</bintray-user>
 		<bintray-repo>kerner1000</bintray-repo>
+		<project.http.version>1.19.0</project.http.version>
+		<project.oauth.version>1.19.0</project.oauth.version>
 	</properties>
 	<scm>
 		<connection>scm:git:https://github.com/${github-user}/${github-repo}.git</connection>
@@ -117,7 +119,6 @@
 			<artifactId>biweekly</artifactId>
 			<version>0.6.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -126,7 +127,22 @@
 		<dependency>
 			<groupId>net.sf.kerner-utils</groupId>
 			<artifactId>kerner-utils</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>v3-rev87-1.19.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client-jackson2</artifactId>
+			<version>${project.http.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client-jetty</artifactId>
+			<version>${project.oauth.version}</version>
 		</dependency>
 	</dependencies>
 </project>

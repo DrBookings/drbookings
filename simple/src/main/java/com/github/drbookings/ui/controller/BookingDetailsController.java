@@ -1,27 +1,31 @@
 package com.github.drbookings.ui.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.drbookings.LocalDates;
 import com.github.drbookings.model.data.Booking;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.beans.RoomBean;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -29,6 +33,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -38,29 +43,28 @@ import javafx.scene.text.TextFlow;
 
 public class BookingDetailsController implements Initializable {
 
-    private static void addDates(final HBox content, final BookingEntry be) {
-	final TextFlow checkIn = LocalDates.getDateText(be.getElement().getCheckIn());
-	final TextFlow checkOut = LocalDates.getDateText(be.getElement().getCheckOut());
-	final TextFlow year = LocalDates.getYearText(be.getElement().getCheckOut());
+    private static void addDates(final HBox content, final Booking be) {
+	final TextFlow checkIn = LocalDates.getDateText(be.getCheckIn());
+	final TextFlow checkOut = LocalDates.getDateText(be.getCheckOut());
+	final TextFlow year = LocalDates.getYearText(be.getCheckOut());
 	final TextFlow tf = new TextFlow();
-	tf.getChildren().addAll(checkIn, new Text("\n"), checkOut, new Text("\n"), year);
+	tf.getChildren().addAll(checkIn, new Text(" - "), checkOut, new Text("\n"), year);
 	// tf.getChildren().addAll(checkIn, new Text(" ➤ "), checkOut);
 	// HBox.setHgrow(tf, Priority.SOMETIMES);
 	content.getChildren().add(tf);
 
     }
 
-    private static void addName(final HBox content, final BookingEntry be) {
-	final Label label = new Label(
-		be.getElement().getGuest().getName() + "\n" + be.getElement().getBookingOrigin().getName());
+    private static void addName(final HBox content, final Booking be) {
+	final Label label = new Label(be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
 	label.setWrapText(true);
 	content.getChildren().add(label);
 	HBox.setHgrow(label, Priority.ALWAYS);
 
     }
 
-    private static void addNights(final HBox content, final BookingEntry be) {
-	final Text label = new Text(be.getElement().getNumberOfNights() + " nights");
+    private static void addNights(final HBox content, final Booking be) {
+	final Text label = new Text(be.getNumberOfNights() + " nights");
 	content.getChildren().add(label);
 	// HBox.setHgrow(label, Priority.SOMETIMES);
     }
@@ -82,118 +86,124 @@ public class BookingDetailsController implements Initializable {
 
     private final Map<Booking, CheckBox> booking2Payment = new HashMap<>();
 
-    private void addCheckInNote(final Pane content, final BookingEntry be) {
+    private void addCheckInNote(final Pane content, final Booking be) {
 	final VBox b = new VBox();
 	b.getChildren().add(new Text("Check-in Note"));
-	final TextArea ta0 = new TextArea(be.getElement().getCheckInNote());
+	final TextArea ta0 = new TextArea(be.getCheckInNote());
 	ta0.setWrapText(true);
 	ta0.setPrefHeight(80);
 	b.getChildren().add(ta0);
-	booking2CheckInNote.put(be.getElement(), ta0);
+	booking2CheckInNote.put(be, ta0);
 	content.getChildren().add(b);
 
     }
 
-    private void addCheckOutNote(final Pane content, final BookingEntry be) {
+    private void addCheckOutNote(final Pane content, final Booking be) {
 	final VBox b = new VBox();
 	b.getChildren().add(new Text("Check-out Note"));
-	final TextArea ta0 = new TextArea(be.getElement().getCheckOutNote());
+	final TextArea ta0 = new TextArea(be.getCheckOutNote());
 	ta0.setWrapText(true);
 	ta0.setPrefHeight(80);
 	b.getChildren().add(ta0);
-	booking2CheckOutNote.put(be.getElement(), ta0);
+	booking2CheckOutNote.put(be, ta0);
 	content.getChildren().add(b);
 
     }
 
-    private static void addRow0(final Pane content, final BookingEntry be) {
+    private static void addRow0(final Pane content, final Booking be) {
 	final HBox box = new HBox(10);
 	box.setFillHeight(true);
 	addName(box, be);
+	box.getChildren().add(new Separator(Orientation.VERTICAL));
 	addDates(box, be);
+	box.getChildren().add(new Separator(Orientation.VERTICAL));
 	addNights(box, be);
 	box.getStyleClass().add("first-line");
 	content.getChildren().add(box);
 
     }
 
-    private void addRow1(final Pane content, final BookingEntry be) {
+    private void addRow1(final Pane content, final Booking be) {
+	final VBox box = new VBox();
 	final HBox box0 = new HBox();
 	final HBox box1 = new HBox();
+	final HBox box2 = new HBox();
+	box.setFillWidth(true);
 	box0.setFillHeight(true);
 	box1.setFillHeight(true);
+	box2.setFillHeight(true);
 	addCheckInNote(box0, be);
 	addCheckOutNote(box1, be);
-	content.getChildren().addAll(box0, box1);
+	addSpecialRequestNote(box2, be);
+	box.getChildren().addAll(box0, box1, box2);
+	final TitledPane pane = new TitledPane("Notes", box);
+	pane.setExpanded(false);
+	content.getChildren().add(pane);
 
     }
 
-    private void addRow2(final Pane content, final BookingEntry be) {
-	final HBox box = new HBox();
-	box.setFillHeight(true);
-	addSpecialRequestNote(box, be);
-	content.getChildren().add(box);
+    private void addRow2(final Pane content, final Booking be) {
 
     }
 
-    private void addRow3(final Pane content, final BookingEntry be) {
+    private void addRow3(final Pane content, final Booking be) {
 	final HBox box = new HBox();
 	box.setPadding(new Insets(4));
 	box.setAlignment(Pos.CENTER_LEFT);
 	box.setFillHeight(true);
-	final TextField grossEarningsExpression = new TextField(be.getElement().getGrossEarningsExpression());
+	final TextField grossEarningsExpression = new TextField(be.getGrossEarningsExpression());
 	grossEarningsExpression.setPrefWidth(120);
-	booking2GrossEarnings.put(be.getElement(), grossEarningsExpression);
-	final Text grossEarnings = new Text(String.format("%3.2f", be.getElement().getGrossEarnings()));
+	booking2GrossEarnings.put(be, grossEarningsExpression);
+	final Text grossEarnings = new Text(String.format("%3.2f", be.getGrossEarnings()));
 	final TextFlow tf = new TextFlow(new Text("Gross Earnings: "), grossEarningsExpression, new Text(" = "),
 		grossEarnings, new Label("€"));
 	box.getChildren().addAll(tf);
-	if (be.getElement().getGrossEarnings() <= 0) {
+	if (be.getGrossEarnings() <= 0) {
 	    box.getStyleClass().add("warning");
 	}
 	content.getChildren().add(box);
 
     }
 
-    private static void addRow4(final Pane content, final BookingEntry be) {
+    private static void addRow4(final Pane content, final Booking be) {
 	final HBox box = new HBox();
 	box.setPadding(new Insets(4));
 	box.setAlignment(Pos.CENTER_LEFT);
 	box.setFillHeight(true);
 	final TextFlow tf = new TextFlow();
 	final Text t0 = new Text("Net Earnings: \t");
-	final Text netEarnings = new Text(String.format("%3.2f", be.getElement().getNetEarnings()));
+	final Text netEarnings = new Text(String.format("%3.2f", be.getNetEarnings()));
 	final Text t1 = new Text("€ total \t");
-	final Text netEarningsDay = new Text(String.format("%3.2f", be.getNetEarnings()));
-	final Text t2 = new Text("€ /day");
+	final Text netEarningsDay = new Text(String.format("%3.2f", be.getNetEarnings() / be.getNumberOfNights()));
+	final Text t2 = new Text("€ /night");
 	tf.getChildren().addAll(t0, netEarnings, t1, netEarningsDay, t2);
 	box.getChildren().addAll(tf);
-	if (be.getElement().getNetEarnings() <= 0) {
+	if (be.getNetEarnings() <= 0) {
 	    box.getStyleClass().add("warning");
 	}
 	content.getChildren().add(box);
 
     }
 
-    private void addRow5(final Pane content, final BookingEntry be) {
+    private void addRow5(final Pane content, final Booking be) {
 	final HBox box = new HBox();
 	box.setPadding(new Insets(4));
 	box.setFillHeight(true);
 	final Text t0 = new Text("Welcome Mail sent: ");
 	final CheckBox cb0 = new CheckBox();
-	cb0.setSelected(be.getElement().isWelcomeMailSend());
-	booking2WelcomeMail.put(be.getElement(), cb0);
+	cb0.setSelected(be.isWelcomeMailSend());
+	booking2WelcomeMail.put(be, cb0);
 	final Text t1 = new Text(" \tPayment done: ");
 	final CheckBox cb1 = new CheckBox();
-	cb1.setSelected(be.getElement().isPaymentDone());
-	booking2Payment.put(be.getElement(), cb1);
+	cb1.setSelected(be.isPaymentDone());
+	booking2Payment.put(be, cb1);
 	final TextFlow tf = new TextFlow();
 	tf.getChildren().addAll(t0, cb0, t1, cb1);
 	box.getChildren().add(tf);
-	if (!be.getElement().isWelcomeMailSend()) {
+	if (!be.isWelcomeMailSend()) {
 	    box.getStyleClass().add("warning");
 	}
-	if (!be.getElement().isPaymentDone()) {
+	if (!be.isPaymentDone()) {
 	    box.getStyleClass().add("warning");
 	}
 	content.getChildren().add(box);
@@ -211,14 +221,14 @@ public class BookingDetailsController implements Initializable {
 	content.getChildren().add(bb);
     }
 
-    private void addSpecialRequestNote(final Pane content, final BookingEntry be) {
+    private void addSpecialRequestNote(final Pane content, final Booking be) {
 	final VBox b = new VBox();
 	b.getChildren().add(new Text("Special Requests"));
-	final TextArea ta0 = new TextArea(be.getElement().getSpecialRequestNote());
+	final TextArea ta0 = new TextArea(be.getSpecialRequestNote());
 	ta0.setWrapText(true);
 	ta0.setPrefHeight(80);
 	b.getChildren().add(ta0);
-	booking2SpecialRequestNote.put(be.getElement(), ta0);
+	booking2SpecialRequestNote.put(be, ta0);
 	content.getChildren().add(b);
 
     }
@@ -260,16 +270,19 @@ public class BookingDetailsController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 	CellSelectionManager.getInstance().getSelection().addListener(roomListener);
+	SettingsManager.getInstance().cleaningFeesProperty().addListener((ChangeListener<Number>) (observable, oldValue,
+		newValue) -> update(CellSelectionManager.getInstance().getSelection()));
 	update(CellSelectionManager.getInstance().getSelection());
 
     }
 
     private void update(final ObservableList<? extends RoomBean> rooms) {
 	clearAll();
-	final Set<BookingEntry> bookings = rooms.stream().flatMap(r -> r.getBookingEntries().stream())
-		.collect(Collectors.toSet());
-	for (final Iterator<BookingEntry> it = bookings.iterator(); it.hasNext();) {
-	    final BookingEntry be = it.next();
+	final List<Booking> bookings = new ArrayList<>(rooms.stream()
+		.flatMap(r -> r.getBookingEntries().stream().map(b -> b.getElement())).collect(Collectors.toSet()));
+	Collections.sort(bookings);
+	for (final Iterator<Booking> it = bookings.iterator(); it.hasNext();) {
+	    final Booking be = it.next();
 	    addBookingEntry(be);
 	    if (it.hasNext()) {
 		addSeparator();
@@ -277,7 +290,7 @@ public class BookingDetailsController implements Initializable {
 	}
     }
 
-    private void addBookingEntry(final BookingEntry be) {
+    private void addBookingEntry(final Booking be) {
 	final VBox box = new VBox(4);
 	// box.setPadding(new Insets(4));
 	addRow0(box, be);
@@ -291,6 +304,10 @@ public class BookingDetailsController implements Initializable {
 	addRow1(box, be);
 	addRow2(box, be);
 	content.getChildren().add(box);
+
+    }
+
+    public void shutDown() {
 
     }
 

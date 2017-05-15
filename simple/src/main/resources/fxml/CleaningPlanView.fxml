@@ -8,18 +8,46 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.UpcomingController"
-	vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToWidth="true">
-	<stylesheets>
-		<URL value="@/css/root.css" />
-		<URL value="@/css/upcoming.css" />
-	</stylesheets>
-	<VBox fx:id="box" spacing="8">
-		<padding>
-			<Insets top="8" right="8" bottom="8" left="8" />
-		</padding>
-	</VBox>
-</ScrollPane>
+<VBox maxWidth="Infinity" maxHeight="Infinity" xmlns:fx="http://javafx.com/fxml/1"
+	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.CleaningPlanController">
+	<padding>
+		<Insets bottom="4" left="4" right="4" top="4" />
+	</padding>
+	<TableView fx:id="content" VBox.vgrow="ALWAYS">
+		<stylesheets>
+			<URL value="@/css/root.css" />
+			<URL value="@/css/cleaningPlan.css" />
+		</stylesheets>
+		<columns>
+			<TableColumn text="Date">
+				<cellValueFactory>
+					<PropertyValueFactory property="date" />
+				</cellValueFactory>
+			</TableColumn>
+			<TableColumn text="Room">
+				<cellValueFactory>
+					<PropertyValueFactory property="room" />
+				</cellValueFactory>
+			</TableColumn>
+			<TableColumn text="Name">
+				<cellValueFactory>
+					<PropertyValueFactory property="element" />
+				</cellValueFactory>
+			</TableColumn>
+			
+		</columns>
+	</TableView>
+	<HBox>
+	<padding>
+		<Insets bottom="0" left="0" right="0" top="4" />
+	</padding>
+		<Button HBox.hgrow="ALWAYS" maxWidth="Infinity" text="Copy Selected"
+			onAction="#handleActionCopySelected"></Button>
+		<Button HBox.hgrow="ALWAYS" maxWidth="Infinity" text="Delete Selected"
+			onAction="#handleActionDeleteSelected"></Button>
+	</HBox>
+</VBox>
 

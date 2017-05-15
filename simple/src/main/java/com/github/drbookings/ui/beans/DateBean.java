@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 
 import javafx.beans.Observable;
@@ -71,7 +72,8 @@ public class DateBean implements Comparable<DateBean> {
 	selfProperty().bind(Bindings.createObjectBinding(update(), roomsProperty(), paymentsReceivedProperty(),
 		totalNetEarningsProperty()));
 	occupancyProperty().bind(Bindings.createObjectBinding(calculateOccupancy(), roomsProperty()));
-	totalNetEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), roomsProperty()));
+	totalNetEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), roomsProperty(),
+		SettingsManager.getInstance().cleaningFeesProperty()));
     }
 
     private Callable<Number> calculateNetEarnings() {

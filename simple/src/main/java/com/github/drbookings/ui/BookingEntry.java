@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.NetEarningsCalculator;
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.settings.SettingsManager;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -22,8 +23,6 @@ import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
 public class BookingEntry extends DateRoomEntry<Booking> {
-
-    private static final NetEarningsCalculator netEarningsCalculator = new DefaultNetEarningsCalculator();
 
     public static List<BookingEntry> checkInView(final Collection<? extends BookingEntry> bookings) {
 	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
@@ -72,7 +71,8 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	super(date, booking.getRoom(), booking);
 	grossEarningsProperty()
 		.bind(Bindings.createObjectBinding(calculateGrossEarnings(), getElement().grossEarningsProperty()));
-	netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty()));
+	netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
+		SettingsManager.getInstance().cleaningFeesProperty()));
     }
 
     private Callable<Number> calculateGrossEarnings() {
@@ -83,7 +83,7 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	    }
 	    // System.err.println(getElement().getGrossEarnings());
 	    // System.err.println(getElement().getNumberOfDays());
-	    final double result = getElement().getGrossEarnings() / getElement().getNumberOfDays();
+	    final double result = getElement().getGrossEarnings() / getElement().getNumberOfNights();
 	    // System.err.println(result);
 	    return result;
 	};
@@ -96,8 +96,11 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	    if (isCheckOut()) {
 		return 0;
 	    }
-	    return netEarningsCalculator.calculateNetEarnings((float) getGrossEarnings(),
+	    final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
+	    c.setFees(SettingsManager.getInstance().getCleaningFees() / getElement().getNumberOfNights());
+	    final float result = c.calculateNetEarnings((float) getGrossEarnings(),
 		    getElement().getBookingOrigin().getName());
+	    return result;
 	};
     }
 
@@ -110,7 +113,8 @@ public class BookingEntry extends DateRoomEntry<Booking> {
     }
 
     public double getNetEarnings() {
-	return this.netEarningsProperty().get();
+	final double result = this.netEarningsProperty().get();
+	return result;
     }
 
     public DoubleProperty grossEarningsProperty() {

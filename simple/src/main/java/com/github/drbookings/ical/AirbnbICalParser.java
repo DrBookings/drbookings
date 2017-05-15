@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
 
+import com.github.drbookings.io.BookingParser;
+
 import biweekly.component.VEvent;
 
-public class AirbnbICalParser implements ICalParser {
+public class AirbnbICalParser implements BookingParser {
 
     private final Map<String, String> vendorNameToNameMap;
 
@@ -28,7 +30,20 @@ public class AirbnbICalParser implements ICalParser {
 
     @Override
     public String getGuestName(final VEvent e) throws IOException {
-	return e.getSummary().getValue().trim();
+	final String value = e.getSummary().getValue().trim();
+	final String name = value.substring(0, value.indexOf("(") - 1).trim();
+	// final String externalID = value.substring(value.indexOf("(") + 1,
+	// value.indexOf(")")).trim();
+	return name;
+    }
+
+    @Override
+    public String getExternalID(final VEvent e) throws IOException {
+	final String value = e.getSummary().getValue().trim();
+	// final String name = value.substring(0, value.indexOf("(") -
+	// 1).trim();
+	final String externalID = value.substring(value.indexOf("(") + 1, value.indexOf(")")).trim();
+	return externalID;
     }
 
     @Override

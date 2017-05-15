@@ -79,10 +79,11 @@ public class DataStore {
     private final List<CleaningBeanSer> cleanings = new ArrayList<>();
 
     public void load(final MainManager manager) throws OverbookingException {
+	final List<Booking> bookingsToAdd = new ArrayList<>();
 	for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
 		.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
 	    try {
-		final Booking b = manager.addBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+		final Booking b = manager.createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
 			bb.roomName, bb.source);
 		// b.setGrossEarnings(bb.grossEarnings);
 		b.setGrossEarningsExpression(bb.grossEarningsExpression);
@@ -91,12 +92,25 @@ public class DataStore {
 		b.setPaymentDone(bb.paymentDone);
 		b.setSpecialRequestNote(bb.specialRequestNote);
 		b.setCheckOutNote(bb.checkOutNote);
+		b.setExternalId(bb.externalId);
+		bookingsToAdd.add(b);
 	    } catch (final Exception e) {
 		if (logger.isErrorEnabled()) {
 		    logger.error(e.getLocalizedMessage(), e);
 		}
 	    }
 	}
+
+	bookingsToAdd.forEach(b -> {
+	    try {
+		manager.addBooking(b);
+	    } catch (final OverbookingException e) {
+		if (logger.isWarnEnabled()) {
+		    logger.warn(e.getLocalizedMessage());
+		}
+	    }
+	});
+
 	for (final CleaningBeanSer cb : getCleaningsSer()) {
 	    manager.addCleaning(cb.date, cb.name, cb.room);
 	}
