@@ -15,6 +15,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingFactory;
+import com.github.drbookings.excel.FileFormatBookingXLS;
 import com.github.drbookings.model.ser.BookingBeanSer;
 
 public class XlsxBookingFactory implements BookingFactory {

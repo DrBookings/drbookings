@@ -20,21 +20,37 @@
 		<Insets bottom="10" left="10" right="10" top="10" />
 	</padding>
 	<children>
-		<Label GridPane.columnIndex="0" GridPane.rowIndex="0"
+
+
+
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="0" wrapText="true"
 			text="Cleaning Plan Look-Behind [days]" />
 
-		<TextField fx:id="cleaningPlanLookBehind" GridPane.hgrow="SOMETIMES"
+		<TextField fx:id="cleaningPlanLookBehind"
 			GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-		<Label GridPane.columnIndex="0" GridPane.rowIndex="1"
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="1" wrapText="true"
 			text="Cleaning Fee Per Stay [€]" />
 
-		<TextField fx:id="cleaningFee" GridPane.hgrow="SOMETIMES"
+		<TextField fx:id="cleaningFee" 
 			GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="2" wrapText="true"
+			text="Upcoming events Look-Ahead [days]" />
 
-		<Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
-			onAction="#handleActionSaveSettings"></Button>
+		<TextField fx:id="upcomingLookAhead"
+			GridPane.columnIndex="1" GridPane.rowIndex="2" />
+			
+			<Label GridPane.columnIndex="0" GridPane.rowIndex="3"
+			text="Show complete Bookings" />
+
+		<CheckBox fx:id="completePayment" GridPane.hgrow="SOMETIMES"
+			GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+		<!-- Skip two rows -->
+
+		<Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="4"
+			prefWidth="100" GridPane.halignment="RIGHT" onAction="#handleActionSaveSettings" />
 	</children>
 
 

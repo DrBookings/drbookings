@@ -33,9 +33,9 @@ public class CellSelectionManager {
 
     public void setSelection(final Collection<? extends RoomBean> data) {
 	this.data.setAll(data);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Selection now " + data);
-	}
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Selection now " + data);
+	// }
     }
 
 }

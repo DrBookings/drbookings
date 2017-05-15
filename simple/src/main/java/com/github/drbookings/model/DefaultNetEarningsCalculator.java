@@ -79,7 +79,9 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
     public float calculateNetEarnings(final float grossEarnings, final String bookingOrigin) {
 	double result = (double) grossEarnings - getFees();
 	if ("booking".equalsIgnoreCase(bookingOrigin)) {
-	    result -= grossEarnings * getProvision();
+	    result -= result * provision;
+	    return (float) result;
+
 	}
 	// System.err.println("result: " + result);
 	return (float) result;

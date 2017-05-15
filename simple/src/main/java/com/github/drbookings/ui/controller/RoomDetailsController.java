@@ -15,6 +15,7 @@ import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.GuestNameAndBookingOriginView;
 import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -83,7 +84,7 @@ public class RoomDetailsController implements Initializable {
     }
 
     private void showBookingDetails() {
-	Platform.runLater(() -> BookingDetailsDialogBuilder.doShowBookingDetails());
+	Platform.runLater(() -> new BookingDetailsDialogFactory().showDialog());
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {

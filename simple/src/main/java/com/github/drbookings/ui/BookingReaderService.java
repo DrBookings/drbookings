@@ -1,11 +1,11 @@
-package com.github.drbookings.ui.controller;
+package com.github.drbookings.ui;
 
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.ical.BookingFactory;
+import com.github.drbookings.BookingFactory;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.ser.DataStore;
@@ -31,7 +31,7 @@ public class BookingReaderService extends Service<Collection<BookingBeanSer>> {
 	});
 	setOnSucceeded(e -> {
 	    if (logger.isDebugEnabled()) {
-		logger.debug("read bookings" + getValue());
+		logger.debug("read " + getValue().size() + " bookings");
 		try {
 		    new DataStore().setBookingSer(getValue()).load(manager);
 		} catch (final Exception e1) {

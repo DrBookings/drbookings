@@ -2,6 +2,11 @@
     
 }
 
+.warning {
+	 -fx-font-weight: bold;
+	  -fx-text-fill: tomato;
+}
+
 .center-text {
 	 -fx-alignment: center;
 	 -fx-text-alignment: center;

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -74,13 +75,26 @@ public class MainManager {
 
     }
 
-    public synchronized Booking addBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
+    public synchronized Booking createBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
 	    final String guestName, final String roomName, final String originName) throws OverbookingException {
-	return addBooking(null, checkInDate, checkOutDate, guestName, roomName, originName);
+	return createBooking(null, checkInDate, checkOutDate, guestName, roomName, originName);
     }
 
-    public synchronized Booking addBooking(final String id, final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String originName) throws OverbookingException {
+    /**
+     * The booking will <b>not</b> be added.
+     *
+     * @param id
+     * @param checkInDate
+     * @param checkOutDate
+     * @param guestName
+     * @param roomName
+     * @param originName
+     * @return
+     * @throws OverbookingException
+     */
+    public synchronized Booking createBooking(final String id, final LocalDate checkInDate,
+	    final LocalDate checkOutDate, final String guestName, final String roomName, final String originName)
+	    throws OverbookingException {
 	Objects.requireNonNull(checkInDate);
 	Objects.requireNonNull(checkOutDate);
 	if (guestName == null || guestName.length() < 1) {
@@ -93,19 +107,69 @@ public class MainManager {
 	final Room room = roomProvider.getOrCreateElement(roomName);
 	final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
 	final Booking booking = new Booking(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
-	return addBooking(booking);
-    }
-
-    protected synchronized Booking addBooking(final Booking booking) {
-	bookings.add(booking);
-	for (final LocalDate d : new DateRange(booking.getCheckIn(), booking.getCheckOut())) {
-	    addBookingEntry(d, booking);
-	}
 	return booking;
     }
 
-    protected synchronized void addBookingEntry(final LocalDate date, final Booking booking) {
+    public synchronized Booking addBooking(final Booking booking) throws OverbookingException {
+	for (final LocalDate d : new DateRange(booking.getCheckIn(), booking.getCheckOut())) {
+	    addBookingEntry(d, booking);
+	}
+	// if (logger.isDebugEnabled()) {
+	// logger.debug("Adding booking " + booking);
+	// }
+	bookings.add(booking);
+	return booking;
+    }
+
+    private boolean roomBusy(final BookingEntry bookingEntry) {
+	if (!bookingEntry.isCheckOut()) {
+	    final Room room = bookingEntry.getElement().getRoom();
+	    final LocalDate date = bookingEntry.getDate();
+	    final Collection<BookingEntry> b = bookingEntries.get(date);
+	    if (b != null) {
+		for (final BookingEntry be : b) {
+		    if (be.isCheckOut()) {
+			continue;
+		    }
+		    final Room room2 = be.getElement().getRoom();
+		    if (room2.equals(room)) {
+			if (logger.isWarnEnabled()) {
+			    logger.warn("Room " + room + " busy with " + be);
+			}
+			return true;
+		    }
+		}
+	    }
+	}
+	return false;
+    }
+
+    public boolean containsBookingByNameAndDate(final Booking booking) {
+	for (final Booking b : bookings) {
+	    if (b.getGuest().getName().equals(booking.getGuest().getName())
+		    && b.getCheckIn().equals(booking.getCheckIn()) && b.getCheckOut().equals(booking.getCheckOut())) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public boolean containsCleaningByNameAndDate(final CleaningEntry cleaning) {
+	for (final Entry<LocalDate, CleaningEntry> b : cleaningEntries.entries()) {
+	    if (b.getValue().getElement().getName().equals(cleaning.getElement().getName())
+		    && b.getKey().equals(cleaning.getDate())) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    protected synchronized void addBookingEntry(final LocalDate date, final Booking booking)
+	    throws OverbookingException {
 	final BookingEntry bookingEntry = new BookingEntry(date, booking);
+	if (roomBusy(bookingEntry)) {
+	    throw new OverbookingException("Cannot add " + booking);
+	}
 	bookingEntries.put(date, bookingEntry);
 	addUiDataBooking(bookingEntry);
     }
@@ -117,9 +181,16 @@ public class MainManager {
 	final Cleaning cleaning = cleaningProvider.getOrCreateElement(cleaningName);
 	final Room room = roomProvider.getOrCreateElement(roomName);
 	final CleaningEntry cleaningEntry = new CleaningEntry(date, room, cleaning);
-	cleaningEntries.put(date, cleaningEntry);
-	cleaningEntriesList.add(cleaningEntry);
-	addUiDataCleaning(cleaningEntry);
+
+	if (containsCleaningByNameAndDate(cleaningEntry)) {
+	    if (logger.isWarnEnabled()) {
+		logger.warn("Skip cleaning " + cleaning);
+	    }
+	} else {
+	    cleaningEntries.put(date, cleaningEntry);
+	    cleaningEntriesList.add(cleaningEntry);
+	    addUiDataCleaning(cleaningEntry);
+	}
     }
 
     private void addUiDataBooking(final BookingEntry bookingEntry) {

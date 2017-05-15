@@ -1,4 +1,4 @@
-package com.github.drbookings.ui.controller;
+package com.github.drbookings.ui.beans;
 
 import java.time.LocalDate;
 

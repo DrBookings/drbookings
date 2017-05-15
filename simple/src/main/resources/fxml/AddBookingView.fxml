@@ -1,40 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane fx:controller="com.github.drbookings.ui.controller.AddBookingController"
-	styleClass="root" xmlns:fx="http://javafx.com/fxml" alignment="center"
-	hgap="10" vgap="10">
+<VBox spacing="4" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.AddBookingController">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 	</stylesheets>
 	<padding>
-		<Insets top="25" right="25" bottom="10" left="25" />
+		<Insets bottom="8" left="8" right="8" top="8" />
 	</padding>
-	<Label text="Check-in" GridPane.columnIndex="0"
-		GridPane.rowIndex="0" />
-	<DatePicker GridPane.columnIndex="1" GridPane.rowIndex="0"
-		fx:id="datePickerCheckIn" onAction="#handleButtonSetCheckInDate" />
-	<Label text="Check-out" GridPane.columnIndex="0"
-		GridPane.rowIndex="1" />
-	<DatePicker GridPane.columnIndex="1" GridPane.rowIndex="1"
-		fx:id="datePickerCheckOut" onAction="#handleButtonSetCheckOutDate" />
-	<Label text="Source" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-	<TextField fx:id="textFieldSource" GridPane.columnIndex="1"
-		GridPane.rowIndex="2" />
-	<Label text="Apartment" GridPane.columnIndex="0"
-		GridPane.rowIndex="3" />
-	<ComboBox fx:id="comboBoxRoom" GridPane.columnIndex="1"
-		GridPane.rowIndex="3" maxWidth="Infinity" />
-	<Label text="Guest Name" GridPane.columnIndex="0"
-		GridPane.rowIndex="4" />
-	<TextField fx:id="textFieldGuestName" GridPane.columnIndex="1"
-		GridPane.rowIndex="4" />
-	<Button fx:id="buttonOK" text="OK" onAction="#handleButtonOK" defaultButton="true"
-		GridPane.columnIndex="1" GridPane.rowIndex="5"></Button>
-</GridPane>
+	<children>
+
+		<HBox spacing="4">
+
+
+			<VBox spacing="4">
+				<Label text="Check-in" />
+				<DatePicker fx:id="datePickerCheckIn" onAction="#handleButtonSetCheckInDate" />
+				<Label text="Check-out" />
+				<DatePicker fx:id="datePickerCheckOut" onAction="#handleButtonSetCheckOutDate" />
+
+			</VBox>
+
+			<VBox HBox.hgrow="ALWAYS" alignment="CENTER">
+
+				<padding>
+					<Insets bottom="8" left="8" right="8" top="8" />
+				</padding>
+
+				<Label fx:id="infoLabel" VBox.vgrow="ALWAYS" wrapText="true" alignment="CENTER"
+					 />
+
+			</VBox>
+
+		</HBox>
+
+
+		<Label text="Guest Name" />
+		<TextField fx:id="textFieldGuestName" />
+		<Label text="Source" />
+		<TextField fx:id="textFieldSource" />
+		<Label text="Apartment" />
+		<ComboBox fx:id="comboBoxRoom" maxWidth="Infinity" />
+		<Label text="Gross Earnings" />
+		<TextField fx:id="textFieldGrossEarnings" />
+		<HBox alignment="CENTER_RIGHT">
+			<children>
+				<Button fx:id="buttonOK" defaultButton="true" onAction="#handleButtonOK"
+					prefWidth="100" text="OK" />
+			</children>
+		</HBox>
+	</children>
+</VBox>
