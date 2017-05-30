@@ -12,7 +12,7 @@ import com.github.drbookings.ui.BookingsByOrigin;
 
 public class StatusLabelStringFactory {
 
-    private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0");
     private final BookingsByOrigin bookings;
 
     public StatusLabelStringFactory(final BookingsByOrigin bookings) {

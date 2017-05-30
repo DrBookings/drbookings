@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,15 +13,18 @@ import org.slf4j.LoggerFactory;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.CleaningEntry;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar.Events.Delete;
@@ -29,6 +33,8 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+
+import net.sf.kerner.utils.time.DateConverter;
 
 public class GoogleCalendarSync {
 
@@ -45,6 +51,61 @@ public class GoogleCalendarSync {
      * make it a single globally shared instance across your application.
      */
     private static FileDataStoreFactory dataStoreFactory;
+
+    private static final String APPLICATION_NAME = "drbookings";
+
+    private static com.google.api.services.calendar.Calendar client;
+
+    public static final int DEFAULT_DAYS_AHEAD = 10;
+
+    public static final int DEFAULT_DAYS_BEHIND = 3;
+
+    /** Directory to store user credentials. */
+    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"),
+	    ".store/calendar_sample");
+
+    private static void addCheckInEvent(final Booking b) throws IOException {
+	final CalendarListEntry flats = getCalendar();
+	String note = "n/a";
+	if (b.getCheckInNote() != null) {
+	    note = b.getCheckInNote();
+	}
+	if (b.getSpecialRequestNote() != null) {
+	    note = note + "\n" + b.getSpecialRequestNote();
+	}
+	final Event checkInEvent = new EventFactory().newEvent(getCheckInSummary(b), b.getCheckIn(),
+		b.getGuest().getName() + ": " + note);
+	b.addCalendarId(addEvent(flats.getId(), checkInEvent));
+    }
+
+    private static void addCheckOutEvent(final Booking b) throws IOException {
+	final CalendarListEntry flats = getCalendar();
+	String note = "n/a";
+	if (b.getCheckOutNote() != null) {
+	    note = b.getCheckOutNote();
+	}
+	final Event event = new EventFactory().newEvent(getCheckOutSummary(b), b.getCheckOut(),
+		b.getGuest().getName() + ": " + note);
+	b.addCalendarId(addEvent(flats.getId(), event));
+
+    }
+
+    private static void addCleaningEvent(final CleaningEntry c) throws IOException {
+	final CalendarListEntry flats = getCalendar();
+	final String prefix = SettingsManager.getInstance().getRoomNamePrefix();
+	final Event event = new EventFactory().newEvent(
+		"Cleaning " + prefix + c.getRoom().getName() + " " + c.getElement().getName(), c.getDate(),
+		"Cleaning event");
+	c.addCalendarId(addEvent(flats.getId(), event));
+    }
+
+    private static String addEvent(final String calendarId, final Event event) throws IOException {
+	final Event i = client.events().insert(calendarId, event).execute();
+	if (logger.isInfoEnabled()) {
+	    logger.info("Created event: " + event.getSummary());
+	}
+	return i.getId();
+    }
 
     /** Authorizes the installed application to access user's protected data. */
     private static Credential authorize() throws Exception {
@@ -68,31 +129,120 @@ public class GoogleCalendarSync {
 		.authorize("557837674207-61uehop5b0u5enflhc7ata9a75sf731e.apps.googleusercontent.com");
     }
 
-    private static final String APPLICATION_NAME = "drbookings";
+    private static void clearEvent(final String calendarId, final Booking b) throws IOException {
+	for (final Iterator<String> it = b.getCalendarIds().iterator(); it.hasNext();) {
+	    final String id = it.next();
+	    final Delete d = client.events().delete(calendarId, id);
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Deleting " + d.getEventId());
+	    }
+	    try {
+		d.execute();
+	    } catch (final GoogleJsonResponseException e) {
+		if (logger.isErrorEnabled()) {
+		    logger.error(e.toString());
+		}
+	    }
+	    it.remove();
+	}
+    }
 
-    private static com.google.api.services.calendar.Calendar client;
+    private static void clearEvent(final String calendarId, final Event event) throws IOException {
+	if (isDrBookingEvent(event)) {
+	    if (logger.isInfoEnabled()) {
+		logger.info("Deleting " + event.getSummary());
+	    }
+	    final Delete d = client.events().delete(calendarId, event.getId());
+	    d.execute();
+	}
+    }
 
-    public static final int DEFAULT_DAYS_AHEAD = 10;
+    private static CalendarListEntry getCalendar() throws IOException {
+	final CalendarList feed = client.calendarList().list().execute();
+	for (final CalendarListEntry c : feed.getItems()) {
+	    if (c.getSummary().equalsIgnoreCase("flats")) {
+		return c;
+	    }
+	}
+	return null;
+    }
+
+    private static String getCheckInSummary(final Booking b) {
+	return getEventSummary("Check-in ", b);
+    }
+
+    private static String getCheckOutSummary(final Booking b) {
+	return getEventSummary("Check-out ", b);
+    }
+
+    private static String getEventSummary(final String prefix, final Booking b) {
+	return prefix + SettingsManager.getInstance().getRoomNamePrefix() + b.getRoom().getName() + " "
+		+ b.getBookingOrigin().getName();
+    }
+
+    private static boolean isDrBookingEvent(final Event event) {
+	return event.getDescription() != null && (event.getDescription().startsWith("Dr.Bookings")
+		|| event.getDescription().startsWith("drbookings"));
+    }
 
     private int daysAhead = DEFAULT_DAYS_AHEAD;
 
-    private final MainManager manager;
+    private int daysBehind = DEFAULT_DAYS_BEHIND;
 
-    /** Directory to store user credentials. */
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"),
-	    ".store/calendar_sample");
+    private final MainManager manager;
 
     public GoogleCalendarSync(final MainManager manager) {
 	this.manager = manager;
 
     }
 
+    public GoogleCalendarSync clear() throws IOException {
+	return clear(LocalDate.now().minusDays(getDaysBehind()));
+    }
+
+    public GoogleCalendarSync clear(final LocalDate date) throws IOException {
+	final CalendarListEntry flats = getCalendar();
+	// Iterate over the events in the specified calendar
+	String pageToken = null;
+	int cnt = 0;
+	do {
+	    final Events events;
+	    if (date != null) {
+		events = client.events().list(flats.getId()).setTimeMin(new DateTime(new DateConverter().convert(date)))
+			.setPageToken(pageToken).execute();
+	    } else {
+		events = client.events().list(flats.getId()).setPageToken(pageToken).execute();
+	    }
+	    final List<Event> items = events.getItems();
+	    for (final Event event : items) {
+		if (event == null) {
+		    if (logger.isWarnEnabled()) {
+			logger.warn("Skipping null event");
+		    }
+		    continue;
+		}
+		clearEvent(flats.getId(), event);
+		cnt++;
+	    }
+	    pageToken = events.getNextPageToken();
+	} while (pageToken != null);
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Processed " + cnt + " events");
+	}
+
+	return this;
+    }
+
+    public GoogleCalendarSync clearAll() throws IOException {
+	return clear(null);
+    }
+
     public int getDaysAhead() {
 	return daysAhead;
     }
 
-    public void setDaysAhead(final int daysAhead) {
-	this.daysAhead = daysAhead;
+    public int getDaysBehind() {
+	return daysBehind;
     }
 
     public GoogleCalendarSync init() throws Exception {
@@ -112,106 +262,44 @@ public class GoogleCalendarSync {
 	return this;
     }
 
-    private static CalendarListEntry getCalendar() throws IOException {
-	final CalendarList feed = client.calendarList().list().execute();
-	for (final CalendarListEntry c : feed.getItems()) {
-	    if (c.getSummary().equalsIgnoreCase("flats")) {
-		return c;
-	    }
-	}
-	return null;
-    }
-
-    public GoogleCalendarSync clear() throws IOException {
-	final CalendarListEntry flats = getCalendar();
-	// final Calendar cal = Calendar.getInstance();
-	// cal.setTime(new Date());
-	// cal.add(Calendar.MONTH, -3);
-
-	// Iterate over the events in the specified calendar
-	String pageToken = null;
-	int cnt = 0;
-	do {
-	    final Events events = client.events().list(flats.getId()).setPageToken(pageToken).execute();
-	    final List<Event> items = events.getItems();
-	    for (final Event event : items) {
-		clearEvent(flats.getId(), event);
-		cnt++;
-	    }
-	    pageToken = events.getNextPageToken();
-	} while (pageToken != null);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Processed " + cnt + " events");
-	}
-
+    public GoogleCalendarSync setDaysAhead(final int daysAhead) {
+	this.daysAhead = daysAhead;
 	return this;
     }
 
-    private void clearEvent(final String calendarId, final Event event) throws IOException {
-	if (event.getDescription() != null && (event.getDescription().startsWith("Dr.Bookings")
-		|| event.getDescription().startsWith("drbookings"))) {
-	    final Delete d = client.events().delete(calendarId, event.getId());
-	    if (logger.isInfoEnabled()) {
-		logger.info("Deleting " + event.getSummary());
-	    }
-	    d.execute();
-	}
+    public GoogleCalendarSync setDaysBehind(final int daysBehind) {
+	this.daysBehind = daysBehind;
+	return this;
     }
 
     public void write() throws IOException {
+	writeBookings();
+	writeCleanings();
+	if (logger.isDebugEnabled()) {
+	    logger.debug("All done");
+	}
+    }
+
+    private void writeBookings() throws IOException {
 	for (final Booking b : manager.getBookings()) {
-	    if (b.getCheckIn().isAfter(LocalDate.now().minusDays(1))
+	    if (b.getCheckIn().isAfter(LocalDate.now().minusDays(getDaysBehind()))
 		    && b.getCheckIn().isBefore(LocalDate.now().plusDays(getDaysAhead()))) {
 		addCheckInEvent(b);
 	    }
-	    if (b.getCheckOut().isAfter(LocalDate.now().minusDays(1))
+	    if (b.getCheckOut().isAfter(LocalDate.now().minusDays(getDaysBehind()))
 		    && b.getCheckOut().isBefore(LocalDate.now().plusDays(getDaysAhead()))) {
 		addCheckOutEvent(b);
 	    }
 	}
     }
 
-    private static void addCheckInEvent(final Booking b) throws IOException {
-	final CalendarListEntry flats = getCalendar();
-	String checkInNote = "n/a";
-	if (b.getCheckInNote() != null) {
-	    checkInNote = b.getCheckInNote();
-	}
-	if (b.getSpecialRequestNote() != null) {
-	    checkInNote = checkInNote + "\n" + b.getSpecialRequestNote();
-	}
-	Event checkInEvent = new EventFactory().newEvent(getCheckInSummary(b), b.getCheckIn(),
-		b.getGuest().getName() + ": " + checkInNote);
-	checkInEvent = client.events().insert(flats.getId(), checkInEvent).execute();
-	if (logger.isInfoEnabled()) {
-	    logger.info("Created event: " + checkInEvent.getSummary());
+    private void writeCleanings() throws IOException {
+	for (final CleaningEntry c : manager.getCleaningEntries()) {
+	    if (c.getDate().isAfter(LocalDate.now().minusDays(getDaysBehind()))
+		    && c.getDate().isBefore(LocalDate.now().plusDays(getDaysAhead()))) {
+		addCleaningEvent(c);
+	    }
 	}
 
     }
-
-    private static void addCheckOutEvent(final Booking b) throws IOException {
-	final CalendarListEntry flats = getCalendar();
-	String checkInNote = "n/a";
-	if (b.getCheckInNote() != null) {
-	    checkInNote = b.getCheckOutNote();
-	}
-	Event checkInEvent = new EventFactory().newEvent(getCheckOutSummary(b), b.getCheckOut(),
-		b.getGuest().getName() + ": " + checkInNote);
-	checkInEvent = client.events().insert(flats.getId(), checkInEvent).execute();
-	if (logger.isInfoEnabled()) {
-	    logger.info("Created event: " + checkInEvent.getSummary());
-	}
-
-    }
-
-    private static String getCheckInSummary(final Booking b) {
-	return "Check-in " + SettingsManager.getInstance().getRoomNamePrefix() + b.getRoom().getName() + " "
-		+ b.getBookingOrigin().getName();
-    }
-
-    private static String getCheckOutSummary(final Booking b) {
-	return "Check-out " + SettingsManager.getInstance().getRoomNamePrefix() + b.getRoom().getName() + " "
-		+ b.getBookingOrigin().getName();
-    }
-
 }

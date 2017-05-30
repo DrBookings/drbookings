@@ -28,6 +28,7 @@ public class DataStore {
 	b.date = c.getDate();
 	b.name = c.getElement().getName();
 	b.room = c.getRoom().getName();
+	b.calendarIds = c.getCalendarIds();
 	return b;
     }
 
@@ -48,6 +49,7 @@ public class DataStore {
 	result.paymentDone = bb.isPaymentDone();
 	result.specialRequestNote = bb.getSpecialRequestNote();
 	result.checkOutNote = bb.getCheckOutNote();
+	result.calendarIds = bb.getCalendarIds();
 
 	return result;
     }
@@ -93,6 +95,7 @@ public class DataStore {
 		b.setSpecialRequestNote(bb.specialRequestNote);
 		b.setCheckOutNote(bb.checkOutNote);
 		b.setExternalId(bb.externalId);
+		b.setCalendarIds(bb.calendarIds);
 		bookingsToAdd.add(b);
 	    } catch (final Exception e) {
 		if (logger.isErrorEnabled()) {
@@ -112,7 +115,8 @@ public class DataStore {
 	});
 
 	for (final CleaningBeanSer cb : getCleaningsSer()) {
-	    manager.addCleaning(cb.date, cb.name, cb.room);
+	    manager.addCleaning(cb.date, cb.name, cb.room).setCalendarIds(cb.calendarIds);
+	    ;
 	}
     }
 }

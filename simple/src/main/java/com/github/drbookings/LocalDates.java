@@ -15,7 +15,21 @@ public class LocalDates {
 
     public static boolean isCurrentMonth(final LocalDate date) {
 	final Month month = LocalDate.now().getMonth();
-	return date.getMonth().equals(month);
+	return date.getMonth().equals(month) && date.getYear() == LocalDate.now().getYear();
+    }
+
+    public static boolean isLastThreeMonths(final LocalDate date) {
+	final Month month = LocalDate.now().getMonth();
+	if (date.getMonth().equals(month) && date.getYear() == LocalDate.now().getYear()) {
+	    return true;
+	}
+	if (date.getMonth().equals(month.minus(1)) && date.getYear() == LocalDate.now().getYear()) {
+	    return true;
+	}
+	if (date.getMonth().equals(month.minus(2)) && date.getYear() == LocalDate.now().getYear()) {
+	    return true;
+	}
+	return false;
     }
 
     public static Pair<LocalDate, LocalDate> getFirstAndLastDayOfMonth(final int month) {

@@ -64,22 +64,36 @@ public class AbstractDialogFactory implements DialogFactory {
 
     @Override
     public void showDialog() {
-	try {
-	    final FXMLLoader loader = new FXMLLoader(AbstractDialogFactory.class.getResource(fxml));
-	    final Parent root = loader.load();
-	    final Stage stage = new Stage();
-	    final Scene scene = new Scene(root);
-	    stage.setTitle(title);
-	    stage.setScene(scene);
-	    stage.setWidth(400);
-	    stage.setHeight(600);
-	    visitController(loader.getController());
-	    stage.show();
-	    this.stage = stage;
-	    this.scene = scene;
-	} catch (final IOException e) {
-	    logger.error(e.getLocalizedMessage(), e);
+	if (this.stage != null) {
+	    if (logger.isDebugEnabled()) {
+		logger.debug(this.stage + " already created");
+	    }
+	    this.stage.show();
+	    this.stage.requestFocus();
+	} else {
+	    try {
+		final FXMLLoader loader = new FXMLLoader(AbstractDialogFactory.class.getResource(fxml));
+		final Parent root = loader.load();
+		final Stage stage = new Stage();
+		final Scene scene = new Scene(root);
+		stage.setTitle(title);
+		stage.setScene(scene);
+		stage.setWidth(getWidth());
+		stage.setHeight(getHeight());
+		visitController(loader.getController());
+		this.stage = stage;
+		this.scene = scene;
+		visitStage(this.stage);
+		stage.show();
+	    } catch (final IOException e) {
+		logger.error(e.getLocalizedMessage(), e);
+	    }
 	}
+    }
+
+    protected void visitStage(final Stage stage) {
+	// TODO Auto-generated method stub
+
     }
 
     protected void visitController(final Object controller) {

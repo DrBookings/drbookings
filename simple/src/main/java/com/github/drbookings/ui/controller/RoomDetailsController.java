@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.LocalDates;
+import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.GuestNameAndBookingOriginView;
@@ -27,14 +28,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class RoomDetailsController implements Initializable {
 
+    public MainManager getManager() {
+	return manager;
+    }
+
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
+    }
+
     private final static Logger logger = LoggerFactory.getLogger(RoomDetailsController.class);
 
-    private ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> updateUIRooms(c.getList()));
+    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> updateUIRooms(c.getList()));
 
     @FXML
     private Button buttonSave;
@@ -50,12 +58,14 @@ public class RoomDetailsController implements Initializable {
     @FXML
     private Label guestNames;
 
+    private MainManager manager;
+
     @FXML
     private void handleButtonSave(final ActionEvent event) {
 	Platform.runLater(() -> {
 	    updateModel();
-	    final Stage stage = (Stage) buttonSave.getScene().getWindow();
-	    stage.close();
+	    // final Stage stage = (Stage) buttonSave.getScene().getWindow();
+	    // stage.close();
 	});
     }
 
@@ -67,8 +77,9 @@ public class RoomDetailsController implements Initializable {
     }
 
     public void shutDown() {
-	CellSelectionManager.getInstance().getSelection().removeListener(roomListener);
-	roomListener = null;
+
+	// CellSelectionManager.getInstance().getSelection().removeListener(roomListener);
+
     }
 
     private void updateModel() {
@@ -84,7 +95,7 @@ public class RoomDetailsController implements Initializable {
     }
 
     private void showBookingDetails() {
-	Platform.runLater(() -> new BookingDetailsDialogFactory().showDialog());
+	Platform.runLater(() -> new BookingDetailsDialogFactory(getManager()).showDialog());
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {

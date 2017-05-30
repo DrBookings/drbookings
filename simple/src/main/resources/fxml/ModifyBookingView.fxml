@@ -6,25 +6,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
-<?import javafx.scene.layout.HBox?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.BookingDetailsController"
+	fx:controller="com.github.drbookings.ui.controller.ModifyBookingController"
 	vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToWidth="true">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 		<URL value="@/css/bookingDetails.css" />
 	</stylesheets>
-	<VBox  fillWidth="true" spacing="8">
+	<VBox fillWidth="true" spacing="8">
 		<padding>
 			<Insets top="8" right="8" bottom="8" left="8" />
 		</padding>
-		<VBox fx:id="content" fillWidth="true">
-		</VBox>
 		<HBox spacing="8">
-		<Button text="Save" prefWidth="100" onAction="#handleActionSaveBookingDetails" defaultButton="true" />
+		<padding>
+			<Insets top="8" right="0" bottom="8" left="0" />
+		</padding>
+		<Label fx:id="summaryLabel"></Label>
 		</HBox>
-		
+		<Label text="Check-in" />
+		<DatePicker fx:id="datePickerCheckIn"  />
+		<Label text="Check-out" />
+		<DatePicker fx:id="datePickerCheckOut" />
+		<Button text="Save" prefWidth="100" onAction="#handleButtonSaveChanges"></Button>
 	</VBox>
-
 </ScrollPane>

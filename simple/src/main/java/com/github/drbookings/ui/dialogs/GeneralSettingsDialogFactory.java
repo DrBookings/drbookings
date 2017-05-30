@@ -10,5 +10,7 @@ public class GeneralSettingsDialogFactory extends AbstractDialogFactory implemen
     public GeneralSettingsDialogFactory() {
 	setFxml("/fxml/GeneralSettingsView.fxml");
 	setTitle("Settings");
+	setHeight(400);
+	setWidth(400);
     }
 }

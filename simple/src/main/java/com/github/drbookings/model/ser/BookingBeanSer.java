@@ -1,6 +1,7 @@
 package com.github.drbookings.model.ser;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -58,5 +59,8 @@ public class BookingBeanSer {
 
     @XmlAttribute
     public String checkOutNote;
+
+    @XmlAttribute
+    public List<String> calendarIds;
 
 }

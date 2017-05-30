@@ -42,7 +42,7 @@
 
 
 		<Button fx:id="buttonSave" text="Save" defaultButton="true"
-			prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="3"
+			prefWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="3"
 			onAction="#handleButtonSave" />
 	</children>
 </GridPane>

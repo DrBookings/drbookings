@@ -190,7 +190,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    return "Today (" + date.toString() + ")";
 	} else if (LocalDate.now().plusDays(1).equals(date)) {
 	    return "Tomorrow (" + date.toString() + ")";
-	} else if (LocalDate.now().plusDays(2).equals(date) || LocalDate.now().plusDays(3).equals(date)) {
+	} else if (LocalDate.now().plusDays(2).equals(date) || LocalDate.now().plusDays(3).equals(date)
+		|| LocalDate.now().plusDays(4).equals(date)) {
 	    return "on " + date.getDayOfWeek().toString().charAt(0)
 		    + date.getDayOfWeek().toString().substring(1).toLowerCase() + " (" + date.toString() + ")";
 	} else {
@@ -273,7 +274,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 
     public void setManager(final MainManager manager) {
 	this.manager = manager;
-	manager.getUIData().addListener(this);
+	// performance kill
+	// manager.getUIData().addListener(this);
 	update();
     }
 

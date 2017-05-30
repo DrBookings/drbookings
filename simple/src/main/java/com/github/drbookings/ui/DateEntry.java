@@ -2,7 +2,7 @@ package com.github.drbookings.ui;
 
 import java.time.LocalDate;
 
-public class DateEntry<E> {
+public class DateEntry<E> implements Comparable<DateEntry<E>> {
 
     @Override
     public int hashCode() {
@@ -63,6 +63,11 @@ public class DateEntry<E> {
     @Override
     public String toString() {
 	return e.toString();
+    }
+
+    @Override
+    public int compareTo(final DateEntry<E> o) {
+	return getDate().compareTo(o.getDate());
     }
 
 }
