@@ -2,9 +2,11 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,9 @@ import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CleaningEntry;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,31 +29,18 @@ import javafx.scene.input.ClipboardContent;
 
 public class CleaningPlanController implements Initializable {
 
-    public MainManager getManager() {
-	return manager;
-    }
+    private final static Logger logger = LoggerFactory.getLogger(CleaningPlanController.class);
 
-    public void setManager(final MainManager manager) {
-	this.manager = manager;
-	content.setItems(
-		manager.cleaningEntriesListProperty()
-			.filtered(e -> e.getDate()
-				.isAfter(LocalDate.now()
-					.minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
-			.sorted());
-    }
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM");
 
     @FXML
     private TableView<CleaningEntry> content;
 
-    @FXML
-    private void handleActionDeleteSelected(final ActionEvent event) {
-	final List<CleaningEntry> selection = content.getSelectionModel().getSelectedItems();
-	selection.forEach(ce -> manager.removeCleaning(ce));
-
-    }
-
     private MainManager manager;
+
+    public MainManager getManager() {
+	return manager;
+    }
 
     @FXML
     private void handleActionCopySelected(final ActionEvent event) {
@@ -58,7 +50,7 @@ public class CleaningPlanController implements Initializable {
 	for (final Iterator<CleaningEntry> it = selection.iterator(); it.hasNext();) {
 	    final CleaningEntry ce = it.next();
 
-	    sb.append(ce.getDate());
+	    sb.append(CleaningPlanController.DATE_FORMATTER.format(ce.getDate()));
 	    sb.append("\t");
 	    sb.append(roomNamePrefix);
 	    sb.append(ce.getRoom().getName());
@@ -82,12 +74,33 @@ public class CleaningPlanController implements Initializable {
 
     }
 
-    private final static Logger logger = LoggerFactory.getLogger(CleaningPlanController.class);
+    @FXML
+    private void handleActionDeleteSelected(final ActionEvent event) {
+	final List<CleaningEntry> selection = content.getSelectionModel().getSelectedItems();
+	selection.forEach(ce -> manager.removeCleaning(ce));
+
+    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 	content.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+    }
+
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
+	content.itemsProperty()
+		.bind(Bindings.createObjectBinding(updateTable(), manager.cleaningEntriesListProperty()));
+	content.sort();
+    }
+
+    private Callable<ObservableList<CleaningEntry>> updateTable() {
+	return () -> FXCollections
+		.observableArrayList(manager.cleaningEntriesListProperty()
+			.filtered(e -> e.getDate()
+				.isAfter(LocalDate.now()
+					.minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
+			.sorted());
     }
 
 }

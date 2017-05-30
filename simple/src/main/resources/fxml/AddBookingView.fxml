@@ -18,32 +18,21 @@
 		<Insets bottom="8" left="8" right="8" top="8" />
 	</padding>
 	<children>
-
 		<HBox spacing="4">
-
-
 			<VBox spacing="4">
 				<Label text="Check-in" />
 				<DatePicker fx:id="datePickerCheckIn" onAction="#handleButtonSetCheckInDate" />
 				<Label text="Check-out" />
 				<DatePicker fx:id="datePickerCheckOut" onAction="#handleButtonSetCheckOutDate" />
-
 			</VBox>
-
 			<VBox HBox.hgrow="ALWAYS" alignment="CENTER">
-
 				<padding>
 					<Insets bottom="8" left="8" right="8" top="8" />
 				</padding>
-
-				<Label fx:id="infoLabel" VBox.vgrow="ALWAYS" wrapText="true" alignment="CENTER"
-					 />
-
+				<Label fx:id="infoLabel" VBox.vgrow="ALWAYS" wrapText="true"
+					alignment="CENTER" />
 			</VBox>
-
 		</HBox>
-
-
 		<Label text="Guest Name" />
 		<TextField fx:id="textFieldGuestName" />
 		<Label text="Source" />

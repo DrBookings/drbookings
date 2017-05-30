@@ -13,9 +13,12 @@ import java.util.stream.Collectors;
 
 import com.github.drbookings.LocalDates;
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CellSelectionManager;
+import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +30,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -43,6 +47,14 @@ import javafx.scene.text.TextFlow;
 
 public class BookingDetailsController implements Initializable {
 
+    public MainManager getManager() {
+	return manager;
+    }
+
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
+    }
+
     private static void addDates(final HBox content, final Booking be) {
 	final TextFlow checkIn = LocalDates.getDateText(be.getCheckIn());
 	final TextFlow checkOut = LocalDates.getDateText(be.getCheckOut());
@@ -58,6 +70,7 @@ public class BookingDetailsController implements Initializable {
     private static void addName(final HBox content, final Booking be) {
 	final Label label = new Label(be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
 	label.setWrapText(true);
+	content.getStyleClass().add(Styles.getBackgroundStyleSource(be.getBookingOrigin().getName()));
 	content.getChildren().add(label);
 	HBox.setHgrow(label, Priority.ALWAYS);
 
@@ -86,6 +99,8 @@ public class BookingDetailsController implements Initializable {
 
     private final Map<Booking, CheckBox> booking2Payment = new HashMap<>();
 
+    private MainManager manager;
+
     private void addCheckInNote(final Pane content, final Booking be) {
 	final VBox b = new VBox();
 	b.getChildren().add(new Text("Check-in Note"));
@@ -111,7 +126,9 @@ public class BookingDetailsController implements Initializable {
     }
 
     private static void addRow0(final Pane content, final Booking be) {
-	final HBox box = new HBox(10);
+	final HBox box = new HBox(8);
+	box.setPadding(new Insets(4));
+	box.setAlignment(Pos.CENTER);
 	box.setFillHeight(true);
 	addName(box, be);
 	box.getChildren().add(new Separator(Orientation.VERTICAL));
@@ -142,7 +159,7 @@ public class BookingDetailsController implements Initializable {
 
     }
 
-    private void addRow2(final Pane content, final Booking be) {
+    private static void addRow2(final Pane content, final Booking be) {
 
     }
 
@@ -243,6 +260,8 @@ public class BookingDetailsController implements Initializable {
 	content.getChildren().clear();
     }
 
+    private ModifyBookingDialogFactory modifyBookingDialogFactory;
+
     @FXML
     public void handleActionSaveBookingDetails(final ActionEvent e) {
 	for (final Entry<Booking, TextInputControl> en : booking2CheckInNote.entrySet()) {
@@ -303,7 +322,22 @@ public class BookingDetailsController implements Initializable {
 	box.getChildren().add(new Separator());
 	addRow1(box, be);
 	addRow2(box, be);
+	addModifyButton(box, be);
 	content.getChildren().add(box);
+
+    }
+
+    private void addModifyButton(final VBox box, final Booking be) {
+	final Button b = new Button();
+	b.setText("Modify");
+	b.setPrefWidth(100);
+	b.setOnAction(e -> {
+	    if (modifyBookingDialogFactory == null) {
+		modifyBookingDialogFactory = new ModifyBookingDialogFactory(getManager());
+	    }
+	    modifyBookingDialogFactory.showDialog();
+	});
+	box.getChildren().add(b);
 
     }
 

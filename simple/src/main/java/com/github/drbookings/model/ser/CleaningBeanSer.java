@@ -1,6 +1,7 @@
 package com.github.drbookings.model.ser;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,5 +22,8 @@ public class CleaningBeanSer {
 
     @XmlAttribute
     public String room;
+
+    @XmlAttribute
+    public List<String> calendarIds;
 
 }

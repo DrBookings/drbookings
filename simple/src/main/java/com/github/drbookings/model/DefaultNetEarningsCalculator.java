@@ -77,6 +77,9 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 
     @Override
     public float calculateNetEarnings(final float grossEarnings, final String bookingOrigin) {
+	if (grossEarnings == 0) {
+	    return 0;
+	}
 	double result = (double) grossEarnings - getFees();
 	if ("booking".equalsIgnoreCase(bookingOrigin)) {
 	    result -= result * provision;

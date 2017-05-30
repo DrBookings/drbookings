@@ -25,6 +25,7 @@
 						<MenuItem text="Import Airbnb iCal" onAction="#handleMenuItemOpenAirbnbICal" />
 						<MenuItem text="Import Booking Excel" onAction="#handleMenuItemOpenBookingExcel" />
 						<MenuItem text="Export to Google Calendar" onAction="#handleMenuItemWriteToGoogleCalendar" />
+						<MenuItem text="Clear Google Calendar" onAction="#handleMenuItemClearGoogleCalendar" />
 
 					</items>
 				</Menu>
@@ -47,21 +48,10 @@
 				</Menu>
 			</menus>
 		</MenuBar>
+		
+		<fx:include fx:id="overviewChartView" source="OverviewChartView.fxml" />
 
-		<HBox spacing="8">
-			<padding>
-				<Insets top="8" right="8" bottom="4" left="8" />
-			</padding>
-			<children>
-				<Label fx:id="progressLabel" maxWidth="Infinity" visible="false"
-					wrapText="true" GridPane.columnSpan="1" GridPane.columnIndex="0"
-					GridPane.rowIndex="0" />
-				<ProgressBar fx:id="progressBar" maxWidth="Infinity"
-					HBox.hgrow="always" progress="-1" visible="false"
-					GridPane.columnSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-			</children>
-		</HBox>
-		<HBox spacing="8">
+		<HBox spacing="8" alignment="CENTER">
 			<padding>
 				<Insets top="4" right="8" bottom="4" left="8" />
 			</padding>
@@ -72,6 +62,14 @@
 					text="Scroll to Today" />
 				<Button fx:id="buttonSelectCurrentMonth" onAction="#handleButtonSelectCurrentMonth"
 					text="Select Current Month" />
+					<Button fx:id="buttonSelectLastThreeMonth" onAction="#handleButtonSelectLastThreeMonth"
+					text="Select Last 3 Months" />
+				<Label fx:id="progressLabel" maxWidth="Infinity" visible="false"
+					wrapText="true" GridPane.columnSpan="1" GridPane.columnIndex="0"
+					GridPane.rowIndex="0" />
+				<ProgressBar fx:id="progressBar" maxWidth="Infinity"
+					HBox.hgrow="always" progress="-1" visible="false"
+					GridPane.columnSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 			</children>
 		</HBox>
 
@@ -132,7 +130,7 @@
 					<!-- percentWidth="10.0" /> -->
 					<!-- </columnConstraints> -->
 					<columns>
-						<TableColumn prefWidth="140" text="Date" fx:id="cDate">
+						<TableColumn prefWidth="200" text="Date" fx:id="cDate">
 							<cellValueFactory>
 								<PropertyValueFactory property="date" />
 							</cellValueFactory>

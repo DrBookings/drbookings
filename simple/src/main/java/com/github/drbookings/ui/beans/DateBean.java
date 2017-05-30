@@ -232,4 +232,8 @@ public class DateBean implements Comparable<DateBean> {
 	};
     }
 
+    public boolean isEmpty() {
+	return getRooms().stream().allMatch(r -> r.isEmpty());
+    }
+
 }

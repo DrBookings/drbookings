@@ -3,6 +3,9 @@ package com.github.drbookings.model.data;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -25,6 +28,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Booking extends IDed implements Comparable<Booking> {
+
+    public List<String> getCalendarIds() {
+	return calendarIds;
+    }
+
+    public void setCalendarIds(final Collection<? extends String> calendarIds) {
+	if (calendarIds != null) {
+	    this.calendarIds = new ArrayList<>(calendarIds);
+	}
+    }
 
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -292,6 +305,15 @@ public class Booking extends IDed implements Comparable<Booking> {
     @Override
     public int compareTo(final Booking o) {
 	return getCheckIn().compareTo(o.getCheckIn());
+    }
+
+    private List<String> calendarIds = new ArrayList<>();
+
+    public void addCalendarId(final String id) {
+	if (id != null) {
+	    calendarIds.add(id);
+	}
+
     }
 
 }

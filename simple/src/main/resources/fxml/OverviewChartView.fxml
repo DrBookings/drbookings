@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.chart.*?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.OverviewChartController"
+	maxWidth="Infinity" HBox.hgrow="ALWAYS" VBox.vgrow="SOMETIMES">
+	<stylesheets>
+		<URL value="@/css/root.css" />
+	</stylesheets>
+
+	<children>
+		<HBox alignment="CENTER">
+			<padding>
+				<Insets right="8" left="8" />
+			</padding>
+			<Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label>
+		</HBox>
+
+		<BarChart legendVisible="false" fx:id="chart" barGap="0"
+			categoryGap="0" animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+			maxHeight="80" prefHeight="60" minHeight="40">
+			<xAxis>
+				<CategoryAxis fx:id="xAxis" tickLabelsVisible="false"
+					tickMarkVisible="false" />
+			</xAxis>
+			<yAxis>
+				<NumberAxis fx:id="yAxis" tickMarkVisible="false"
+					autoRanging="false" upperBound="10" lowerBound="0"
+					minorTickVisible="false" />
+			</yAxis>
+		</BarChart>
+		<HBox alignment="CENTER">
+			<padding>
+				<Insets right="8" left="8" />
+			</padding>
+			<Label fx:id="labelEndDate" wrapText="true" alignment="CENTER"></Label>
+		</HBox>
+	</children>
+</HBox>

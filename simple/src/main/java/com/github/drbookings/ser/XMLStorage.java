@@ -98,8 +98,8 @@ public class XMLStorage {
 
     protected void doSave(final MainManager manager, final File file) {
 	makeBackup(file);
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Saving data to " + file);
+	if (logger.isInfoEnabled()) {
+	    logger.info("Saving data to " + file);
 	}
 	try {
 	    final JAXBContext jc = JAXBContext.newInstance(DataStore.class);

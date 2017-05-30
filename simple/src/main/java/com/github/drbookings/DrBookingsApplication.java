@@ -1,6 +1,7 @@
 package com.github.drbookings;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -26,6 +27,8 @@ public class DrBookingsApplication extends Application {
 
     private final static Logger logger = LoggerFactory.getLogger(DrBookingsApplication.class);
 
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM.yyyy");
+
     public static void main(final String[] args) {
 	launch(args);
     }
@@ -39,7 +42,7 @@ public class DrBookingsApplication extends Application {
 	}
 	final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 	final Parent root = loader.load();
-	final Scene scene = new Scene(root, 700, 800);
+	final Scene scene = new Scene(root, 800, 800);
 	String s = getClass().getPackage().getImplementationVersion();
 	if (s == null) {
 	    s = "dev version";
@@ -48,8 +51,8 @@ public class DrBookingsApplication extends Application {
 	stage.setScene(scene);
 	stage.setOnCloseRequest(event -> {
 	    final Alert alert = new Alert(AlertType.CONFIRMATION);
-	    final ButtonType buttonTypeOne = new ButtonType("Yes");
-	    final ButtonType buttonTypeTwo = new ButtonType("No");
+	    final ButtonType buttonTypeOne = new ButtonType("Yes", ButtonData.OK_DONE);
+	    final ButtonType buttonTypeTwo = new ButtonType("No", ButtonData.NO);
 	    final ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 	    alert.getButtonTypes().setAll(buttonTypeCancel, buttonTypeTwo, buttonTypeOne);
 	    alert.setTitle("Save changes?");
