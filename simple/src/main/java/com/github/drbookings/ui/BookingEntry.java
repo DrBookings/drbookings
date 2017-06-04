@@ -10,19 +10,24 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
+import com.github.drbookings.model.EarningsProvider;
+import com.github.drbookings.model.GrossEarningsProvider;
+import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.NetEarningsCalculator;
+import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.settings.SettingsManager;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
-public class BookingEntry extends DateRoomEntry<Booking> {
+public class BookingEntry extends DateRoomEntry<Booking>
+	implements NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
     public static List<BookingEntry> checkInView(final Collection<? extends BookingEntry> bookings) {
 	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
@@ -55,7 +60,7 @@ public class BookingEntry extends DateRoomEntry<Booking> {
     /**
      * Gross earnings for this particular day.
      */
-    private final DoubleProperty grossEarnings = new SimpleDoubleProperty();
+    private final FloatProperty grossEarnings = new SimpleFloatProperty();
 
     /**
      * Gross earnings string for this particular day.
@@ -65,7 +70,7 @@ public class BookingEntry extends DateRoomEntry<Booking> {
     /**
      * Net earnings for this particular day.
      */
-    private final DoubleProperty netEarnings = new SimpleDoubleProperty();
+    private final FloatProperty netEarnings = new SimpleFloatProperty();
 
     public BookingEntry(final LocalDate date, final Booking booking) {
 	super(date, booking.getRoom(), booking);
@@ -98,13 +103,21 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	    }
 	    final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
 	    c.setFees(SettingsManager.getInstance().getCleaningFees() / getElement().getNumberOfNights());
-	    final float result = c.calculateNetEarnings((float) getGrossEarnings(),
-		    getElement().getBookingOrigin().getName());
+	    final float result = c.calculateNetEarnings(getGrossEarnings(), getElement().getBookingOrigin().getName());
 	    return result;
 	};
     }
 
-    public double getGrossEarnings() {
+    @Override
+    public float getEarnings(final boolean netEarnings) {
+	if (netEarnings) {
+	    return getNetEarnings();
+	}
+	return getGrossEarnings();
+    }
+
+    @Override
+    public float getGrossEarnings() {
 	return this.grossEarningsProperty().get();
     }
 
@@ -112,12 +125,14 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	return this.grossEarningsStringProperty().get();
     }
 
-    public double getNetEarnings() {
-	final double result = this.netEarningsProperty().get();
-	return result;
+    @Override
+    public float getNetEarnings() {
+	return this.netEarningsProperty().get();
+
     }
 
-    public DoubleProperty grossEarningsProperty() {
+    @Override
+    public FloatProperty grossEarningsProperty() {
 	return this.grossEarnings;
     }
 
@@ -133,11 +148,12 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	return getDate().equals(getElement().getCheckOut());
     }
 
-    public DoubleProperty netEarningsProperty() {
+    @Override
+    public FloatProperty netEarningsProperty() {
 	return this.netEarnings;
     }
 
-    public void setGrossEarnings(final double grossEarnings) {
+    public void setGrossEarnings(final float grossEarnings) {
 	this.grossEarningsProperty().set(grossEarnings);
     }
 
@@ -145,7 +161,7 @@ public class BookingEntry extends DateRoomEntry<Booking> {
 	this.grossEarningsStringProperty().set(grossEarningsString);
     }
 
-    public void setNetEarnings(final double netEarnings) {
+    public void setNetEarnings(final float netEarnings) {
 	this.netEarningsProperty().set(netEarnings);
     }
 

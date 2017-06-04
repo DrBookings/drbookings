@@ -63,6 +63,8 @@ public class MainManager {
 
     private final Map<LocalDate, DateBean> uiDataMap;
 
+    private final List<DateBean> filteredDates = new ArrayList<>();
+
     public MainManager() {
 	roomProvider = new RoomProvider();
 	guestProvider = new GuestProvider();
@@ -104,8 +106,7 @@ public class MainManager {
 	}
 	final Cleaning cleaning = cleaningProvider.getOrCreateElement(cleaningName);
 	final Room room = roomProvider.getOrCreateElement(roomName);
-	final CleaningEntry cleaningEntry = new CleaningEntry(date, room, cleaning);
-
+	final CleaningEntry cleaningEntry = new CleaningEntry(date, room, cleaning, this);
 	if (containsCleaningByNameDateRoom(cleaningEntry)) {
 	    if (logger.isWarnEnabled()) {
 		logger.warn("Skip cleaning " + cleaning);
@@ -146,8 +147,6 @@ public class MainManager {
 	}
 	db.getRoom(room.getName()).setCleaningEntry(cleaningEntry);
     }
-
-    private final List<DateBean> filteredDates = new ArrayList<>();
 
     public synchronized void applyFilter(final String guestNameFilterString) {
 	uiData.addAll(filteredDates);
@@ -269,6 +268,11 @@ public class MainManager {
 
     public synchronized ObservableList<DateBean> getUIData() {
 	return uiData;
+    }
+
+    public boolean hasCheckIn(final LocalDate date, final String roomName) {
+	final Collection<BookingEntry> be = bookingEntries.get(date);
+	return be.stream().anyMatch(b -> b.isCheckIn() && b.getRoom().getName().equals(roomName));
     }
 
     public void modifyBooking(final Booking booking, final LocalDate checkInDate, final LocalDate checkOutDate)

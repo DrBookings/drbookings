@@ -9,40 +9,47 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.chart.*?>
+<?import javafx.scene.chart.PieChart?>
 
 <HBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
 	fx:controller="com.github.drbookings.ui.controller.OverviewChartController"
 	maxWidth="Infinity" HBox.hgrow="ALWAYS" VBox.vgrow="SOMETIMES">
 	<stylesheets>
 		<URL value="@/css/root.css" />
+		<URL value="@/css/overviewChart.css" />
 	</stylesheets>
 
 	<children>
-		<HBox alignment="CENTER">
-			<padding>
-				<Insets right="8" left="8" />
-			</padding>
-			<Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label>
-		</HBox>
-
-		<BarChart legendVisible="false" fx:id="chart" barGap="0"
-			categoryGap="0" animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
-			maxHeight="80" prefHeight="60" minHeight="40">
+<!-- 		<HBox alignment="CENTER"> -->
+<!-- 			<padding> -->
+<!-- 				<Insets right="8" left="8" /> -->
+<!-- 			</padding> -->
+<!-- 			<Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
+<!-- 		</HBox> -->
+		<BarChart legendVisible="false" fx:id="chart" barGap="0" categoryGap="4" title="Profit per Month"
+			 animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+			maxHeight="140" prefHeight="80" minHeight="60">
 			<xAxis>
-				<CategoryAxis fx:id="xAxis" tickLabelsVisible="false"
-					tickMarkVisible="false" />
+				<CategoryAxis fx:id="xAxis" tickLabelsVisible="true" 
+					tickMarkVisible="false" tickLength="0" />
 			</xAxis>
 			<yAxis>
-				<NumberAxis fx:id="yAxis" tickMarkVisible="false"
+				<NumberAxis fx:id="yAxis" tickMarkVisible="true"
 					autoRanging="false" upperBound="10" lowerBound="0"
 					minorTickVisible="false" />
 			</yAxis>
 		</BarChart>
-		<HBox alignment="CENTER">
+<!-- 		<HBox alignment="CENTER"> -->
+<!-- 			<padding> -->
+<!-- 				<Insets right="8" left="8" /> -->
+<!-- 			</padding> -->
+<!-- 			<Label fx:id="labelEndDate" wrapText="true" alignment="CENTER"></Label> -->
+<!-- 		</HBox> -->
+		<HBox fx:id="chart2" alignment="CENTER">
 			<padding>
 				<Insets right="8" left="8" />
 			</padding>
-			<Label fx:id="labelEndDate" wrapText="true" alignment="CENTER"></Label>
+		
 		</HBox>
 	</children>
 </HBox>

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.model.OccupancyRateCalculator;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
@@ -17,10 +18,12 @@ import com.github.drbookings.ui.BookingEntry;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,8 +36,7 @@ public class DateBean implements Comparable<DateBean> {
     private static final Logger logger = LoggerFactory.getLogger(DateBean.class);
 
     public static Callback<DateBean, Observable[]> extractor() {
-	return param -> new Observable[] { param.selfProperty(), param.roomsProperty(),
-		param.totalNetEarningsProperty() };
+	return param -> new Observable[] { param.selfProperty(), param.roomsProperty(), param.totalEarningsProperty() };
     }
 
     private final LocalDate date;
@@ -55,7 +57,7 @@ public class DateBean implements Comparable<DateBean> {
     /**
      * Sum of all net earnings for this day.
      */
-    private final DoubleProperty totalNetEarnings = new SimpleDoubleProperty();
+    private final FloatProperty totalEarnings = new SimpleFloatProperty();
 
     /**
      *
@@ -70,19 +72,25 @@ public class DateBean implements Comparable<DateBean> {
 	this.date = date;
 	this.manager = manager;
 	selfProperty().bind(Bindings.createObjectBinding(update(), roomsProperty(), paymentsReceivedProperty(),
-		totalNetEarningsProperty()));
+		totalEarningsProperty()));
 	occupancyProperty().bind(Bindings.createObjectBinding(calculateOccupancy(), roomsProperty()));
-	totalNetEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), roomsProperty(),
-		SettingsManager.getInstance().cleaningFeesProperty()));
+	totalEarningsProperty().bind(Bindings.createObjectBinding(calculateEarnings(), roomsProperty(),
+		SettingsManager.getInstance().cleaningFeesProperty(),
+		SettingsManager.getInstance().showNetEarningsProperty()));
     }
 
-    private Callable<Number> calculateNetEarnings() {
+    public DoubleProperty auslastungProperty() {
+	return this.occupancy;
+    }
+
+    private Callable<Number> calculateEarnings() {
 
 	return () -> {
-	    final List<BookingEntry> bookings = getRooms().stream().flatMap(r -> r.getBookingEntries().stream())
+	    final List<BookingEntry> bookings = getRooms().stream().flatMap(r -> r.getFilteredBookingEntries().stream())
 		    .collect(Collectors.toList());
 	    // System.err.println(bookings);
-	    final double result = bookings.stream().mapToDouble(b -> b.getNetEarnings()).sum();
+	    final double result = bookings.stream()
+		    .mapToDouble(b -> b.getEarnings(SettingsManager.getInstance().isShowNetEarnings())).sum();
 	    // System.err.println("net earnings: " + result);
 	    return result;
 
@@ -91,16 +99,8 @@ public class DateBean implements Comparable<DateBean> {
 
     private Callable<Number> calculateOccupancy() {
 	return () -> {
-	    final int cntRooms = getRooms().size();
-	    // TODO: hard coded check out filter
-	    final long cntBusyRooms = getRooms().stream().filter(r -> !r.getFilteredBookingEntries().stream()
-		    .filter(b -> !b.isCheckOut()).collect(Collectors.toList()).isEmpty()).count();
-	    return cntBusyRooms / (double) cntRooms;
+	    return new OccupancyRateCalculator().apply(getRooms());
 	};
-    }
-
-    public DoubleProperty auslastungProperty() {
-	return this.occupancy;
     }
 
     @Override
@@ -159,7 +159,7 @@ public class DateBean implements Comparable<DateBean> {
 		return rb;
 	    }
 	}
-	final RoomBean rb = new RoomBean(name, getDate(), getManager());
+	final RoomBean rb = new RoomBean(name, this, getManager());
 	roomsProperty().add(rb);
 	// if (logger.isDebugEnabled()) {
 	// logger.debug("Rooms now " + getRooms());
@@ -175,8 +175,12 @@ public class DateBean implements Comparable<DateBean> {
 	return this.selfProperty().get();
     }
 
-    public double getTotalNetEarnings() {
-	return this.totalNetEarningsProperty().get();
+    public double getTotalEarnings() {
+	return this.totalEarningsProperty().get();
+    }
+
+    public boolean isEmpty() {
+	return getRooms().stream().allMatch(r -> r.isEmpty());
     }
 
     public DoubleProperty occupancyProperty() {
@@ -212,8 +216,8 @@ public class DateBean implements Comparable<DateBean> {
 	this.selfProperty().set(self);
     }
 
-    public void setTotalNetEarnings(final double totalNetEarnings) {
-	this.totalNetEarningsProperty().set(totalNetEarnings);
+    public void setTotalEarnings(final float totalEarnings) {
+	this.totalEarningsProperty().set(totalEarnings);
     }
 
     @Override
@@ -221,8 +225,8 @@ public class DateBean implements Comparable<DateBean> {
 	return "DateBean: Date:" + getDate();
     }
 
-    public DoubleProperty totalNetEarningsProperty() {
-	return this.totalNetEarnings;
+    public FloatProperty totalEarningsProperty() {
+	return this.totalEarnings;
     }
 
     private Callable<DateBean> update() {
@@ -230,10 +234,6 @@ public class DateBean implements Comparable<DateBean> {
 	    // System.err.println("updating");
 	    return DateBean.this;
 	};
-    }
-
-    public boolean isEmpty() {
-	return getRooms().stream().allMatch(r -> r.isEmpty());
     }
 
 }

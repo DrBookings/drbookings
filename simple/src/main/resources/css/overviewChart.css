@@ -1,0 +1,6 @@
+.chart-vertical-grid-lines {
+    -fx-stroke: transparent;
+}
+.chart-title {
+  -fx-font-size: 1.0em;
+}

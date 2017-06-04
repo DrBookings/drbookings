@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -71,6 +70,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 		}
 		box.getChildren().add(tf);
 	    }
+	    box.getChildren().add(new Separator());
 	}
     }
 
@@ -93,7 +93,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	}
 
 	if (checkInNotes.isEmpty()) {
-	    tf.getChildren().add(new Text("no check-ins,"));
+	    // tf.getChildren().add(new Text("no check-ins,"));
 	}
 	box.getChildren().add(tf);
     }
@@ -114,6 +114,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 		}
 		box.getChildren().add(tf);
 	    }
+	    box.getChildren().add(new Separator());
 	}
     }
 
@@ -137,7 +138,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    tf.getChildren().addAll(t0, t1, t2);
 	}
 	if (checkOutNotes.isEmpty()) {
-	    tf.getChildren().add(new Text("no check-outs,"));
+	    // tf.getChildren().add(new Text("no check-outs,"));
 	}
 	box.getChildren().add(tf);
     }
@@ -145,9 +146,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
     private static void addCleanings(final LocalDate date, final VBox box,
 	    final Collection<CleaningEntry> upcomingBookings) {
 
-	for (final Iterator<CleaningEntry> it = upcomingBookings.iterator(); it.hasNext();) {
+	for (final CleaningEntry c : upcomingBookings) {
 	    final TextFlow tf = new TextFlow();
-	    final CleaningEntry c = it.next();
 	    final Text t0 = new Text("Room " + c.getRoom() + ": ");
 	    t0.getStyleClass().add("emphasis");
 	    final Text t1 = new Text(c.toString());
@@ -161,8 +161,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    final Collection<CleaningEntry> upcomingBookings) {
 	final TextFlow tf = new TextFlow();
 	if (upcomingBookings.isEmpty()) {
-	    final Text t0 = new Text("and no cleaning.");
-	    tf.getChildren().add(t0);
+	    // final Text t0 = new Text("and no cleaning.");
+	    // tf.getChildren().add(t0);
 	} else {
 	    final Text t0 = new Text("and ");
 	    final Text t1 = new Text(upcomingBookings.size() + " ");
@@ -247,10 +247,8 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    addGeneralSummary(date, box, checkInNotes);
 	    addCheckOutSummary(date, box, checkOutNotes);
 	    addCheckOutNotes(date, box, checkOutNotes);
-	    box.getChildren().add(new Separator());
 	    addCheckInSummary(date, box, checkInNotes);
 	    addCheckInNotes(date, box, checkInNotes);
-	    box.getChildren().add(new Separator());
 	    addCleaningSummary(date, box, upcomingCleanings);
 	    addCleanings(date, box, upcomingCleanings);
 	}
