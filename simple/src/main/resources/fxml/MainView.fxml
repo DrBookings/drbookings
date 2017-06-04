@@ -48,12 +48,12 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-		
+
 		<fx:include fx:id="overviewChartView" source="OverviewChartView.fxml" />
 
 		<HBox spacing="8" alignment="CENTER">
 			<padding>
-				<Insets top="4" right="8" bottom="4" left="8" />
+				<Insets top="0" right="8" bottom="4" left="8" />
 			</padding>
 			<children>
 				<Button fx:id="buttonAddBooking" onAction="#handleButtonAddBooking"
@@ -62,7 +62,9 @@
 					text="Scroll to Today" />
 				<Button fx:id="buttonSelectCurrentMonth" onAction="#handleButtonSelectCurrentMonth"
 					text="Select Current Month" />
-					<Button fx:id="buttonSelectLastThreeMonth" onAction="#handleButtonSelectLastThreeMonth"
+				<Button fx:id="buttonSelectLastMonth" onAction="#handleButtonSelectLastMonth"
+					text="Select Last Month" />
+				<Button fx:id="buttonSelectLastThreeMonth" onAction="#handleButtonSelectLastThreeMonth"
 					text="Select Last 3 Months" />
 				<Label fx:id="progressLabel" maxWidth="Infinity" visible="false"
 					wrapText="true" GridPane.columnSpan="1" GridPane.columnIndex="0"
@@ -115,58 +117,58 @@
 					<columnResizePolicy>
 						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 					</columnResizePolicy>
-					<!-- <columnConstraints> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="20" /> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="20" /> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="20" /> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="20" /> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="10.0" /> -->
-					<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-					<!-- percentWidth="10.0" /> -->
-					<!-- </columnConstraints> -->
-					<columns>
-						<TableColumn prefWidth="200" text="Date" fx:id="cDate">
-							<cellValueFactory>
-								<PropertyValueFactory property="date" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cStudio1" prefWidth="120" text="#1">
-							<cellValueFactory>
-								<PropertyValueFactory property="self" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cStudio2" prefWidth="120" text="#2">
-							<cellValueFactory>
-								<PropertyValueFactory property="self" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cStudio3" prefWidth="120" text="#3">
-							<cellValueFactory>
-								<PropertyValueFactory property="self" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cStudio4" prefWidth="120" text="#4">
-							<cellValueFactory>
-								<PropertyValueFactory property="self" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cAuslastung" prefWidth="30" text="Occupancy">
-							<cellValueFactory>
-								<PropertyValueFactory property="self" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cBruttoEarningsPerNightTotal"
-							prefWidth="30" text="Net Earnings">
-							<cellValueFactory>
-								<PropertyValueFactory property="totalNetEarnings" />
-							</cellValueFactory>
-						</TableColumn>
-					</columns>
+<!-- 					<columnConstraints> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- percentWidth="20" /> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- percentWidth="20" /> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- percentWidth="20" /> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- percentWidth="20" /> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- percentWidth="10.0" /> -->
+						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
+						<!-- prefWidth="20.0" /> -->
+						<!-- </columnConstraints> -->
+						<columns>
+							<TableColumn text="Date" fx:id="cDate">
+								<cellValueFactory>
+									<PropertyValueFactory property="date" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cStudio1" text="#1">
+								<cellValueFactory>
+									<PropertyValueFactory property="self" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cStudio2" text="#2">
+								<cellValueFactory>
+									<PropertyValueFactory property="self" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cStudio3" text="#3">
+								<cellValueFactory>
+									<PropertyValueFactory property="self" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cStudio4" text="#4">
+								<cellValueFactory>
+									<PropertyValueFactory property="self" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cAuslastung" text="Occupancy">
+								<cellValueFactory>
+									<PropertyValueFactory property="self" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="cBruttoEarningsPerNightTotal"
+								text="Earnings">
+								<cellValueFactory>
+									<PropertyValueFactory property="totalEarnings" />
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
 				</TableView>
 
 			</children>

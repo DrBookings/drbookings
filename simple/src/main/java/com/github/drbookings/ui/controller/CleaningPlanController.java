@@ -54,8 +54,10 @@ public class CleaningPlanController implements Initializable {
 	    sb.append("\t");
 	    sb.append(roomNamePrefix);
 	    sb.append(ce.getRoom().getName());
-	    // sb.append("\t");
-	    // sb.append(ce.getElement().getName());
+	    if (ce.isShortTime()) {
+		sb.append("\t");
+		sb.append("bis 1600");
+	    }
 
 	    if (it.hasNext()) {
 		sb.append("\n");

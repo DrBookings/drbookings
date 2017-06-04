@@ -23,6 +23,7 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
+import com.github.drbookings.model.OccupancyRateCalculator;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
@@ -36,6 +37,7 @@ import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.OccupancyCellFactory;
 import com.github.drbookings.ui.OccupancyCellValueFactory;
+import com.github.drbookings.ui.StatusLabelStringFactory;
 import com.github.drbookings.ui.StudioCellFactory;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
@@ -260,6 +262,9 @@ public class MainController implements Initializable {
     private Button buttonSelectLastThreeMonth;
 
     @FXML
+    private Button buttonSelectLastMonth;
+
+    @FXML
     private TextField guestNameFilterInput;
 
     private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
@@ -269,6 +274,11 @@ public class MainController implements Initializable {
     private BookingDetailsDialogFactory bookingDetailsDialogFactory;
 
     private GeneralSettingsDialogFactory generalSettingsDialogFactory;
+
+    @FXML
+    private OverviewChartController overviewChartViewController;
+
+    private RoomDetailsDialogFactory roomDetailsDialogFactory;
 
     public MainController() {
 	manager = new MainManager();
@@ -319,11 +329,17 @@ public class MainController implements Initializable {
     private void doUpdateStatusLabel() {
 
 	final ObservableList<RoomBean> selectedRooms = CellSelectionManager.getInstance().getSelection();
+	// final List<DateBean> dateBeans = selectedRooms.stream().map(r ->
+	// r.getDateBean()).collect(Collectors.toList());
 	final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
 		.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
 	final BookingsByOrigin bo = new BookingsByOrigin(selectedBookings);
-	statusLabel.textProperty().set(new StatusLabelStringFactory(bo).build());
-
+	final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
+	sb.append("\tOccupancyRate:");
+	sb.append(StatusLabelStringFactory.DECIMAL_FORMAT
+		.format(new OccupancyRateCalculator().apply(selectedRooms).floatValue() * 100));
+	sb.append("%");
+	statusLabel.textProperty().set(sb.toString());
     }
 
     @SuppressWarnings("rawtypes")
@@ -357,6 +373,22 @@ public class MainController implements Initializable {
 	for (int index = 0; index < tableView.getItems().size(); index++) {
 	    final LocalDate date = tableView.getItems().get(index).getDate();
 	    if (LocalDates.isCurrentMonth(date)) {
+		result.add(index);
+	    }
+	}
+	return ArrayUtils.toPrimitive(result.toArray(new Integer[] { result.size() }));
+
+    }
+
+    public String getGuestNameFilter() {
+	return guestNameFilterInput.getText();
+    }
+
+    private int[] getLastMonthIndicies() {
+	final List<Integer> result = new ArrayList<>();
+	for (int index = 0; index < tableView.getItems().size(); index++) {
+	    final LocalDate date = tableView.getItems().get(index).getDate();
+	    if (LocalDates.isLastMonth(date)) {
 		result.add(index);
 	    }
 	}
@@ -430,6 +462,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleButtonSelectCurrentMonth(final ActionEvent event) {
 	Platform.runLater(() -> selectCurrentMonthFX());
+    }
+
+    @FXML
+    private void handleButtonSelectLastMonth(final ActionEvent event) {
+	Platform.runLater(() -> selectLastMonthFX());
     }
 
     @FXML
@@ -546,9 +583,6 @@ public class MainController implements Initializable {
 	Platform.runLater(() -> showRoomDetailsDialog());
 	Platform.runLater(() -> showBookingDetails());
     }
-
-    @FXML
-    private OverviewChartController overviewChartViewController;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -693,9 +727,13 @@ public class MainController implements Initializable {
 	fileChooser.setInitialFileName(file.getName());
 	final File file2 = fileChooser.showOpenDialog(node.getScene().getWindow());
 	if (file2 != null) {
-	    new OpenFileService(file2).start();
+	    readDataFile(file2);
 
 	}
+    }
+
+    public void readDataFile(final File file) {
+	new OpenFileService(file).start();
     }
 
     void scrollToToday() {
@@ -721,6 +759,15 @@ public class MainController implements Initializable {
 	setWorking(true);
 	tableView.sort();
 	final int[] currentMonthIndices = getCurrentMonthIndicies();
+	tableView.getSelectionModel().selectIndices(currentMonthIndices[0], currentMonthIndices);
+	setWorking(false);
+    }
+
+    private void selectLastMonthFX() {
+
+	setWorking(true);
+	tableView.sort();
+	final int[] currentMonthIndices = getLastMonthIndicies();
 	tableView.getSelectionModel().selectIndices(currentMonthIndices[0], currentMonthIndices);
 	setWorking(false);
     }
@@ -757,6 +804,7 @@ public class MainController implements Initializable {
 	buttonAddBooking.setDisable(working);
 	buttonGoHome.setDisable(working);
 	buttonSelectCurrentMonth.setDisable(working);
+	buttonSelectLastMonth.setDisable(working);
 	buttonSelectLastThreeMonth.setDisable(working);
 	filterBookingsLabel.setDisable(working);
 	guestNameFilterInput.setDisable(working);
@@ -766,10 +814,6 @@ public class MainController implements Initializable {
 	progressLabel.textProperty().unbind();
 	progressBar.getScene().getRoot().setCursor(Cursor.DEFAULT);
 
-    }
-
-    public String getGuestNameFilter() {
-	return guestNameFilterInput.getText();
     }
 
     private void showAbout() {
@@ -855,8 +899,6 @@ public class MainController implements Initializable {
 
 	new CleaningPlanDialogFactory(getManager()).showDialog();
     }
-
-    private RoomDetailsDialogFactory roomDetailsDialogFactory;
 
     private void showRoomDetailsDialog() {
 	if (this.roomDetailsDialogFactory == null) {

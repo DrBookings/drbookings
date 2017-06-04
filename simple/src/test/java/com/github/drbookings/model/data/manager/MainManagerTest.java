@@ -16,8 +16,6 @@ import com.github.drbookings.ui.CleaningEntry;
 
 public class MainManagerTest {
 
-    private MainManager mm;
-
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
     }
@@ -25,6 +23,8 @@ public class MainManagerTest {
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
     }
+
+    private MainManager mm;
 
     @Before
     public void setUp() throws Exception {
@@ -37,7 +37,8 @@ public class MainManagerTest {
     @Test
     public void testAddCleaning01() {
 	mm = new MainManager();
-	final CleaningEntry ce = new CleaningEntry(LocalDate.now(), new Room("testRoom"), new Cleaning("testCleaning"));
+	final CleaningEntry ce = new CleaningEntry(LocalDate.now(), new Room("testRoom"), new Cleaning("testCleaning"),
+		null);
 	mm.addCleaning(LocalDate.now(), "testCleaning", "testRoom");
 	assertTrue(mm.getCleaningEntries().contains(ce));
     }

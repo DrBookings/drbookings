@@ -53,16 +53,16 @@ public class RoomBean extends WarnableBean {
 
     private final MainManager manager;
 
-    private final LocalDate date;
+    private final DateBean dateBean;
 
     private final StringProperty bookingFilterString = new SimpleStringProperty();
 
     private final BooleanProperty needsCleaning = new SimpleBooleanProperty();
 
-    public RoomBean(final String name, final LocalDate date, final MainManager manager) {
+    public RoomBean(final String name, final DateBean date, final MainManager manager) {
 	this.name = name;
 	this.manager = manager;
-	this.date = date;
+	this.dateBean = date;
 	bindProperties();
     }
 
@@ -123,8 +123,17 @@ public class RoomBean extends WarnableBean {
 	};
     }
 
-    public Set<String> getGuestNames() {
-	return BookingEntry.guestNameView(getFilteredBookingEntries());
+    public Callable<Boolean> calulateNeedsCleaning() {
+	return () -> {
+	    if (getDate().isBefore(LocalDate.now())) {
+		// time out
+		return false;
+	    }
+	    if (getGuestNames().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
+		return true;
+	    }
+	    return hasCheckOut() && manager.needsCleaning(this.getName(), getDate());
+	};
     }
 
     public ObjectProperty<CleaningEntry> cleaningEntryProperty() {
@@ -145,12 +154,6 @@ public class RoomBean extends WarnableBean {
 	    // }
 	    return result;
 	};
-    }
-
-    @Override
-    public String toString() {
-	return "roomBean:" + getDate() + ",name:" + getName() + ",filteredBookings:"
-		+ getFilteredBookingEntries().size() + " " + getBookingEntries().size();
     }
 
     public ListProperty<BookingEntry> filteredBookingEntriesProperty() {
@@ -178,11 +181,19 @@ public class RoomBean extends WarnableBean {
     }
 
     public LocalDate getDate() {
-	return date;
+	return dateBean.getDate();
+    }
+
+    public DateBean getDateBean() {
+	return dateBean;
     }
 
     public List<BookingEntry> getFilteredBookingEntries() {
 	return this.filteredBookingEntriesProperty().get();
+    }
+
+    public Set<String> getGuestNames() {
+	return BookingEntry.guestNameView(getFilteredBookingEntries());
     }
 
     public String getName() {
@@ -221,17 +232,24 @@ public class RoomBean extends WarnableBean {
 	return getCleaningEntry() != null;
     }
 
-    public Callable<Boolean> calulateNeedsCleaning() {
-	return () -> {
-	    if (getDate().isBefore(LocalDate.now())) {
-		// time out
-		return false;
-	    }
-	    if (getGuestNames().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
-		return true;
-	    }
-	    return hasCheckOut() && manager.needsCleaning(this.getName(), getDate());
-	};
+    public boolean isEmpty() {
+	return getFilteredBookingEntries().isEmpty();
+    }
+
+    public boolean needsCleaning() {
+	return this.needsCleaningProperty().get();
+    }
+
+    public BooleanProperty needsCleaningProperty() {
+	return this.needsCleaning;
+    }
+
+    public void removeCleaningEntry() {
+	if (getCleaningEntry() != null) {
+	    manager.removeCleaning(getCleaningEntry());
+	    // setCleaningEntry(null);
+	}
+
     }
 
     public void setBookingEntries(final Collection<? extends BookingEntry> bookingEntries) {
@@ -242,14 +260,6 @@ public class RoomBean extends WarnableBean {
 	this.bookingFilterStringProperty().set(bookingFilterString);
     }
 
-    public void setCleaningEntry(final CleaningEntry cleaningEntry) {
-	this.cleaningEntryProperty().set(cleaningEntry);
-    }
-
-    public void setFilteredBookingEntries(final Collection<? extends BookingEntry> filteredBookingEntries) {
-	this.filteredBookingEntriesProperty().setAll(filteredBookingEntries);
-    }
-
     public void setCleaning(final String cleaningName) {
 	if (getCleaningEntry() != null) {
 	    manager.removeCleaning(getCleaningEntry());
@@ -258,28 +268,22 @@ public class RoomBean extends WarnableBean {
 
     }
 
-    public boolean isEmpty() {
-	return getFilteredBookingEntries().isEmpty();
+    public void setCleaningEntry(final CleaningEntry cleaningEntry) {
+	this.cleaningEntryProperty().set(cleaningEntry);
     }
 
-    public BooleanProperty needsCleaningProperty() {
-	return this.needsCleaning;
-    }
-
-    public boolean needsCleaning() {
-	return this.needsCleaningProperty().get();
+    public void setFilteredBookingEntries(final Collection<? extends BookingEntry> filteredBookingEntries) {
+	this.filteredBookingEntriesProperty().setAll(filteredBookingEntries);
     }
 
     public void setNeedsCleaning(final boolean needsCleaning) {
 	this.needsCleaningProperty().set(needsCleaning);
     }
 
-    public void removeCleaningEntry() {
-	if (getCleaningEntry() != null) {
-	    manager.removeCleaning(getCleaningEntry());
-	    // setCleaningEntry(null);
-	}
-
+    @Override
+    public String toString() {
+	return "roomBean:" + getDate() + ",name:" + getName() + ",filteredBookings:"
+		+ getFilteredBookingEntries().size() + " " + getBookingEntries().size();
     }
 
 }

@@ -31,11 +31,15 @@ public class GeneralSettingsController implements Initializable {
     private CheckBox completePayment;
 
     @FXML
+    private CheckBox netEarnings;
+
+    @FXML
     public void handleActionSaveSettings(final ActionEvent event) {
 	saveCleaningPlanLookBehind();
 	saveCleaningFee();
 	saveUpcomingLookAhead();
 	saveCompletePayment();
+	saveNetEarnings();
 	// final Stage stage = (Stage)
 	// cleaningPlanLookBehind.getScene().getWindow();
 	// stage.close();
@@ -86,7 +90,7 @@ public class GeneralSettingsController implements Initializable {
 	final String value = cleaningFee.getText();
 	if (value != null) {
 	    try {
-		final int value2 = Integer.parseInt(value.trim());
+		final float value2 = Float.parseFloat(value.trim());
 		SettingsManager.getInstance().setCleaningFees(value2);
 	    } catch (final NumberFormatException e) {
 		if (logger.isInfoEnabled()) {
@@ -112,6 +116,10 @@ public class GeneralSettingsController implements Initializable {
 
     private void saveCompletePayment() {
 	SettingsManager.getInstance().setCompletePayment(completePayment.isSelected());
+    }
+
+    private void saveNetEarnings() {
+	SettingsManager.getInstance().setShowNetEarnings(netEarnings.isSelected());
     }
 
     private void saveUpcomingLookAhead() {

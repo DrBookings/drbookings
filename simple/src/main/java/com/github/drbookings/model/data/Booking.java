@@ -16,28 +16,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
+import com.github.drbookings.model.EarningsProvider;
+import com.github.drbookings.model.GrossEarningsProvider;
+import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.NetEarningsCalculator;
+import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.model.settings.SettingsManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Booking extends IDed implements Comparable<Booking> {
-
-    public List<String> getCalendarIds() {
-	return calendarIds;
-    }
-
-    public void setCalendarIds(final Collection<? extends String> calendarIds) {
-	if (calendarIds != null) {
-	    this.calendarIds = new ArrayList<>(calendarIds);
-	}
-    }
+public class Booking extends IDed
+	implements Comparable<Booking>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -59,9 +56,9 @@ public class Booking extends IDed implements Comparable<Booking> {
 
     private final DoubleProperty serviceFee = new SimpleDoubleProperty(Float.valueOf(0));
 
-    private final DoubleProperty grossEarnings = new SimpleDoubleProperty();
+    private final FloatProperty grossEarnings = new SimpleFloatProperty();
 
-    private final DoubleProperty netEarnings = new SimpleDoubleProperty();
+    private final FloatProperty netEarnings = new SimpleFloatProperty();
 
     private final StringProperty grossEarningsExpression = new SimpleStringProperty();
 
@@ -74,6 +71,8 @@ public class Booking extends IDed implements Comparable<Booking> {
     private final BooleanProperty welcomeMailSend = new SimpleBooleanProperty(false);
 
     private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
+
+    private List<String> calendarIds = new ArrayList<>();
 
     public Booking(final Guest guest, final Room room, final BookingOrigin origin, final LocalDate checkIn,
 	    final LocalDate checkOut) {
@@ -100,6 +99,13 @@ public class Booking extends IDed implements Comparable<Booking> {
 
     }
 
+    public void addCalendarId(final String id) {
+	if (id != null) {
+	    calendarIds.add(id);
+	}
+
+    }
+
     private void bindProperties() {
 	// if (logger.isDebugEnabled()) {
 	// logger.debug("Binding on " + Thread.currentThread().getName());
@@ -114,17 +120,23 @@ public class Booking extends IDed implements Comparable<Booking> {
 
 	return () -> {
 	    final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
-	    if (getGuest().getName().contains("Lien")) {
-		final int wait = 0;
-	    }
 	    c.setFees(SettingsManager.getInstance().getCleaningFees());
-	    final float result = c.calculateNetEarnings((float) getGrossEarnings(), getBookingOrigin().getName());
+	    final float result = c.calculateNetEarnings(getGrossEarnings(), getBookingOrigin().getName());
 	    return result;
 	};
     }
 
     public StringProperty checkInNoteProperty() {
 	return this.checkInNote;
+    }
+
+    public StringProperty checkOutNoteProperty() {
+	return this.checkOutNote;
+    }
+
+    @Override
+    public int compareTo(final Booking o) {
+	return getCheckIn().compareTo(o.getCheckIn());
     }
 
     private Callable<Number> evaluateExpression() {
@@ -149,6 +161,10 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return bookingOrigin;
     }
 
+    public List<String> getCalendarIds() {
+	return calendarIds;
+    }
+
     public LocalDate getCheckIn() {
 	return checkIn;
     }
@@ -161,11 +177,24 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return checkOut;
     }
 
+    public String getCheckOutNote() {
+	return this.checkOutNoteProperty().get();
+    }
+
+    @Override
+    public float getEarnings(final boolean netEarnings) {
+	if (netEarnings) {
+	    return getNetEarnings();
+	}
+	return getGrossEarnings();
+    }
+
     public String getExternalId() {
 	return externalId;
     }
 
-    public double getGrossEarnings() {
+    @Override
+    public float getGrossEarnings() {
 	return this.grossEarningsProperty().get();
     }
 
@@ -177,7 +206,8 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return guest;
     }
 
-    public double getNetEarnings() {
+    @Override
+    public float getNetEarnings() {
 	return this.netEarningsProperty().get();
     }
 
@@ -203,11 +233,16 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return this.serviceFeeProperty().get();
     }
 
+    public String getSpecialRequestNote() {
+	return this.specialRequestNoteProperty().get();
+    }
+
     public StringProperty grossEarningsExpressionProperty() {
 	return this.grossEarningsExpression;
     }
 
-    public DoubleProperty grossEarningsProperty() {
+    @Override
+    public FloatProperty grossEarningsProperty() {
 	return this.grossEarnings;
     }
 
@@ -219,7 +254,8 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return this.welcomeMailSendProperty().get();
     }
 
-    public DoubleProperty netEarningsProperty() {
+    @Override
+    public FloatProperty netEarningsProperty() {
 	return this.netEarnings;
     }
 
@@ -231,15 +267,25 @@ public class Booking extends IDed implements Comparable<Booking> {
 	return this.serviceFee;
     }
 
+    public void setCalendarIds(final Collection<? extends String> calendarIds) {
+	if (calendarIds != null) {
+	    this.calendarIds = new ArrayList<>(calendarIds);
+	}
+    }
+
     public void setCheckInNote(final String checkInNote) {
 	this.checkInNoteProperty().set(checkInNote);
+    }
+
+    public void setCheckOutNote(final String checkOutNote) {
+	this.checkOutNoteProperty().set(checkOutNote);
     }
 
     public void setExternalId(final String externalId) {
 	this.externalId = externalId;
     }
 
-    public void setGrossEarnings(final double grossEarnings) {
+    public void setGrossEarnings(final float grossEarnings) {
 	this.grossEarningsProperty().set(grossEarnings);
 	// if (logger.isDebugEnabled()) {
 	// logger.debug("Gross Earnings changed to " + getGrossEarnings());
@@ -252,7 +298,7 @@ public class Booking extends IDed implements Comparable<Booking> {
 	this.grossEarningsExpressionProperty().set(expression);
     }
 
-    public void setNetEarnings(final double netEarnings) {
+    public void setNetEarnings(final float netEarnings) {
 	this.netEarningsProperty().set(netEarnings);
     }
 
@@ -264,8 +310,16 @@ public class Booking extends IDed implements Comparable<Booking> {
 	this.serviceFeeProperty().set(serviceFee);
     }
 
+    public void setSpecialRequestNote(final String specialRequestNote) {
+	this.specialRequestNoteProperty().set(specialRequestNote);
+    }
+
     public void setWelcomeMailSend(final boolean welcomeMailSend) {
 	this.welcomeMailSendProperty().set(welcomeMailSend);
+    }
+
+    public StringProperty specialRequestNoteProperty() {
+	return this.specialRequestNote;
     }
 
     @Override
@@ -276,44 +330,6 @@ public class Booking extends IDed implements Comparable<Booking> {
 
     public BooleanProperty welcomeMailSendProperty() {
 	return this.welcomeMailSend;
-    }
-
-    public StringProperty specialRequestNoteProperty() {
-	return this.specialRequestNote;
-    }
-
-    public String getSpecialRequestNote() {
-	return this.specialRequestNoteProperty().get();
-    }
-
-    public void setSpecialRequestNote(final String specialRequestNote) {
-	this.specialRequestNoteProperty().set(specialRequestNote);
-    }
-
-    public StringProperty checkOutNoteProperty() {
-	return this.checkOutNote;
-    }
-
-    public String getCheckOutNote() {
-	return this.checkOutNoteProperty().get();
-    }
-
-    public void setCheckOutNote(final String checkOutNote) {
-	this.checkOutNoteProperty().set(checkOutNote);
-    }
-
-    @Override
-    public int compareTo(final Booking o) {
-	return getCheckIn().compareTo(o.getCheckIn());
-    }
-
-    private List<String> calendarIds = new ArrayList<>();
-
-    public void addCalendarId(final String id) {
-	if (id != null) {
-	    calendarIds.add(id);
-	}
-
     }
 
 }
