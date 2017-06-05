@@ -26,6 +26,7 @@
 						<MenuItem text="Import Booking Excel" onAction="#handleMenuItemOpenBookingExcel" />
 						<MenuItem text="Export to Google Calendar" onAction="#handleMenuItemWriteToGoogleCalendar" />
 						<MenuItem text="Clear Google Calendar" onAction="#handleMenuItemClearGoogleCalendar" />
+						<MenuItem text="Clear Data" onAction="#handleMenuItemClearData" />
 
 					</items>
 				</Menu>

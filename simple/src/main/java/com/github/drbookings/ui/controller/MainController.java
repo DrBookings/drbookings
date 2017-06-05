@@ -23,7 +23,8 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
-import com.github.drbookings.model.OccupancyRateCalculator;
+import com.github.drbookings.model.MinimumPriceProvider;
+import com.github.drbookings.model.OccupancyRateProvider;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
@@ -280,6 +281,10 @@ public class MainController implements Initializable {
 
     private RoomDetailsDialogFactory roomDetailsDialogFactory;
 
+    private final OccupancyRateProvider occupancyRateProvider = new OccupancyRateProvider();
+
+    private final MinimumPriceProvider minimumPriceProvider = new MinimumPriceProvider();
+
     public MainController() {
 	manager = new MainManager();
     }
@@ -291,6 +296,10 @@ public class MainController implements Initializable {
 
     private Callable<String> buildProgressString(final UnmarshallListener listener) {
 	return () -> "Bookings read: " + listener.getBookingCount();
+    }
+
+    void clearData() {
+	getManager().clearData();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -324,22 +333,6 @@ public class MainController implements Initializable {
 		}
 	    }
 	}
-    }
-
-    private void doUpdateStatusLabel() {
-
-	final ObservableList<RoomBean> selectedRooms = CellSelectionManager.getInstance().getSelection();
-	// final List<DateBean> dateBeans = selectedRooms.stream().map(r ->
-	// r.getDateBean()).collect(Collectors.toList());
-	final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
-		.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
-	final BookingsByOrigin bo = new BookingsByOrigin(selectedBookings);
-	final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
-	sb.append("\tOccupancyRate:");
-	sb.append(StatusLabelStringFactory.DECIMAL_FORMAT
-		.format(new OccupancyRateCalculator().apply(selectedRooms).floatValue() * 100));
-	sb.append("%");
-	statusLabel.textProperty().set(sb.toString());
     }
 
     @SuppressWarnings("rawtypes")
@@ -491,10 +484,14 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void handleMenuItemClearData(final ActionEvent event) {
+	Platform.runLater(() -> clearData());
+    }
+
+    @FXML
     private void handleMenuItemClearGoogleCalendar(final ActionEvent event) {
 	final ClearGoogleCalendarService s = new ClearGoogleCalendarService();
 	s.start();
-
     }
 
     @FXML
@@ -960,8 +957,23 @@ public class MainController implements Initializable {
     }
 
     private void updateStatusLabel() {
-	Platform.runLater(() -> doUpdateStatusLabel());
+	Platform.runLater(() -> updateStatusLabelFX());
 
+    }
+
+    private void updateStatusLabelFX() {
+
+	final ObservableList<RoomBean> selectedRooms = CellSelectionManager.getInstance().getSelection();
+	final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
+		.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
+	final BookingsByOrigin bo = new BookingsByOrigin(selectedBookings);
+	final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
+	sb.append("\tOccupancyRate:");
+	sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(occupancyRateProvider.getOccupancyRate() * 100));
+	sb.append("%\tMinPriceAtRate:");
+	sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(minimumPriceProvider.getMinimumPrice()));
+	sb.append("€");
+	statusLabel.textProperty().set(sb.toString());
     }
 
 }

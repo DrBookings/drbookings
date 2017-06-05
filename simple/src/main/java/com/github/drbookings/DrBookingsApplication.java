@@ -101,23 +101,62 @@ public class DrBookingsApplication extends Application {
 	final Properties prop = new Properties();
 	InputStream input = null;
 	try {
-	    input = new FileInputStream(CONFIG_FILE_PATH);
-	    prop.load(input);
-	    SettingsManager.getInstance().setDataFile(new File(prop.getProperty(DATA_FILE_KEY)));
-	    SettingsManager.getInstance().setAdditionalCosts(Float.parseFloat(prop.getProperty(ADDITIONAL_COSTS_KEY)));
-	    SettingsManager.getInstance()
-		    .setReferenceColdRentLongTerm(Float.parseFloat(prop.getProperty(REFERENCE_COLD_RENT_LONGTERM_KEY)));
-	    SettingsManager.getInstance().setNumberOfRooms(Integer.parseInt(prop.getProperty(NUMBER_OF_ROOMS_KEY)));
-	    SettingsManager.getInstance()
-		    .setWorkHoursPerMonth(Float.parseFloat(prop.getProperty(WORK_HOURS_PER_MONTH_KEY)));
-	    SettingsManager.getInstance()
-		    .setShowNetEarnings(Boolean.parseBoolean(prop.getProperty(SHOW_NET_EARNINGS_KEY)));
+	    input = new FileInputStream(System.getProperty("user.home") + File.separator + CONFIG_FILE_PATH);
 	    if (logger.isInfoEnabled()) {
-		logger.info("Read settings from " + CONFIG_FILE_PATH);
+		logger.info("Reading properties from " + System.getProperty("user.home") + File.separator
+			+ CONFIG_FILE_PATH);
 	    }
-	} catch (final Exception ex) {
-	    if (logger.isDebugEnabled()) {
-		logger.debug("Failed to read properties file " + ex.toString());
+	    prop.load(input);
+
+	    try {
+		SettingsManager.getInstance().setDataFile(new File(prop.getProperty(DATA_FILE_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + DATA_FILE_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance()
+			.setAdditionalCosts(Float.parseFloat(prop.getProperty(ADDITIONAL_COSTS_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + ADDITIONAL_COSTS_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance().setReferenceColdRentLongTerm(
+			Float.parseFloat(prop.getProperty(REFERENCE_COLD_RENT_LONGTERM_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + REFERENCE_COLD_RENT_LONGTERM_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance().setNumberOfRooms(Integer.parseInt(prop.getProperty(NUMBER_OF_ROOMS_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + NUMBER_OF_ROOMS_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance()
+			.setWorkHoursPerMonth(Float.parseFloat(prop.getProperty(WORK_HOURS_PER_MONTH_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance()
+			.setShowNetEarnings(Boolean.parseBoolean(prop.getProperty(SHOW_NET_EARNINGS_KEY)));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + SHOW_NET_EARNINGS_KEY + ", " + ex.toString());
+		}
+	    }
+	} catch (final Exception e) {
+	    if (logger.isErrorEnabled()) {
+		logger.error(e.getLocalizedMessage(), e);
 	    }
 	} finally {
 	    IOUtils.closeQuietly(input);

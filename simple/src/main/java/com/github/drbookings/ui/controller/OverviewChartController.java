@@ -1,12 +1,12 @@
 package com.github.drbookings.ui.controller;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.BinYearMonth;
 import com.github.drbookings.model.MoneyMonitor;
+import com.github.drbookings.model.ProfitProvider;
+import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
@@ -27,11 +31,12 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -61,7 +66,7 @@ public class OverviewChartController implements Initializable {
     private MainController mainController;
 
     @FXML
-    private BarChart<String, Number> chart;
+    private StackedBarChart<String, Number> chart;
 
     @FXML
     private CategoryAxis xAxis;
@@ -80,7 +85,7 @@ public class OverviewChartController implements Initializable {
 
     private final BinYearMonth bin = new BinYearMonth();
 
-    private final ObservableList<XYChart.Data<String, Number>> chartData = FXCollections.observableArrayList();
+    private final ProfitProvider pc = new ProfitProvider();
 
     public OverviewChartController() {
 
@@ -113,48 +118,76 @@ public class OverviewChartController implements Initializable {
 
     private void handleChartClickEvent(final MouseEvent event) {
 
-	chartData.clear();
+	final Map<BookingOrigin, ObservableList<XYChart.Data<String, Number>>> chartData = new HashMap<>();
 
-	double max = 0;
+	int max = 0;
 	final double costsToCover = getCostsToCover();
 	final double refColdRentLongTerm = getRefColdRentLongTerm();
 	for (final Entry<YearMonth, Collection<DateBean>> e : bin.getYearMonth2DateBeanMap().entrySet()) {
-	    final double earnings = e.getValue().stream().flatMap(d -> d.getRooms().stream())
-		    .flatMap(r -> r.getFilteredBookingEntries().stream()).mapToDouble(be -> be.getNetEarnings()).sum();
 
-	    if (earnings > 0) {
-		final int profit = (int) (earnings - costsToCover - refColdRentLongTerm);
+	    final BookingsByOrigin bo = new BookingsByOrigin(e.getValue().stream().flatMap(d -> d.getRooms().stream())
+		    .flatMap(r -> r.getFilteredBookingEntries().stream()).collect(Collectors.toList()));
 
-		if (profit > max) {
-		    max = profit;
+	    final Map<BookingOrigin, Collection<BookingEntry>> map = bo.getMap();
+
+	    double totalPerformance = 0;
+	    for (final Entry<BookingOrigin, Collection<BookingEntry>> entry : map.entrySet()) {
+		final double sizeAll = bo.getAllBookings().size();
+		final double sizeThis = entry.getValue().size();
+		final double percent = sizeThis / sizeAll;
+		final double earnings = entry.getValue().stream().mapToDouble(be -> be.getNetEarnings()).sum();
+		final double performance = (earnings - (costsToCover * percent) - (refColdRentLongTerm * percent));
+		totalPerformance += performance;
+		if (earnings <= 0) {
+		    continue;
 		}
+
 		if (logger.isDebugEnabled()) {
-		    logger.debug(e.getKey() + "->" + profit);
+		    logger.debug(e.getKey() + "(" + String.format("%4.2f", percent) + "): " + entry.getKey() + "->"
+			    + String.format("%4.0f", performance));
 		}
 
-		final XYChart.Data<String, Number> data1 = new XYChart.Data<>(e.getKey().toString(), profit);
-		data1.nodeProperty().addListener(new ChangeListener<Node>() {
-		    @Override
-		    public void changed(final ObservableValue<? extends Node> ov, final Node oldNode,
-			    final Node newNode) {
-			if (newNode != null) {
-			    if (data1.getYValue().floatValue() > 0) {
-				newNode.setStyle("-fx-bar-fill: grey;");
-			    } else {
-				newNode.setStyle("-fx-bar-fill: tomato;");
-			    }
-			}
-		    }
-		});
-		chartData.add(data1);
+		final XYChart.Data<String, Number> data = new XYChart.Data<>(e.getKey().toString(), performance);
+		// data.nodeProperty().addListener(new
+		// ChangeListener<Node>() {
+		// @Override
+		// public void changed(final ObservableValue<? extends Node>
+		// ov,
+		// final Node oldNode,
+		// final Node newNode) {
+		// if (newNode != null) {
+		// if (data.getYValue().floatValue() > 0) {
+		// newNode.setStyle("-fx-bar-fill: grey;");
+		// } else {
+		// newNode.setStyle("-fx-bar-fill: tomato;");
+		// }
+		// }
+		// }
+		// });
+		final ObservableList<Data<String, Number>> hans = chartData.getOrDefault(entry.getKey(),
+			FXCollections.observableArrayList());
+		hans.add(data);
+		chartData.put(entry.getKey(), hans);
 
 	    }
 
+	    if (totalPerformance > max) {
+		max = (int) totalPerformance;
+	    }
 	}
-	yAxis.setUpperBound(max);
-	yAxis.setTickUnit(500);
-	yAxis.setLowerBound(-250);
-	chart.setMinHeight(140);
+
+	chart.getData().clear();
+	chartData.forEach((bo, co) -> {
+	    final Series s = new Series<>(bo.toString(), co);
+	    chart.getData().add(s);
+	});
+
+	xAxis.getCategories().addAll(chartData.keySet().stream().map(o -> o.toString()).collect(Collectors.toList()));
+	chart.setLegendVisible(true);
+	yAxis.setUpperBound(max + (max * 0.1));
+	yAxis.setTickUnit(200);
+	yAxis.setLowerBound(-200);
+	chart.setMinHeight(200);
 
     }
 
@@ -167,7 +200,26 @@ public class OverviewChartController implements Initializable {
 	    // }
 	});
 
-	chart.getData().add(new XYChart.Series<>("s1", chartData));
+	chart.getData().addListener(new ListChangeListener<Series<String, Number>>() {
+
+	    @Override
+	    public void onChanged(
+		    final javafx.collections.ListChangeListener.Change<? extends Series<String, Number>> c) {
+		while (c.next()) {
+		    for (final Series s : c.getAddedSubList()) {
+			if ("booking".equalsIgnoreCase(s.getName())) {
+			    if (s.getNode() != null) {
+				s.getNode().getStyleClass().add(".source-background-booking");
+			    }
+			} else if ("airbnb".equalsIgnoreCase(s.getName())) {
+			    if (s.getNode() != null) {
+				s.getNode().getStyleClass().add(".source-background-airbnb");
+			    }
+			}
+		    }
+		}
+	    }
+	});
 
 	updateChart2();
 	SettingsManager.getInstance().additionalCostsProperty().addListener(new PieChartUpdater());
@@ -193,28 +245,11 @@ public class OverviewChartController implements Initializable {
 
     private void updateChart2FX() {
 	chart.setMinHeight(60);
-	final Set<LocalDate> dates = CellSelectionManager.getInstance().getSelection().stream().map(r -> r.getDate())
-		.collect(Collectors.toSet());
-	if (logger.isDebugEnabled()) {
-	    logger.debug(dates.size() + " days selected");
-	}
-	final double costsToCover = getCostsToCover() / 30d * dates.size();
-	final double refColdRentLongTerm = getRefColdRentLongTerm() / 30d * dates.size();
-	final double netEarnings = getEarnings();
-	final double hours = getHours() / 30d * dates.size();
-	final double payment = netEarnings - costsToCover - refColdRentLongTerm;
-	final double paymentPerHour = payment / hours;
+	chart.setLegendVisible(false);
 
-	if (logger.isDebugEnabled()) {
-	    logger.debug(String.format("CostsToCover %8.2f", costsToCover));
-	    logger.debug(String.format("CostsToCover plus RefRent %8.2f", (costsToCover + refColdRentLongTerm)));
-	    logger.debug(String.format("TotalNetProfit %8.2f", netEarnings));
-	    logger.debug(String.format("Profit %8.2f", payment));
-	    logger.debug(String.format("Profit/hour %8.2f", paymentPerHour));
-	}
 	chart2.getChildren().clear();
-	final Label l = new Label("Profit total" + String.format("%6.0f€", payment) + "\n" + "Profit/hour"
-		+ String.format("%6.0f€", paymentPerHour));
+	final Label l = new Label("Profit total" + String.format("%6.0f€", pc.getProfit()) + "\n" + "Profit/hour"
+		+ String.format("%6.0f€", pc.getProfitPerHour()));
 	l.setWrapText(true);
 	chart2.getChildren().add(l);
     }

@@ -26,7 +26,7 @@
 <!-- 			</padding> -->
 <!-- 			<Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
 <!-- 		</HBox> -->
-		<BarChart legendVisible="false" fx:id="chart" barGap="0" categoryGap="4" title="Profit per Month"
+		<StackedBarChart legendVisible="true" legendSide="LEFT" fx:id="chart" 
 			 animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
 			maxHeight="140" prefHeight="80" minHeight="60">
 			<xAxis>
@@ -38,7 +38,7 @@
 					autoRanging="false" upperBound="10" lowerBound="0"
 					minorTickVisible="false" />
 			</yAxis>
-		</BarChart>
+		</StackedBarChart>
 <!-- 		<HBox alignment="CENTER"> -->
 <!-- 			<padding> -->
 <!-- 				<Insets right="8" left="8" /> -->
