@@ -610,16 +610,12 @@ public class MainController implements Initializable {
 		@Override
 		protected void updateItem(final Number item, final boolean empty) {
 		    super.updateItem(item, empty);
-		    this.getStyleClass().removeAll("all-payed", "needs-payment");
 		    if (item == null || empty) {
 			setText(null);
 		    } else {
-
 			setText(decimalFormat.format(item));
-
 		    }
 		}
-
 	    };
 
 	});

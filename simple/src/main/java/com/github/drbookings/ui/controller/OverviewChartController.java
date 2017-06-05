@@ -3,6 +3,8 @@ package com.github.drbookings.ui.controller;
 import java.net.URL;
 import java.time.YearMonth;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -177,9 +179,36 @@ public class OverviewChartController implements Initializable {
 	}
 
 	chart.getData().clear();
+
 	chartData.forEach((bo, co) -> {
 	    final Series s = new Series<>(bo.toString(), co);
 	    chart.getData().add(s);
+	});
+	chart.getData().sort(new Comparator<Series<String, Number>>() {
+
+	    @Override
+	    public int compare(final Series<String, Number> o1, final Series<String, Number> o2) {
+
+		final Data<String, Number> minValue1 = Collections.min(o1.getData(),
+			new Comparator<Data<String, Number>>() {
+
+			    @Override
+			    public int compare(final Data<String, Number> o1, final Data<String, Number> o2) {
+				return o1.getXValue().compareTo(o2.getXValue());
+			    }
+			});
+
+		final Data<String, Number> minValue2 = Collections.min(o2.getData(),
+			new Comparator<Data<String, Number>>() {
+
+			    @Override
+			    public int compare(final Data<String, Number> o1, final Data<String, Number> o2) {
+				return o1.getXValue().compareTo(o2.getXValue());
+			    }
+			});
+
+		return minValue1.getXValue().compareTo(minValue2.getXValue());
+	    }
 	});
 
 	xAxis.getCategories().addAll(chartData.keySet().stream().map(o -> o.toString()).collect(Collectors.toList()));
@@ -188,6 +217,20 @@ public class OverviewChartController implements Initializable {
 	yAxis.setTickUnit(200);
 	yAxis.setLowerBound(-200);
 	chart.setMinHeight(200);
+
+	// for (final XYChart.Series<String, Number> series : chart.getData()) {
+	// if ("booking".equalsIgnoreCase(series.getName())) {
+	// for (final Data data : series.getData()) {
+	// data.getNode().setStyle("-fx-background-color:
+	// rgba(8.0,152.0,255.0,1);");
+	// }
+	// } else if ("airbnb".equalsIgnoreCase(series.getName())) {
+	// for (final Data data : series.getData()) {
+	// data.getNode().setStyle("-fx-background-color:
+	// rgba(255.0,90.0,95.0,1);");
+	// }
+	// }
+	// }
 
     }
 
@@ -200,26 +243,38 @@ public class OverviewChartController implements Initializable {
 	    // }
 	});
 
-	chart.getData().addListener(new ListChangeListener<Series<String, Number>>() {
-
-	    @Override
-	    public void onChanged(
-		    final javafx.collections.ListChangeListener.Change<? extends Series<String, Number>> c) {
-		while (c.next()) {
-		    for (final Series s : c.getAddedSubList()) {
-			if ("booking".equalsIgnoreCase(s.getName())) {
-			    if (s.getNode() != null) {
-				s.getNode().getStyleClass().add(".source-background-booking");
-			    }
-			} else if ("airbnb".equalsIgnoreCase(s.getName())) {
-			    if (s.getNode() != null) {
-				s.getNode().getStyleClass().add(".source-background-airbnb");
-			    }
-			}
-		    }
-		}
-	    }
-	});
+	// chart.getData().addListener(new ListChangeListener<Series<String,
+	// Number>>() {
+	//
+	// @Override
+	// public void onChanged(
+	// final javafx.collections.ListChangeListener.Change<? extends
+	// Series<String, Number>> c) {
+	// while (c.next()) {
+	// System.err.println("Series " + c.getAddedSubList() + " kommt
+	// rein..");
+	// for (final Series<String, Number> s : c.getAddedSubList()) {
+	// s.nodeProperty().addListener(new ChangeListener<Node>() {
+	//
+	// @Override
+	// public void changed(final ObservableValue<? extends Node> observable,
+	// final Node oldValue,
+	// final Node newValue) {
+	// System.err.println("Already good");
+	// if ("booking".equalsIgnoreCase(s.getName())) {
+	// newValue.getStyleClass().add(".source-background-booking");
+	// System.err.println("Seems to work..");
+	// } else if ("airbnb".equalsIgnoreCase(s.getName())) {
+	// newValue.getStyleClass().add(".source-background-airbnb");
+	// System.err.println("Seems to work..");
+	// }
+	// }
+	// });
+	//
+	// }
+	// }
+	// }
+	// });
 
 	updateChart2();
 	SettingsManager.getInstance().additionalCostsProperty().addListener(new PieChartUpdater());
