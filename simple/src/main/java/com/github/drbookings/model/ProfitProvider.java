@@ -77,6 +77,9 @@ public class ProfitProvider {
 	    // costs to cover is a per-month-value, therefore calculate for
 	    // selected
 	    // period
+	    if (!avDays.isPresent()) {
+		return 0f;
+	    }
 	    final double costsToCover = getCostsToCover() / avDays.getAsDouble() * dates.size();
 	    // reference cold rent is a per-month-value, therefore calculate for
 	    // selected period

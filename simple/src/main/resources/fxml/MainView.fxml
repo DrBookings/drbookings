@@ -164,7 +164,7 @@
 								</cellValueFactory>
 							</TableColumn>
 							<TableColumn fx:id="cBruttoEarningsPerNightTotal"
-								text="Earnings">
+								text="Av.Earnings">
 								<cellValueFactory>
 									<PropertyValueFactory property="totalEarnings" />
 								</cellValueFactory>

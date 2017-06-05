@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -89,10 +90,13 @@ public class DateBean implements Comparable<DateBean> {
 	    final List<BookingEntry> bookings = getRooms().stream().flatMap(r -> r.getFilteredBookingEntries().stream())
 		    .collect(Collectors.toList());
 	    // System.err.println(bookings);
-	    final double result = bookings.stream()
-		    .mapToDouble(b -> b.getEarnings(SettingsManager.getInstance().isShowNetEarnings())).sum();
+	    final OptionalDouble result = bookings.stream().filter(b -> !b.isCheckOut())
+		    .mapToDouble(b -> b.getEarnings(SettingsManager.getInstance().isShowNetEarnings())).average();
 	    // System.err.println("net earnings: " + result);
-	    return result;
+	    if (result.isPresent()) {
+		return result.getAsDouble();
+	    }
+	    return 0;
 
 	};
     }
