@@ -170,6 +170,16 @@ public class MainManager {
 	return this.cleaningEntriesList;
     }
 
+    public void clearData() {
+	bookingEntries.clear();
+	cleaningEntries.clear();
+	bookings.clear();
+	cleaningEntriesList.clear();
+	filteredDates.clear();
+	uiData.clear();
+	uiDataMap.clear();
+    }
+
     public boolean containsBookingByNameAndDate(final Booking booking) {
 	for (final Booking b : bookings) {
 	    if (b.getGuest().getName().equals(booking.getGuest().getName())
