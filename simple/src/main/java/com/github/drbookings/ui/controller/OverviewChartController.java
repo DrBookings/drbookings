@@ -303,8 +303,8 @@ public class OverviewChartController implements Initializable {
 	chart.setLegendVisible(false);
 
 	chart2.getChildren().clear();
-	final Label l = new Label("Profit total" + String.format("%6.0f€", pc.getProfit()) + "\n" + "Profit/hour"
-		+ String.format("%6.0f€", pc.getProfitPerHour()));
+	final Label l = new Label("Performance total" + String.format("%6.0f€", pc.getProfit()) + "\n"
+		+ "Performance/hour" + String.format("%6.0f€", pc.getProfitPerHour()));
 	l.setWrapText(true);
 	chart2.getChildren().add(l);
     }
