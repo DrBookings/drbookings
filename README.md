@@ -17,7 +17,11 @@
 
 ## Screenshots
 
-![alt text](screenshots/drbookings01.png)
+![main view](pics/main-view-01.png)
+
+![performance overview](pics/performance-view-01.png)
+
+![performance overview](pics/performance-view-02.png)
 
 ![alt text](screenshots/upcoming-events.png)
 
