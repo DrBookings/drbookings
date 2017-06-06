@@ -80,6 +80,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -221,28 +222,7 @@ public class MainController implements Initializable {
     private TableView<DateBean> tableView;
 
     @FXML
-    private TableColumn<DateBean, LocalDate> cDate;
-
-    @FXML
-    private TableColumn<DateBean, DateBean> cStudio1;
-
-    @FXML
-    private TableColumn<DateBean, DateBean> cStudio2;
-
-    @FXML
     private Label statusLabel;
-
-    @FXML
-    private TableColumn<DateBean, DateBean> cStudio3;
-
-    @FXML
-    private TableColumn<DateBean, DateBean> cStudio4;
-
-    @FXML
-    private TableColumn<DateBean, Number> cAuslastung;
-
-    @FXML
-    private TableColumn<DateBean, Number> cBruttoEarningsPerNightTotal;
 
     @FXML
     private MenuItem menuItemExit;
@@ -292,6 +272,58 @@ public class MainController implements Initializable {
     private void addBooking() {
 	final ObservableList<RoomBean> dates = CellSelectionManager.getInstance().getSelection();
 	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate(), dates.get(0).getName()));
+    }
+
+    private void addDateColumn() {
+	final TableColumn<DateBean, LocalDate> col = new TableColumn<>("Date");
+	col.setCellValueFactory(new PropertyValueFactory<DateBean, LocalDate>("date"));
+	col.setCellFactory(column -> {
+	    return new TableCell<DateBean, LocalDate>() {
+		@Override
+		protected void updateItem(final LocalDate item, final boolean empty) {
+		    super.updateItem(item, empty);
+		    if (item == null || empty) {
+			setText(null);
+			setStyle("");
+		    } else {
+			setText(DrBookingsApplication.DATE_FORMATTER.format(item));
+		    }
+		}
+	    };
+	});
+	col.getStyleClass().addAll("center-left");
+	tableView.getColumns().add(col);
+
+    }
+
+    private void addEarningsColumn() {
+	final TableColumn<DateBean, Number> col = new TableColumn<>("Av.Earnings");
+	col.setCellValueFactory(new PropertyValueFactory<DateBean, Number>("totalEarnings"));
+	col.setCellFactory(column -> {
+	    return new TableCell<DateBean, Number>() {
+
+		@Override
+		protected void updateItem(final Number item, final boolean empty) {
+		    super.updateItem(item, empty);
+		    if (item == null || empty) {
+			setText(null);
+		    } else {
+			setText(decimalFormat.format(item));
+		    }
+		}
+	    };
+
+	});
+	col.getStyleClass().add("opace");
+	tableView.getColumns().add(col);
+
+    }
+
+    private void addOccupancyRateColumn() {
+	final TableColumn<DateBean, Number> col = new TableColumn<>("OccupancyRate");
+	col.setCellFactory(new OccupancyCellFactory());
+	col.setCellValueFactory(new OccupancyCellValueFactory());
+	tableView.getColumns().add(col);
     }
 
     private Callable<String> buildProgressString(final UnmarshallListener listener) {
@@ -368,6 +400,9 @@ public class MainController implements Initializable {
 	    if (LocalDates.isCurrentMonth(date)) {
 		result.add(index);
 	    }
+	}
+	if (result.isEmpty()) {
+	    return new int[0];
 	}
 	return ArrayUtils.toPrimitive(result.toArray(new Integer[] { result.size() }));
 
@@ -589,48 +624,6 @@ public class MainController implements Initializable {
 	guestNameFilterInput.textProperty().addListener(
 		(ChangeListener<String>) (observable, oldValue, newValue) -> manager.applyFilter(newValue));
 	initTableView();
-	cDate.setCellFactory(column -> {
-	    return new TableCell<DateBean, LocalDate>() {
-		@Override
-		protected void updateItem(final LocalDate item, final boolean empty) {
-		    super.updateItem(item, empty);
-
-		    if (item == null || empty) {
-			setText(null);
-			setStyle("");
-		    } else {
-			setText(DrBookingsApplication.DATE_FORMATTER.format(item));
-		    }
-		}
-	    };
-	});
-	cBruttoEarningsPerNightTotal.setCellFactory(column -> {
-	    return new TableCell<DateBean, Number>() {
-
-		@Override
-		protected void updateItem(final Number item, final boolean empty) {
-		    super.updateItem(item, empty);
-		    if (item == null || empty) {
-			setText(null);
-		    } else {
-			setText(decimalFormat.format(item));
-		    }
-		}
-	    };
-
-	});
-	cDate.getStyleClass().addAll("center-left");
-	cBruttoEarningsPerNightTotal.getStyleClass().add("opace");
-	cStudio1.setCellFactory(new StudioCellFactory("1"));
-
-	cStudio2.setCellFactory(new StudioCellFactory("2"));
-
-	cStudio3.setCellFactory(new StudioCellFactory("3"));
-
-	cStudio4.setCellFactory(new StudioCellFactory("4"));
-
-	cAuslastung.setCellFactory(new OccupancyCellFactory());
-	cAuslastung.setCellValueFactory(new OccupancyCellValueFactory());
 
 	tableView.getSelectionModel().getSelectedCells().addListener(getCellSelectionListener());
 	tableView.setOnMousePressed(event -> {
@@ -670,6 +663,9 @@ public class MainController implements Initializable {
     }
 
     private void initTableView() {
+
+	setTableColumns();
+
 	tableView.getSelectionModel().getSelectedCells().addListener(
 		(@SuppressWarnings("rawtypes") final ListChangeListener.Change<? extends TablePosition> c) -> {
 		    rowsWithSelectedCells.clear();
@@ -772,6 +768,20 @@ public class MainController implements Initializable {
 	final int[] currentMonthIndices = getLastThreeMonthIndicies();
 	tableView.getSelectionModel().selectIndices(currentMonthIndices[0], currentMonthIndices);
 	setWorking(false);
+    }
+
+    private void setTableColumns() {
+	addDateColumn();
+	final int numberRooms = SettingsManager.getInstance().getNumberOfRooms();
+	final String prefix = SettingsManager.getInstance().getRoomNamePrefix();
+	for (int i = 1; i <= numberRooms; i++) {
+	    final TableColumn<DateBean, DateBean> col1 = new TableColumn<>(prefix + i);
+	    col1.setCellValueFactory(new PropertyValueFactory<DateBean, DateBean>("self"));
+	    col1.setCellFactory(new StudioCellFactory("" + i));
+	    tableView.getColumns().add(col1);
+	}
+	addOccupancyRateColumn();
+	addEarningsColumn();
     }
 
     private void setWorking(final boolean working) {

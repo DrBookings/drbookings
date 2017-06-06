@@ -83,13 +83,15 @@ public class DrBookingsApplication extends Application {
 
     public static final String DATA_FILE_KEY = "data-file";
 
-    public static final String ADDITIONAL_COSTS_KEY = "additional-costs-permonth";
+    public static final String ADDITIONAL_COSTS_KEY = "additional-costs-permonth-perroom";
 
-    public static final String REFERENCE_COLD_RENT_LONGTERM_KEY = "reference-coldrent-longterm-permonth";
+    public static final String REFERENCE_COLD_RENT_LONGTERM_KEY = "reference-coldrent-longterm-permonth-perroom";
 
     public static final String WORK_HOURS_PER_MONTH_KEY = "work-hours-permonth";
 
     public static final String NUMBER_OF_ROOMS_KEY = "number-of-rooms";
+
+    public static final String ROOM_NAME_PREFIX_KEY = "room-name-prefix";
 
     public static final String SHOW_NET_EARNINGS_KEY = "show-net-earnings";
 
@@ -144,6 +146,13 @@ public class DrBookingsApplication extends Application {
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
 		    logger.debug("Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex.toString());
+		}
+	    }
+	    try {
+		SettingsManager.getInstance().setRoomNamePrefix(prop.getProperty(ROOM_NAME_PREFIX_KEY));
+	    } catch (final Exception ex) {
+		if (logger.isDebugEnabled()) {
+		    logger.debug("Failed to parse " + ROOM_NAME_PREFIX_KEY + ", " + ex.toString());
 		}
 	    }
 	    try {

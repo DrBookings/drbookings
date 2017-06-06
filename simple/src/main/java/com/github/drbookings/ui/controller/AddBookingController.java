@@ -2,6 +2,8 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import com.github.drbookings.LocalDates;
 import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.UIUtils;
 
 import javafx.beans.value.ChangeListener;
@@ -25,14 +28,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AddBookingController implements Initializable {
-
-    public MainManager getManager() {
-	return manager;
-    }
-
-    public void setManager(final MainManager manager) {
-	this.manager = manager;
-    }
 
     private final static Logger logger = LoggerFactory.getLogger(AddBookingController.class);
 
@@ -62,6 +57,21 @@ public class AddBookingController implements Initializable {
     @FXML
     private Label infoLabel;
 
+    private double getGrossEarnings() {
+	if (textFieldGrossEarnings.getText() != null) {
+	    try {
+		return Double.parseDouble(textFieldGrossEarnings.getText());
+	    } catch (final NumberFormatException e) {
+
+	    }
+	}
+	return 0;
+    }
+
+    public MainManager getManager() {
+	return manager;
+    }
+
     @FXML
     void handleButtonOK(final ActionEvent event) {
 	final boolean valid = validateInput();
@@ -85,17 +95,6 @@ public class AddBookingController implements Initializable {
 
     }
 
-    private double getGrossEarnings() {
-	if (textFieldGrossEarnings.getText() != null) {
-	    try {
-		return Double.parseDouble(textFieldGrossEarnings.getText());
-	    } catch (final NumberFormatException e) {
-
-	    }
-	}
-	return 0;
-    }
-
     @FXML
     void handleButtonSetCheckInDate(final ActionEvent event) {
 	final LocalDate date = datePickerCheckIn.getValue();
@@ -107,6 +106,31 @@ public class AddBookingController implements Initializable {
 	}
 
 	updateInfoLabel();
+    }
+
+    @FXML
+    void handleButtonSetCheckOutDate(final ActionEvent event) {
+	final LocalDate date = datePickerCheckOut.getValue();
+	if (datePickerCheckIn.getValue() == null) {
+	    datePickerCheckIn.setValue(date.minusDays(3));
+	}
+
+	updateInfoLabel();
+    }
+
+    @Override
+    public void initialize(final URL location, final ResourceBundle resources) {
+	final List<String> numbers = new ArrayList<>();
+	for (int i = 1; i <= SettingsManager.getInstance().getNumberOfRooms(); i++) {
+	    numbers.add("" + i);
+	}
+	comboBoxRoom.getItems().addAll(numbers);
+	textFieldGrossEarnings.textProperty()
+		.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateInfoLabel());
+    }
+
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
     }
 
     private void updateInfoLabel() {
@@ -128,23 +152,6 @@ public class AddBookingController implements Initializable {
 	    infoLabel.setText(numberOfNights + " nights.");
 	}
 
-    }
-
-    @FXML
-    void handleButtonSetCheckOutDate(final ActionEvent event) {
-	final LocalDate date = datePickerCheckOut.getValue();
-	if (datePickerCheckIn.getValue() == null) {
-	    datePickerCheckIn.setValue(date.minusDays(3));
-	}
-
-	updateInfoLabel();
-    }
-
-    @Override
-    public void initialize(final URL location, final ResourceBundle resources) {
-	comboBoxRoom.getItems().addAll("1", "2", "3", "4");
-	textFieldGrossEarnings.textProperty()
-		.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateInfoLabel());
     }
 
     private boolean validateInput() {
