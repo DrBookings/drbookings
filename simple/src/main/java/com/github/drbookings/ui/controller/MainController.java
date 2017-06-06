@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -394,10 +395,19 @@ public class MainController implements Initializable {
     }
 
     private int[] getCurrentMonthIndicies() {
+	return getIndicies(date -> LocalDates.isCurrentMonth(date));
+
+    }
+
+    public String getGuestNameFilter() {
+	return guestNameFilterInput.getText();
+    }
+
+    private int[] getIndicies(final Predicate<LocalDate> p) {
 	final List<Integer> result = new ArrayList<>();
 	for (int index = 0; index < tableView.getItems().size(); index++) {
 	    final LocalDate date = tableView.getItems().get(index).getDate();
-	    if (LocalDates.isCurrentMonth(date)) {
+	    if (p.test(date)) {
 		result.add(index);
 	    }
 	}
@@ -408,31 +418,13 @@ public class MainController implements Initializable {
 
     }
 
-    public String getGuestNameFilter() {
-	return guestNameFilterInput.getText();
-    }
-
     private int[] getLastMonthIndicies() {
-	final List<Integer> result = new ArrayList<>();
-	for (int index = 0; index < tableView.getItems().size(); index++) {
-	    final LocalDate date = tableView.getItems().get(index).getDate();
-	    if (LocalDates.isLastMonth(date)) {
-		result.add(index);
-	    }
-	}
-	return ArrayUtils.toPrimitive(result.toArray(new Integer[] { result.size() }));
+	return getIndicies(date -> LocalDates.isLastMonth(date));
 
     }
 
     private int[] getLastThreeMonthIndicies() {
-	final List<Integer> result = new ArrayList<>();
-	for (int index = 0; index < tableView.getItems().size(); index++) {
-	    final LocalDate date = tableView.getItems().get(index).getDate();
-	    if (LocalDates.isLastThreeMonths(date)) {
-		result.add(index);
-	    }
-	}
-	return ArrayUtils.toPrimitive(result.toArray(new Integer[] { result.size() }));
+	return getIndicies(date -> LocalDates.isLastThreeMonths(date));
 
     }
 
