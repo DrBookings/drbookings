@@ -23,10 +23,10 @@
 
 ![performance overview](pics/performance-view-02.png)
 
-![alt text](screenshots/upcoming-events.png)
+![alt text](pics/upcoming-events.png)
 
-![alt text](screenshots/room-details.png)
+![alt text](pics/room-details.png)
 
-![alt text](screenshots/booking-details.png)
+![alt text](pics/booking-details.png)
 
 
