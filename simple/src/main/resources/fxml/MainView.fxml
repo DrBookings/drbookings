@@ -118,58 +118,7 @@
 					<columnResizePolicy>
 						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 					</columnResizePolicy>
-<!-- 					<columnConstraints> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- percentWidth="20" /> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- percentWidth="20" /> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- percentWidth="20" /> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- percentWidth="20" /> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- percentWidth="10.0" /> -->
-						<!-- <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" -->
-						<!-- prefWidth="20.0" /> -->
-						<!-- </columnConstraints> -->
-						<columns>
-							<TableColumn text="Date" fx:id="cDate">
-								<cellValueFactory>
-									<PropertyValueFactory property="date" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cStudio1" text="#1">
-								<cellValueFactory>
-									<PropertyValueFactory property="self" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cStudio2" text="#2">
-								<cellValueFactory>
-									<PropertyValueFactory property="self" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cStudio3" text="#3">
-								<cellValueFactory>
-									<PropertyValueFactory property="self" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cStudio4" text="#4">
-								<cellValueFactory>
-									<PropertyValueFactory property="self" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cAuslastung" text="Occupancy">
-								<cellValueFactory>
-									<PropertyValueFactory property="self" />
-								</cellValueFactory>
-							</TableColumn>
-							<TableColumn fx:id="cBruttoEarningsPerNightTotal"
-								text="Av.Earnings">
-								<cellValueFactory>
-									<PropertyValueFactory property="totalEarnings" />
-								</cellValueFactory>
-							</TableColumn>
-						</columns>
+						
 				</TableView>
 
 			</children>

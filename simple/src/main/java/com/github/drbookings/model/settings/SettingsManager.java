@@ -49,6 +49,10 @@ public class SettingsManager {
 
     public static final int DEFAULT_CLEANINGPLAN_LOOKBEHIND_DAYS = 7;
 
+    public static final int DEFAULT_NUMBER_OF_ROOMS = 2;
+
+    public static final int MAX_NUMBER_OF_ROOMS = 10;
+
     public static final boolean DEFAULT_COMPLETE_PAYMENT = false;
 
     public static final int DEFAULT_UPCOMING_LOOK_AHEAD_DAYS = 3;
@@ -91,7 +95,8 @@ public class SettingsManager {
 	final Properties prop = readProperties();
 	OutputStream output = null;
 	try {
-	    output = new FileOutputStream(DrBookingsApplication.CONFIG_FILE_PATH);
+	    output = new FileOutputStream(
+		    System.getProperty("user.home") + File.separator + DrBookingsApplication.CONFIG_FILE_PATH);
 	    // set the properties value
 	    prop.setProperty(DrBookingsApplication.SHOW_NET_EARNINGS_KEY, newValue.toString());
 	    // save properties to project root folder
@@ -121,7 +126,7 @@ public class SettingsManager {
 
     private final BooleanProperty showNetEarnings = new SimpleBooleanProperty();
 
-    private final IntegerProperty numberOfRooms = new SimpleIntegerProperty();
+    private final IntegerProperty numberOfRooms = new SimpleIntegerProperty(DEFAULT_NUMBER_OF_ROOMS);
 
     private final Preferences cleaningFees = Preferences.userNodeForPackage(getClass());
 
@@ -252,7 +257,12 @@ public class SettingsManager {
 	cleaningFees.put(fileKey, file.getAbsolutePath());
     }
 
-    public final void setNumberOfRooms(final int numberOfRooms) {
+    public final void setNumberOfRooms(int numberOfRooms) {
+	if (numberOfRooms < DEFAULT_NUMBER_OF_ROOMS) {
+	    numberOfRooms = DEFAULT_NUMBER_OF_ROOMS;
+	} else if (numberOfRooms > MAX_NUMBER_OF_ROOMS) {
+	    numberOfRooms = MAX_NUMBER_OF_ROOMS;
+	}
 	this.numberOfRoomsProperty().set(numberOfRooms);
     }
 
