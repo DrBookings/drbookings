@@ -28,7 +28,7 @@
 		<!-- </padding> -->
 		<!-- <Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
 		<!-- </HBox> -->
-		<StackedBarChart legendVisible="true" fx:id="chart"
+		<StackedBarChart legendVisible="true" fx:id="chart" categoryGap="0"
 			animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" maxHeight="140"
 			prefHeight="80" minHeight="60">
 			<xAxis>
