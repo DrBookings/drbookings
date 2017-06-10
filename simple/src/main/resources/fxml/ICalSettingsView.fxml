@@ -21,7 +21,7 @@
 	</padding>
 	<children>
 		<Label GridPane.columnIndex="0" GridPane.rowIndex="0"
-			GridPane.columnSpan="2" text="Mapping: Vendor room name -> room name" />
+			GridPane.columnSpan="2" text="Mapping: Vendor Room Name -> DrBookings Room Number" />
 
 		<TextField fx:id="vendorRoomName1" GridPane.hgrow="ALWAYS"
 			GridPane.columnIndex="0" GridPane.rowIndex="1" />

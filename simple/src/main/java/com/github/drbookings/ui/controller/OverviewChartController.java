@@ -142,7 +142,7 @@ public class OverviewChartController implements Initializable {
 
 		yAxis.setUpperBound(max);
 		yAxis.setTickUnit(200);
-		yAxis.setLowerBound(-200);
+		yAxis.setLowerBound(-400);
 
 		if (expanded) {
 			chart.setLegendVisible(true);
