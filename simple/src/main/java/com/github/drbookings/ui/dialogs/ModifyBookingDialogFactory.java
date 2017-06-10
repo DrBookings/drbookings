@@ -3,7 +3,7 @@ package com.github.drbookings.ui.dialogs;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.controller.ModifyBookingController;
 
-public class ModifyBookingDialogFactory extends AbstractDialogFactory {
+public class ModifyBookingDialogFactory extends AbstractViewFactory {
 
     private final MainManager manager;
 

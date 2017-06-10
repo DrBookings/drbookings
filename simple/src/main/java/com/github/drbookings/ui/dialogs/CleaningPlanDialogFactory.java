@@ -13,7 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class CleaningPlanDialogFactory implements DialogFactory {
+public class CleaningPlanDialogFactory implements ViewFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(CleaningPlanDialogFactory.class);
 

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.controller.BookingDetailsController;
 
-public class BookingDetailsDialogFactory extends AbstractDialogFactory implements DialogFactory {
+public class BookingDetailsDialogFactory extends AbstractViewFactory implements ViewFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingDetailsDialogFactory.class);
     private final MainManager manager;

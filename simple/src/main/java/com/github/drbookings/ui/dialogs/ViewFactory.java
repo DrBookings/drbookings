@@ -1,6 +1,6 @@
 package com.github.drbookings.ui.dialogs;
 
-public interface DialogFactory {
+public interface ViewFactory {
 
     void showDialog();
 

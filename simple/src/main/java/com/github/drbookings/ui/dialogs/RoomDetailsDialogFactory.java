@@ -5,7 +5,7 @@ import com.github.drbookings.ui.controller.RoomDetailsController;
 
 import javafx.stage.Stage;
 
-public class RoomDetailsDialogFactory extends AbstractDialogFactory {
+public class RoomDetailsDialogFactory extends AbstractViewFactory {
 
     private final MainManager manager;
 

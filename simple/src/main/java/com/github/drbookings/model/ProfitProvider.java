@@ -19,107 +19,114 @@ import javafx.beans.property.SimpleFloatProperty;
 
 public class ProfitProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProfitProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProfitProvider.class);
 
-    private static double getCostsToCover() {
-	double result = 0;
-	result += SettingsManager.getInstance().getAdditionalCosts();
-	result *= SettingsManager.getInstance().getNumberOfRooms();
-	return result;
-    }
+	private static double getCostsToCover() {
+		double result = 0;
+		result += SettingsManager.getInstance().getAdditionalCosts();
+		result *= SettingsManager.getInstance().getNumberOfRooms();
+		return result;
+	}
 
-    private static double getEarnings() {
+	private static double getEarnings() {
 
-	return MoneyMonitor.getInstance().getTotalNetEarnings();
-    }
+		return MoneyMonitor.getInstance().getTotalNetEarnings();
+	}
 
-    private static double getHours() {
-	return SettingsManager.getInstance().getWorkHoursPerMonth();
-    }
+	private static double getHours() {
+		return SettingsManager.getInstance().getWorkHoursPerMonth();
+	}
 
-    private static double getRefColdRentLongTerm() {
-	return SettingsManager.getInstance().getReferenceColdRentLongTerm()
-		* SettingsManager.getInstance().getNumberOfRooms();
-    }
+	private static double getRefColdRentLongTerm() {
+		return SettingsManager.getInstance().getReferenceColdRentLongTerm()
+				* SettingsManager.getInstance().getNumberOfRooms();
+	}
 
-    private final FloatProperty profit = new SimpleFloatProperty();
+	private final FloatProperty profit = new SimpleFloatProperty();
 
-    private final FloatProperty profitPerHour = new SimpleFloatProperty();
+	private final FloatProperty profitPerHour = new SimpleFloatProperty();
 
-    public ProfitProvider() {
-	bindProperties();
-    }
+	public ProfitProvider() {
+		bindProperties();
+	}
 
-    private void bindProperties() {
-	profit.bind(
-		Bindings.createFloatBinding(calculcateProfit(), SettingsManager.getInstance().additionalCostsProperty(),
-			CellSelectionManager.getInstance().getSelection()));
-	profitPerHour.bind(Bindings.createFloatBinding(calculateProfitPerHour(), profit));
-    }
+	private void bindProperties() {
+		profit.bind(
+				Bindings.createFloatBinding(calculcateProfit(), SettingsManager.getInstance().additionalCostsProperty(),
+						CellSelectionManager.getInstance().getSelection()));
+		profitPerHour.bind(Bindings.createFloatBinding(calculateProfitPerHour(), profit));
+	}
 
-    private Callable<Float> calculateProfitPerHour() {
-	return () -> {
-	    final Set<LocalDate> dates = CellSelectionManager.getInstance().getSelection().stream()
-		    .map(r -> r.getDate()).collect(Collectors.toSet());
-	    // hours is a per-month-value, therefore calculate for selected
-	    // period
-	    final double hours = getHours() / 30d * dates.size();
-	    return (float) (profit.get() / hours);
-	};
-    }
+	private Callable<Float> calculateProfitPerHour() {
+		return () -> {
+			final Set<LocalDate> dates = CellSelectionManager.getInstance().getSelection().stream()
+					.map(r -> r.getDate()).collect(Collectors.toSet());
+			final Set<YearMonth> months = dates.stream().map(d -> YearMonth.from(d)).collect(Collectors.toSet());
+			final OptionalDouble avDays = months.stream().mapToDouble(ym -> ym.getMonth().maxLength()).average();
+			// hours is a per-month-value, therefore calculate for selected
+			// period
+			if (avDays.isPresent()) {
+				final double hours = getHours() / avDays.getAsDouble() * dates.size();
+				return (float) (profit.get() / hours);
+			} else {
+				return Float.NaN;
+			}
 
-    private Callable<Float> calculcateProfit() {
-	return () -> {
-	    final Set<LocalDate> dates = CellSelectionManager.getInstance().getSelection().stream()
-		    .map(r -> r.getDate()).collect(Collectors.toSet());
-	    final Set<YearMonth> months = dates.stream().map(d -> YearMonth.from(d)).collect(Collectors.toSet());
-	    final OptionalDouble avDays = months.stream().mapToDouble(ym -> ym.getMonth().maxLength()).average();
-	    // costs to cover is a per-month-value, therefore calculate for
-	    // selected
-	    // period
-	    if (!avDays.isPresent()) {
-		return 0f;
-	    }
-	    final double costsToCover = getCostsToCover() / avDays.getAsDouble() * dates.size();
-	    // reference cold rent is a per-month-value, therefore calculate for
-	    // selected period
-	    final double refColdRentLongTerm = getRefColdRentLongTerm() / avDays.getAsDouble() * dates.size();
-	    final double netEarnings = getEarnings();
-	    final double payment = netEarnings - costsToCover - refColdRentLongTerm;
+		};
+	}
 
-	    if (logger.isDebugEnabled()) {
-		logger.debug(String.format("AvDaysMonth %4.2f", avDays.getAsDouble()));
-		logger.debug(String.format("CostsToCover %8.2f", costsToCover));
-		logger.debug(String.format("CostsToCover plus RefRent %8.2f", (costsToCover + refColdRentLongTerm)));
-		logger.debug(String.format("TotalNetProfit %8.2f", netEarnings));
-		logger.debug(String.format("Profit %8.2f", payment));
-	    }
-	    return (float) payment;
-	};
-    }
+	private Callable<Float> calculcateProfit() {
+		return () -> {
+			final Set<LocalDate> dates = CellSelectionManager.getInstance().getSelection().stream()
+					.map(r -> r.getDate()).collect(Collectors.toSet());
+			final Set<YearMonth> months = dates.stream().map(d -> YearMonth.from(d)).collect(Collectors.toSet());
+			final OptionalDouble avDays = months.stream().mapToDouble(ym -> ym.getMonth().maxLength()).average();
+			// costs to cover is a per-month-value, therefore calculate for
+			// selected
+			// period
+			if (!avDays.isPresent()) {
+				return 0f;
+			}
+			final double costsToCover = getCostsToCover() / avDays.getAsDouble() * dates.size();
+			// reference cold rent is a per-month-value, therefore calculate for
+			// selected period
+			final double refColdRentLongTerm = getRefColdRentLongTerm() / avDays.getAsDouble() * dates.size();
+			final double netEarnings = getEarnings();
+			final double payment = netEarnings - costsToCover - refColdRentLongTerm;
 
-    public final float getProfit() {
-	return this.profitProperty().get();
-    }
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("AvDaysMonth %4.2f", avDays.getAsDouble()));
+				logger.debug(String.format("CostsToCover %8.2f", costsToCover));
+				logger.debug(String.format("CostsToCover plus RefRent %8.2f", (costsToCover + refColdRentLongTerm)));
+				logger.debug(String.format("TotalNetProfit %8.2f", netEarnings));
+				logger.debug(String.format("Profit %8.2f", payment));
+			}
+			return (float) payment;
+		};
+	}
 
-    public final float getProfitPerHour() {
-	return this.profitPerHourProperty().get();
-    }
+	public final float getProfit() {
+		return this.profitProperty().get();
+	}
 
-    public final FloatProperty profitPerHourProperty() {
-	return this.profitPerHour;
-    }
+	public final float getProfitPerHour() {
+		return this.profitPerHourProperty().get();
+	}
 
-    public final FloatProperty profitProperty() {
-	return this.profit;
-    }
+	public final FloatProperty profitPerHourProperty() {
+		return this.profitPerHour;
+	}
 
-    public final void setProfit(final float profit) {
-	this.profitProperty().set(profit);
-    }
+	public final FloatProperty profitProperty() {
+		return this.profit;
+	}
 
-    public final void setProfitPerHour(final float profitPerHour) {
-	this.profitPerHourProperty().set(profitPerHour);
-    }
+	public final void setProfit(final float profit) {
+		this.profitProperty().set(profit);
+	}
+
+	public final void setProfitPerHour(final float profitPerHour) {
+		this.profitPerHourProperty().set(profitPerHour);
+	}
 
 }
