@@ -36,6 +36,7 @@
 						<MenuItem text="Show Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
 						<MenuItem text="Show Booking Details" onAction="#handleMenuItemBookingDetails" />
 						<MenuItem text="Show Room Details" onAction="#handleMenuItemRoomDetails" />
+						<MenuItem text="Show Earnings Chart" onAction="#handleMenuItemShowEarningsChart" />
 
 					</items>
 				</Menu>

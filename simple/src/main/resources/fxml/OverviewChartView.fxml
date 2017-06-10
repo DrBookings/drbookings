@@ -11,26 +11,28 @@
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.chart.PieChart?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
 	fx:controller="com.github.drbookings.ui.controller.OverviewChartController"
 	maxWidth="Infinity" HBox.hgrow="ALWAYS" VBox.vgrow="SOMETIMES">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 		<URL value="@/css/overviewChart.css" />
 	</stylesheets>
-
+	<padding>
+		<Insets right="4" left="4" top="4" bottom="4" />
+	</padding>
 	<children>
-<!-- 		<HBox alignment="CENTER"> -->
-<!-- 			<padding> -->
-<!-- 				<Insets right="8" left="8" /> -->
-<!-- 			</padding> -->
-<!-- 			<Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
-<!-- 		</HBox> -->
-		<StackedBarChart legendVisible="true" legendSide="LEFT" fx:id="chart" 
-			 animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
-			maxHeight="140" prefHeight="80" minHeight="60">
+		<!-- <HBox alignment="CENTER"> -->
+		<!-- <padding> -->
+		<!-- <Insets right="8" left="8" /> -->
+		<!-- </padding> -->
+		<!-- <Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
+		<!-- </HBox> -->
+		<StackedBarChart legendVisible="true" fx:id="chart"
+			animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" maxHeight="140"
+			prefHeight="80" minHeight="60">
 			<xAxis>
-				<CategoryAxis fx:id="xAxis" tickLabelsVisible="true" 
+				<CategoryAxis fx:id="xAxis" tickLabelsVisible="true"
 					tickMarkVisible="false" tickLength="0" />
 			</xAxis>
 			<yAxis>
@@ -39,17 +41,5 @@
 					minorTickVisible="false" />
 			</yAxis>
 		</StackedBarChart>
-<!-- 		<HBox alignment="CENTER"> -->
-<!-- 			<padding> -->
-<!-- 				<Insets right="8" left="8" /> -->
-<!-- 			</padding> -->
-<!-- 			<Label fx:id="labelEndDate" wrapText="true" alignment="CENTER"></Label> -->
-<!-- 		</HBox> -->
-		<HBox fx:id="chart2" alignment="CENTER">
-			<padding>
-				<Insets right="8" left="8" />
-			</padding>
-		
-		</HBox>
 	</children>
-</HBox>
+</VBox>
