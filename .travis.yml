@@ -6,5 +6,5 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
-before_script: cd project
+before_script: cd simple
 script: "mvn clean install"
