@@ -1,7 +1,8 @@
-package com.github.drbookings.model;
+package com.github.drbookings.ui.provider;
 
 import java.util.concurrent.Callable;
 
+import com.github.drbookings.model.OccupancyRateCalculator;
 import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.beans.RoomBean;
 

@@ -1,4 +1,4 @@
-package com.github.drbookings.model;
+package com.github.drbookings.ui.provider;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;

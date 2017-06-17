@@ -1,18 +1,13 @@
 package com.github.drbookings.model;
 
-public interface NetEarningsCalculator {
+import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.ui.BookingEntry;
 
-    // @Deprecated
-    // float calculateNetEarnings(MainManager manager, LocalDate localDate);
+public interface NetEarningsCalculator extends java.util.function.Function<Booking, Number> {
 
-    float calculateNetEarnings(float grossEarnings, String bookingOrigin);
+	@Override
+	Number apply(Booking booking);
 
-    float getFees();
-
-    float getProvision();
-
-    NetEarningsCalculator setFees(float fees);
-
-    NetEarningsCalculator setProvision(float provision);
+	Number apply(BookingEntry booking);
 
 }

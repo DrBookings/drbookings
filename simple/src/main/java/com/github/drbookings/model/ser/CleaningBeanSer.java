@@ -13,17 +13,28 @@ import com.github.drbookings.ser.LocalDateAdapter;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CleaningBeanSer {
 
-    @XmlAttribute
-    public String name;
+	@Override
+	public String toString() {
+		return "CleaningBeanSer date=" + date + ", name=" + name + ", room=" + room + "]";
+	}
 
-    @XmlAttribute
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    public LocalDate date;
+	@XmlAttribute
+	public List<String> calendarIds;
 
-    @XmlAttribute
-    public String room;
+	@XmlAttribute
+	public float cleaningCosts;
 
-    @XmlAttribute
-    public List<String> calendarIds;
+	@XmlAttribute
+	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+	public LocalDate date;
+
+	@XmlAttribute
+	public String name;
+
+	@XmlAttribute
+	public String bookingId;
+
+	@XmlAttribute
+	public String room;
 
 }

@@ -41,6 +41,10 @@
 		<ComboBox fx:id="comboBoxRoom" maxWidth="Infinity" />
 		<Label text="Gross Earnings" />
 		<TextField fx:id="textFieldGrossEarnings" />
+		<Label text="Service Fees" />
+		<TextField fx:id="textFieldServiceFees" />
+		<Label text="Service Fees Percent" />
+		<TextField fx:id="textFieldServiceFeesPercent" />
 		<HBox alignment="CENTER_RIGHT">
 			<children>
 				<Button fx:id="buttonOK" defaultButton="true" onAction="#handleButtonOK"

@@ -24,8 +24,6 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
-import com.github.drbookings.model.MinimumPriceProvider;
-import com.github.drbookings.model.OccupancyRateProvider;
 import com.github.drbookings.model.ProfitProvider;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
@@ -49,6 +47,8 @@ import com.github.drbookings.ui.dialogs.CleaningPlanDialogFactory;
 import com.github.drbookings.ui.dialogs.EarningsChartFactory;
 import com.github.drbookings.ui.dialogs.GeneralSettingsDialogFactory;
 import com.github.drbookings.ui.dialogs.RoomDetailsDialogFactory;
+import com.github.drbookings.ui.provider.MinimumPriceProvider;
+import com.github.drbookings.ui.provider.OccupancyRateProvider;
 import com.jcabi.manifests.Manifests;
 
 import javafx.application.Platform;
@@ -866,7 +866,7 @@ public class MainController implements Initializable {
 			final Parent root = loader.load();
 			final Stage stage = new Stage();
 			stage.setWidth(300);
-			stage.setHeight(400);
+			stage.setHeight(600);
 			final Scene scene = new Scene(root);
 			stage.setTitle("Add Booking");
 			stage.setScene(scene);
@@ -886,9 +886,9 @@ public class MainController implements Initializable {
 	}
 
 	private void showBookingDetails() {
-		if (bookingDetailsDialogFactory == null) {
-			bookingDetailsDialogFactory = new BookingDetailsDialogFactory(getManager());
-		}
+		// if (bookingDetailsDialogFactory == null) {
+		bookingDetailsDialogFactory = new BookingDetailsDialogFactory(getManager());
+		// }
 		bookingDetailsDialogFactory.showDialog();
 	}
 
@@ -912,9 +912,9 @@ public class MainController implements Initializable {
 	}
 
 	private void showRoomDetailsDialog() {
-		if (this.roomDetailsDialogFactory == null) {
-			this.roomDetailsDialogFactory = new RoomDetailsDialogFactory(getManager());
-		}
+		// if (this.roomDetailsDialogFactory == null) {
+		this.roomDetailsDialogFactory = new RoomDetailsDialogFactory(getManager());
+		// }
 		roomDetailsDialogFactory.showDialog();
 
 	}
