@@ -39,7 +39,7 @@ public class DefaultNetEarningsCalculatorTest {
 		final Booking b = TestUtils.getTestBooking(LocalDate.now(), LocalDate.now().plusDays(4));
 		b.setGrossEarningsExpression("360");
 		b.setServiceFee(0);
-		b.setServiceFeesPercent(0.12f);
+		b.setServiceFeesPercent(12f);
 		b.setCleaningFees(60);
 		final CleaningEntry ce = new CleaningEntry(LocalDate.now(), b, new Cleaning("testCleaning"), null);
 		ce.setCleaningCosts(40);
