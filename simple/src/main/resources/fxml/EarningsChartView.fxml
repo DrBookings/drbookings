@@ -23,7 +23,7 @@
 	</padding>
 	<children>
 		<StackedBarChart 
-			fx:id="chart" maxWidth="Infinity"  animated="false"
+			fx:id="chart" maxWidth="Infinity"  animated="false" VBox.vgrow="ALWAYS"
 			>
 			<xAxis>
 				<CategoryAxis fx:id="xAxis" />

@@ -48,9 +48,9 @@ public class GeneralSettingsController implements Initializable {
 
 	private void initCleaningFee() {
 		cleaningFee.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-		cleaningFee.setPromptText("default " + SettingsManager.DEFAULT_CLEANING_FEE);
+		cleaningFee.setPromptText("default " + SettingsManager.DEFAULT_CLEANING_FEES);
 		final float value = SettingsManager.getInstance().getCleaningFees();
-		if (value != SettingsManager.DEFAULT_CLEANING_FEE) {
+		if (value != SettingsManager.DEFAULT_CLEANING_FEES) {
 			cleaningFee.setText(value + "");
 		}
 	}

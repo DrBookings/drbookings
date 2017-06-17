@@ -30,7 +30,7 @@
 			GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
 		<Label GridPane.columnIndex="0" GridPane.rowIndex="1" wrapText="true"
-			text="Cleaning Fee Per Stay [€]" />
+			text="Default Cleaning Fee Per Stay [€]" />
 
 		<TextField fx:id="cleaningFee" GridPane.columnIndex="1"
 			GridPane.rowIndex="1" />

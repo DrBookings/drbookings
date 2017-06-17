@@ -20,7 +20,7 @@
 
 	<columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" />
-		<ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" />
+		<ColumnConstraints hgrow="ALWAYS" minWidth="40.0" />
 	</columnConstraints>
 
 	<children>
@@ -32,17 +32,20 @@
 		<Label text="Cleaning" GridPane.columnIndex="0"
 			GridPane.rowIndex="1" />
 
-		<TextField fx:id="cleaning" GridPane.columnIndex="1"
-			GridPane.rowIndex="1" />
+		<VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
+			maxWidth="Infinity" spacing="8">
+			<TextField fx:id="cleaningName" prefWidth="100" HBox.hgrow="SOMETIMES" />
+			<Label fx:id="cleaningBooking" HBox.hgrow="SOMETIMES"/>
+		</VBox>
 
-		<Label text="Guests" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+		<Label text="Guests" GridPane.columnIndex="0" GridPane.rowIndex="2" wrapText="true" />
 
 		<Label fx:id="guestNames" maxWidth="Infinity"
-			GridPane.columnIndex="1" wrapText="true" GridPane.rowIndex="2" />
+			GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
 
 		<Button fx:id="buttonSave" text="Save" defaultButton="true"
-			prefWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="3"
-			onAction="#handleButtonSave" />
+			 prefWidth="100" GridPane.columnIndex="1"
+			GridPane.rowIndex="3" onAction="#handleButtonSave" />
 	</children>
 </GridPane>

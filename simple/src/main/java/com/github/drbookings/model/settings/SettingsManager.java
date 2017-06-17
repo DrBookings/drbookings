@@ -34,37 +34,43 @@ public class SettingsManager {
 		private static final SettingsManager instance = new SettingsManager();
 	}
 
+	private static final String cleaningFeesKey = "cleaningFeeKey";
+
 	private static final String cleaningPlanLookBehindKey = "cleaningPlanLookBehindKey";
 
 	private static final String completePaymentKey = "completePaymentKey";
 
-	private static final String upcomingLookAheadKey = "upcomingLookAheadKey";
+	public static final float DEFAULT_CLEANING_FEES = 0;
 
-	private static final String roomNamePrefixKey = "roomPrefixKey";
+	public static final float DEFAULT_SERVICE_FEES = 0;
 
-	private static final String cleaningFeeKey = "cleaningFeeKey";
+	public static final float DEFAULT_SERVICE_FEES_PERCENT = 0;
 
-	private static final String roomNameMapKey = "roomNameMapKey";
+	public static final float DEFAULT_CLEANING_COSTS = DEFAULT_CLEANING_FEES;
 
 	public static final int DEFAULT_CLEANINGPLAN_LOOKBEHIND_DAYS = 7;
 
-	public static final int DEFAULT_NUMBER_OF_ROOMS = 2;
-
-	public static final int MAX_NUMBER_OF_ROOMS = 10;
-
 	public static final boolean DEFAULT_COMPLETE_PAYMENT = false;
-
-	public static final int DEFAULT_UPCOMING_LOOK_AHEAD_DAYS = 3;
-
-	public static final float DEFAULT_CLEANING_FEE = 0;
-
-	private static final String fileKey = "data";
 
 	public static final String DEFAULT_FILE_NAME = "booking-data.xml";
 
+	public static final int DEFAULT_NUMBER_OF_ROOMS = 2;
+
 	public static final String DEFAULT_ROOM_NAME_PREFIX = "F";
 
+	public static final int DEFAULT_UPCOMING_LOOK_AHEAD_DAYS = 3;
+
+	private static final String fileKey = "data";
+
 	private static final Logger logger = LoggerFactory.getLogger(SettingsManager.class);
+
+	public static final int MAX_NUMBER_OF_ROOMS = 10;
+
+	private static final String roomNameMapKey = "roomNameMapKey";
+
+	private static final String roomNamePrefixKey = "roomPrefixKey";
+
+	private static final String upcomingLookAheadKey = "upcomingLookAheadKey";
 
 	public static SettingsManager getInstance() {
 		return InstanceHolder.instance;
@@ -92,50 +98,35 @@ public class SettingsManager {
 		return null;
 	}
 
-	protected void saveAllToFile() {
-		final Properties prop = readProperties();
-		OutputStream output = null;
-		try {
-			output = new FileOutputStream(
-					System.getProperty("user.home") + File.separator + DrBookingsApplication.CONFIG_FILE_PATH);
-			prop.setProperty(DrBookingsApplication.SHOW_NET_EARNINGS_KEY, Boolean.toString(isShowNetEarnings()));
-			prop.store(output, "Dr.Bookings Preferences");
-			if (logger.isDebugEnabled()) {
-				logger.debug("Properties file updated");
-			}
-		} catch (final IOException io) {
-			if (logger.isErrorEnabled()) {
-				logger.debug("Failed to write properties file " + io.toString());
-			}
-		} finally {
-			IOUtils.closeQuietly(output);
-		}
-
-	}
-
-	private final BooleanProperty completePayment = new SimpleBooleanProperty(DEFAULT_COMPLETE_PAYMENT);
-
-	private final FloatProperty fees = new SimpleFloatProperty(0f);
-
-	private final FloatProperty referenceColdRentLongTerm = new SimpleFloatProperty();
-
-	private final FloatProperty workHoursPerMonth = new SimpleFloatProperty();
-
 	private final FloatProperty additionalCosts = new SimpleFloatProperty();
 
-	private final BooleanProperty showNetEarnings = new SimpleBooleanProperty();
+	private final FloatProperty cleaningCosts = new SimpleFloatProperty(DEFAULT_CLEANING_COSTS);
+
+	private final FloatProperty cleaningFees = new SimpleFloatProperty(DEFAULT_CLEANING_FEES);
+
+	private final FloatProperty serviceFees = new SimpleFloatProperty(DEFAULT_SERVICE_FEES);
+
+	private final FloatProperty serviceFeesPercent = new SimpleFloatProperty(DEFAULT_SERVICE_FEES_PERCENT);
+
+	private final BooleanProperty completePayment = new SimpleBooleanProperty(DEFAULT_COMPLETE_PAYMENT);
 
 	private final IntegerProperty numberOfRooms = new SimpleIntegerProperty(DEFAULT_NUMBER_OF_ROOMS);
 
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 
+	private final FloatProperty referenceColdRentLongTerm = new SimpleFloatProperty();
+
+	private final BooleanProperty showNetEarnings = new SimpleBooleanProperty();
+
+	private final FloatProperty workHoursPerMonth = new SimpleFloatProperty();
+
 	private SettingsManager() {
 		completePayment.set(prefs.getBoolean(completePaymentKey, false));
 		completePayment.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> prefs
 				.putBoolean(completePaymentKey, newValue));
-		cleaningFeesProperty().set(prefs.getFloat(cleaningFeeKey, DEFAULT_CLEANING_FEE));
+		cleaningFeesProperty().set(prefs.getFloat(cleaningFeesKey, DEFAULT_CLEANING_FEES));
 		cleaningFeesProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
-			prefs.putFloat(cleaningFeeKey, newValue.floatValue());
+			prefs.putFloat(cleaningFeesKey, newValue.floatValue());
 		});
 	}
 
@@ -143,8 +134,12 @@ public class SettingsManager {
 		return this.additionalCosts;
 	}
 
+	public final FloatProperty cleaningCostsProperty() {
+		return this.cleaningCosts;
+	}
+
 	public FloatProperty cleaningFeesProperty() {
-		return this.fees;
+		return this.cleaningFees;
 	}
 
 	public BooleanProperty completePaymentProperty() {
@@ -153,6 +148,10 @@ public class SettingsManager {
 
 	public final float getAdditionalCosts() {
 		return this.additionalCostsProperty().get();
+	}
+
+	public final float getCleaningCosts() {
+		return this.cleaningCostsProperty().get();
 	}
 
 	public float getCleaningFees() {
@@ -227,8 +226,38 @@ public class SettingsManager {
 		return this.referenceColdRentLongTerm;
 	}
 
+	protected void saveAllToFile() {
+		final Properties prop = readProperties();
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(
+					System.getProperty("user.home") + File.separator + DrBookingsApplication.CONFIG_FILE_PATH);
+			prop.setProperty(DrBookingsApplication.SHOW_NET_EARNINGS_KEY, Boolean.toString(isShowNetEarnings()));
+			prop.store(output, "Dr.Bookings Preferences");
+			if (logger.isInfoEnabled()) {
+				logger.info("Properties file updated");
+			}
+		} catch (final IOException io) {
+			if (logger.isErrorEnabled()) {
+				logger.error("Failed to write properties file " + io.toString());
+			}
+		} finally {
+			IOUtils.closeQuietly(output);
+		}
+
+	}
+
+	public void saveToFile() {
+		saveAllToFile();
+
+	}
+
 	public final void setAdditionalCosts(final float additionalCosts) {
 		this.additionalCostsProperty().set(additionalCosts);
+	}
+
+	public final void setCleaningCosts(final float cleaningCosts) {
+		this.cleaningCostsProperty().set(cleaningCosts);
 	}
 
 	public void setCleaningFees(final float fees) {
@@ -290,9 +319,28 @@ public class SettingsManager {
 		return this.workHoursPerMonth;
 	}
 
-	public void saveToFile() {
-		saveAllToFile();
+	public final FloatProperty serviceFeesProperty() {
+		return this.serviceFees;
+	}
 
+	public final float getServiceFees() {
+		return this.serviceFeesProperty().get();
+	}
+
+	public final void setServiceFees(final float serviceFees) {
+		this.serviceFeesProperty().set(serviceFees);
+	}
+
+	public final FloatProperty serviceFeesPercentProperty() {
+		return this.serviceFeesPercent;
+	}
+
+	public final float getServiceFeesPercent() {
+		return this.serviceFeesPercentProperty().get();
+	}
+
+	public final void setServiceFeesPercent(final float serviceFeesPercent) {
+		this.serviceFeesPercentProperty().set(serviceFeesPercent);
 	}
 
 }

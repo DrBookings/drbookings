@@ -95,6 +95,14 @@ public class DrBookingsApplication extends Application {
 
 	public static final String SHOW_NET_EARNINGS_KEY = "show-net-earnings";
 
+	private static final String CLEANING_FEES_KEY = "default-cleaning-fees";
+
+	private static final String SERVICE_FEES_KEY = "default-service-fees";
+
+	private static final String SERVICE_FEES_PERCENT_KEY = "default-service-fees-percent";
+
+	private static final String CLEANING_COSTS_KEY = "default-cleaning-costs";
+
 	public static void main(final String[] args) {
 		launch(args);
 	}
@@ -161,6 +169,35 @@ public class DrBookingsApplication extends Application {
 			} catch (final Exception ex) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Failed to parse " + SHOW_NET_EARNINGS_KEY + ", " + ex.toString());
+				}
+			}
+			try {
+				SettingsManager.getInstance().setCleaningFees(Float.parseFloat(prop.getProperty(CLEANING_FEES_KEY)));
+			} catch (final Exception ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to parse " + CLEANING_FEES_KEY + ", " + ex.toString());
+				}
+			}
+			try {
+				SettingsManager.getInstance().setCleaningCosts(Float.parseFloat(prop.getProperty(CLEANING_COSTS_KEY)));
+			} catch (final Exception ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to parse " + CLEANING_COSTS_KEY + ", " + ex.toString());
+				}
+			}
+			try {
+				SettingsManager.getInstance().setServiceFees(Float.parseFloat(prop.getProperty(SERVICE_FEES_KEY)));
+			} catch (final Exception ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to parse " + SERVICE_FEES_KEY + ", " + ex.toString());
+				}
+			}
+			try {
+				SettingsManager.getInstance()
+						.setServiceFeesPercent(Float.parseFloat(prop.getProperty(SERVICE_FEES_PERCENT_KEY)));
+			} catch (final Exception ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex.toString());
 				}
 			}
 		} catch (final Exception e) {

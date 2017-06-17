@@ -83,7 +83,6 @@ public class DateBean implements Comparable<DateBean> {
 				totalEarningsProperty()));
 		occupancyProperty().bind(Bindings.createObjectBinding(calculateOccupancy(), roomsProperty()));
 		earningsPerOriginProperty().bind(Bindings.createObjectBinding(calculateEarningsPerOrigin(), roomsProperty(),
-				SettingsManager.getInstance().cleaningFeesProperty(),
 				SettingsManager.getInstance().showNetEarningsProperty()));
 		totalEarningsProperty().bind(Bindings.createObjectBinding(calculateEarnings(), earningsPerOriginProperty()));
 	}
@@ -93,8 +92,10 @@ public class DateBean implements Comparable<DateBean> {
 			final ObservableMap<String, Number> result = FXCollections.observableMap(new TreeMap<>());
 			final Stream<BookingEntry> s = getRooms().stream().flatMap(r -> r.getFilteredBookingEntries().stream());
 			s.forEach(b -> {
-				result.put(b.getElement().getBookingOrigin().getName(),
-						b.getEarnings(SettingsManager.getInstance().isShowNetEarnings()));
+				double n = result.getOrDefault(b.getElement().getBookingOrigin().getName(), Double.valueOf(0))
+						.doubleValue();
+				n += b.getEarnings(SettingsManager.getInstance().isShowNetEarnings());
+				result.put(b.getElement().getBookingOrigin().getName(), n);
 			});
 			return result;
 		};

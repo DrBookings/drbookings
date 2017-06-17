@@ -17,6 +17,7 @@ import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.UIUtils;
 
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,154 +30,190 @@ import javafx.stage.Stage;
 
 public class AddBookingController implements Initializable {
 
-    private final static Logger logger = LoggerFactory.getLogger(AddBookingController.class);
+	private final static Logger logger = LoggerFactory.getLogger(AddBookingController.class);
 
-    private MainManager manager;
+	private MainManager manager;
 
-    @FXML
-    private Button buttonOK;
+	@FXML
+	private Button buttonOK;
 
-    @FXML
-    DatePicker datePickerCheckIn;
+	@FXML
+	DatePicker datePickerCheckIn;
 
-    @FXML
-    DatePicker datePickerCheckOut;
+	@FXML
+	DatePicker datePickerCheckOut;
 
-    @FXML
-    private TextField textFieldSource;
+	@FXML
+	private TextField textFieldSource;
 
-    @FXML
-    private TextField textFieldGrossEarnings;
+	@FXML
+	private TextField textFieldGrossEarnings;
 
-    @FXML
-    ComboBox<String> comboBoxRoom;
+	@FXML
+	ComboBox<String> comboBoxRoom;
 
-    @FXML
-    private TextField textFieldGuestName;
+	@FXML
+	private TextField textFieldGuestName;
 
-    @FXML
-    private Label infoLabel;
+	@FXML
+	private TextField textFieldServiceFees;
 
-    private double getGrossEarnings() {
-	if (textFieldGrossEarnings.getText() != null) {
-	    try {
-		return Double.parseDouble(textFieldGrossEarnings.getText());
-	    } catch (final NumberFormatException e) {
+	@FXML
+	private TextField textFieldServiceFeesPercent;
 
-	    }
-	}
-	return 0;
-    }
+	@FXML
+	private Label infoLabel;
 
-    public MainManager getManager() {
-	return manager;
-    }
+	private double getGrossEarnings() {
+		if (textFieldGrossEarnings.getText() != null) {
+			try {
+				return Double.parseDouble(textFieldGrossEarnings.getText());
+			} catch (final NumberFormatException e) {
 
-    @FXML
-    void handleButtonOK(final ActionEvent event) {
-	final boolean valid = validateInput();
-	if (valid) {
-	    try {
-		final Booking b = getManager().createBooking(datePickerCheckIn.getValue(),
-			datePickerCheckOut.getValue(), textFieldGuestName.getText().trim(),
-			comboBoxRoom.getSelectionModel().getSelectedItem(), textFieldSource.getText().trim());
-		b.setGrossEarningsExpression(getGrossEarnings() + "");
-		getManager().addBooking(b);
-
-	    } catch (final OverbookingException e) {
-		if (logger.isDebugEnabled()) {
-		    logger.debug(e.getLocalizedMessage());
+			}
 		}
-		UIUtils.showError("Overbooking", e.getLocalizedMessage());
-	    }
-	    final Stage stage = (Stage) buttonOK.getScene().getWindow();
-	    stage.close();
+		return 0;
 	}
 
-    }
-
-    @FXML
-    void handleButtonSetCheckInDate(final ActionEvent event) {
-	final LocalDate date = datePickerCheckIn.getValue();
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("Selected Check-in " + date);
-	// }
-	if (datePickerCheckOut.getValue() == null) {
-	    datePickerCheckOut.setValue(date.plusDays(3));
+	public MainManager getManager() {
+		return manager;
 	}
 
-	updateInfoLabel();
-    }
+	@FXML
+	void handleButtonOK(final ActionEvent event) {
+		final boolean valid = validateInput();
+		if (valid) {
+			try {
+				final Booking b = getManager().createBooking(datePickerCheckIn.getValue(),
+						datePickerCheckOut.getValue(), textFieldGuestName.getText().trim(),
+						comboBoxRoom.getSelectionModel().getSelectedItem(), textFieldSource.getText().trim());
+				b.setGrossEarningsExpression(getGrossEarnings() + "");
+				b.setCleaningFees(SettingsManager.getInstance().getCleaningFees());
+				try {
+					b.setServiceFeesPercent(Float.parseFloat(textFieldServiceFeesPercent.getText()));
+				} catch (final NumberFormatException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug(e.toString());
+					}
+				}
+				try {
+					b.setServiceFee(Float.parseFloat(textFieldServiceFees.getText()));
+				} catch (final NumberFormatException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug(e.toString());
+					}
+				}
+				getManager().addBooking(b);
 
-    @FXML
-    void handleButtonSetCheckOutDate(final ActionEvent event) {
-	final LocalDate date = datePickerCheckOut.getValue();
-	if (datePickerCheckIn.getValue() == null) {
-	    datePickerCheckIn.setValue(date.minusDays(3));
-	}
+			} catch (final OverbookingException e) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(e.getLocalizedMessage());
+				}
+				UIUtils.showError("Overbooking", e.getLocalizedMessage());
+			}
+			final Stage stage = (Stage) buttonOK.getScene().getWindow();
+			stage.close();
+		}
 
-	updateInfoLabel();
-    }
-
-    @Override
-    public void initialize(final URL location, final ResourceBundle resources) {
-	final List<String> numbers = new ArrayList<>();
-	for (int i = 1; i <= SettingsManager.getInstance().getNumberOfRooms(); i++) {
-	    numbers.add("" + i);
-	}
-	comboBoxRoom.getItems().addAll(numbers);
-	textFieldGrossEarnings.textProperty()
-		.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateInfoLabel());
-    }
-
-    public void setManager(final MainManager manager) {
-	this.manager = manager;
-    }
-
-    private void updateInfoLabel() {
-	if (datePickerCheckIn.getValue() == null) {
-	    return;
-	}
-	if (datePickerCheckOut.getValue() == null) {
-	    return;
-	}
-
-	final double grossEarnings = getGrossEarnings();
-
-	final long numberOfNights = LocalDates.getNumberOfNights(datePickerCheckIn.getValue(),
-		datePickerCheckOut.getValue());
-	if (grossEarnings > 0) {
-	    infoLabel.setText(numberOfNights + " nights. " + String.format("%6.2f", grossEarnings / numberOfNights)
-		    + " per night.");
-	} else {
-	    infoLabel.setText(numberOfNights + " nights.");
 	}
 
-    }
+	@FXML
+	void handleButtonSetCheckInDate(final ActionEvent event) {
+		final LocalDate date = datePickerCheckIn.getValue();
+		// if (logger.isDebugEnabled()) {
+		// logger.debug("Selected Check-in " + date);
+		// }
+		if (datePickerCheckOut.getValue() == null) {
+			datePickerCheckOut.setValue(date.plusDays(3));
+		}
 
-    private boolean validateInput() {
-	if (datePickerCheckIn.getValue() == null) {
-	    UIUtils.showError("Invalid Input", "Please select a check-in date");
-	    return false;
+		updateInfoLabel();
 	}
-	if (datePickerCheckOut.getValue() == null) {
-	    UIUtils.showError("Invalid Input", "Please select a check-out date");
-	    return false;
+
+	@FXML
+	void handleButtonSetCheckOutDate(final ActionEvent event) {
+		final LocalDate date = datePickerCheckOut.getValue();
+		if (datePickerCheckIn.getValue() == null) {
+			datePickerCheckIn.setValue(date.minusDays(3));
+		}
+
+		updateInfoLabel();
 	}
-	if (datePickerCheckOut.getValue().isBefore(datePickerCheckIn.getValue())) {
-	    UIUtils.showError("Invalid Input", "Please choose a check-out date that is after check-in");
-	    return false;
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		final List<String> numbers = new ArrayList<>();
+		for (int i = 1; i <= SettingsManager.getInstance().getNumberOfRooms(); i++) {
+			numbers.add("" + i);
+		}
+		comboBoxRoom.getItems().addAll(numbers);
+		textFieldGrossEarnings.textProperty()
+				.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateInfoLabel());
+		textFieldServiceFees.setText(String.format("%4.2f", SettingsManager.getInstance().getServiceFees()));
+		textFieldServiceFeesPercent
+				.setText(String.format("%4.2f", SettingsManager.getInstance().getServiceFeesPercent()));
+		textFieldSource.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(final ObservableValue<? extends String> observable, final String oldValue,
+					final String newValue) {
+				if ("booking".equalsIgnoreCase(newValue)) {
+					textFieldServiceFeesPercent.setText("12");
+				} else if ("airbnb".equalsIgnoreCase(newValue)) {
+					textFieldServiceFeesPercent.setText("0");
+				}
+			}
+		});
 	}
-	if (textFieldGuestName.getText().trim().isEmpty()) {
-	    UIUtils.showError("Invalid Input", "Please choose a guest name");
-	    return false;
+
+	public void setManager(final MainManager manager) {
+		this.manager = manager;
 	}
-	if (comboBoxRoom.getSelectionModel().getSelectedItem() == null
-		|| comboBoxRoom.getSelectionModel().getSelectedItem().isEmpty()) {
-	    UIUtils.showError("Invalid Input", "Please choose a room");
-	    return false;
+
+	private void updateInfoLabel() {
+		if (datePickerCheckIn.getValue() == null) {
+			return;
+		}
+		if (datePickerCheckOut.getValue() == null) {
+			return;
+		}
+
+		final double grossEarnings = getGrossEarnings();
+
+		final long numberOfNights = LocalDates.getNumberOfNights(datePickerCheckIn.getValue(),
+				datePickerCheckOut.getValue());
+		if (grossEarnings > 0) {
+			infoLabel.setText(numberOfNights + " nights. " + String.format("%6.2f", grossEarnings / numberOfNights)
+					+ " per night.");
+		} else {
+			infoLabel.setText(numberOfNights + " nights.");
+		}
+
 	}
-	return true;
-    }
+
+	private boolean validateInput() {
+		if (datePickerCheckIn.getValue() == null) {
+			UIUtils.showError("Invalid Input", "Please select a check-in date");
+			return false;
+		}
+		if (datePickerCheckOut.getValue() == null) {
+			UIUtils.showError("Invalid Input", "Please select a check-out date");
+			return false;
+		}
+		if (datePickerCheckOut.getValue().isBefore(datePickerCheckIn.getValue())) {
+			UIUtils.showError("Invalid Input", "Please choose a check-out date that is after check-in");
+			return false;
+		}
+		if (textFieldGuestName.getText().trim().isEmpty()) {
+			UIUtils.showError("Invalid Input", "Please choose a guest name");
+			return false;
+		}
+		if (comboBoxRoom.getSelectionModel().getSelectedItem() == null
+				|| comboBoxRoom.getSelectionModel().getSelectedItem().isEmpty()) {
+			UIUtils.showError("Invalid Input", "Please choose a room");
+			return false;
+		}
+		return true;
+	}
 
 }

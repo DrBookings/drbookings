@@ -13,54 +13,58 @@ import com.github.drbookings.ser.LocalDateAdapter;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class BookingBeanSer {
 
-    @XmlAttribute
-    public String guestName;
+	@XmlAttribute
+	public String bookingId;
 
-    @XmlAttribute
-    public String source;
+	@XmlAttribute
+	public List<String> calendarIds;
 
-    public LocalDate getCheckInDate() {
-	return checkInDate;
-    }
+	@XmlAttribute
+	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+	public LocalDate checkInDate;
 
-    // @XmlAttribute
-    // public double grossEarnings;
+	@XmlAttribute
+	public String checkInNote;
 
-    @XmlAttribute
-    public boolean welcomeMailSend;
+	@XmlAttribute
+	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+	public LocalDate checkOutDate;
 
-    @XmlAttribute
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    public LocalDate checkInDate;
+	@XmlAttribute
+	public String checkOutNote;
 
-    @XmlAttribute
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    public LocalDate checkOutDate;
+	@XmlAttribute
+	public String externalId;
 
-    @XmlAttribute
-    public String roomName;
+	@XmlAttribute
+	public String grossEarningsExpression;
+	@XmlAttribute
+	public String guestName;
+	@XmlAttribute
+	public boolean paymentDone;
+	@XmlAttribute
+	public String roomName;
+	/**
+	 * E.g. Airbnb fees. Absolute value, such as 12€.
+	 */
+	@XmlAttribute
+	public float serviceFee;
+	/**
+	 * E.g. Booking fees. Relative value, such as 0.12 (12%).
+	 */
+	@XmlAttribute
+	public float serviceFeePercent;
 
-    @XmlAttribute
-    public double serviceFee;
-    @XmlAttribute
-    public String checkInNote;
-    @XmlAttribute
-    public boolean paymentDone;
-    @XmlAttribute
-    public String bookingId;
-    @XmlAttribute
-    public String grossEarningsExpression;
+	@XmlAttribute
+	public float cleaningFees;
 
-    @XmlAttribute
-    public String externalId;
+	@XmlAttribute
+	public String source;
 
-    @XmlAttribute
-    public String specialRequestNote;
+	@XmlAttribute
+	public String specialRequestNote;
 
-    @XmlAttribute
-    public String checkOutNote;
-
-    @XmlAttribute
-    public List<String> calendarIds;
+	@XmlAttribute
+	public boolean welcomeMailSend;
 
 }
