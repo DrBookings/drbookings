@@ -1,5 +1,7 @@
 # Dr.Bookings
 
+[![Build Status](https://travis-ci.org/DrBookings/drbookings.svg?branch=master)](https://travis-ci.org/DrBookings/drbookings)
+
 ### Booking managment through a rich graphical interface.
 
 ## Features
