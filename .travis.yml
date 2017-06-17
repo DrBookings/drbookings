@@ -8,3 +8,8 @@ addons:
       - oracle-java8-installer
 before_script: cd simple
 script: "mvn clean install"
+notifications:
+  email:
+    recipients:
+      - kerner1000@gmail.com
+    on_failure: change # default: always
