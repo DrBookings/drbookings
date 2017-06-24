@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,9 +104,12 @@ public class MainManager {
 
 	public synchronized CleaningEntry addCleaning(final LocalDate date, final String cleaningName,
 			final Booking booking) {
+		Objects.requireNonNull(date, "Date must not be null");
+		Objects.requireNonNull(booking, "Booking must not be null");
 		if (cleaningName == null || cleaningName.trim().length() == 0) {
 			throw new IllegalArgumentException();
 		}
+
 		final Cleaning cleaning = cleaningProvider.getOrCreateElement(cleaningName);
 		final CleaningEntry cleaningEntry = new CleaningEntry(date, booking, cleaning, this);
 		cleaningEntry.setCleaningCosts(SettingsManager.getInstance().getCleaningCosts());
@@ -356,8 +360,8 @@ public class MainManager {
 	public void modifyBooking(final Booking booking, final LocalDate checkInDate, final LocalDate checkOutDate)
 			throws OverbookingException {
 		removeBooking(booking);
-		final Booking newBooking = new Booking(booking.getGuest(), booking.getRoom(), booking.getBookingOrigin(),
-				checkInDate, checkOutDate);
+		final Booking newBooking = new Booking(booking.getId(), booking.getGuest(), booking.getRoom(),
+				booking.getBookingOrigin(), checkInDate, checkOutDate);
 		newBooking.setCheckInNote(booking.getCheckInNote());
 		newBooking.setCheckOutNote(booking.getCheckOutNote());
 		newBooking.setExternalId(booking.getExternalId());
@@ -366,6 +370,11 @@ public class MainManager {
 		newBooking.setWelcomeMailSend(booking.isWelcomeMailSend());
 		newBooking.setSpecialRequestNote(booking.getSpecialRequestNote());
 		newBooking.setCalendarIds(booking.getCalendarIds());
+		newBooking.setCleaning(booking.getCleaning());
+		newBooking.setCleaningFees(booking.getCleaningFees());
+		newBooking.setDateOfPayment(booking.getDateOfPayment());
+		newBooking.setServiceFee(booking.getServiceFee());
+		newBooking.setServiceFeesPercent(booking.getServiceFeesPercent());
 		try {
 			addBooking(newBooking);
 		} catch (final OverbookingException e) {
@@ -467,16 +476,16 @@ public class MainManager {
 		this.cleaningEntriesListProperty().setAll(cleaningEntriesList);
 	}
 
-	public Booking getBooking(final String bookingId) {
+	public Optional<Booking> getBooking(final String bookingId) {
 		final Collection<Booking> c = bookings.stream().filter(b -> b.getId().equals(bookingId))
 				.collect(Collectors.toSet());
-		if (c.isEmpty()) {
-			return null;
+		if (!c.isEmpty()) {
+			if (c.size() > 1) {
+				throw new RuntimeException("Ambiguous booking id " + bookingId);
+			}
+			return Optional.of(c.iterator().next());
 		}
-		if (c.size() > 1) {
-			throw new RuntimeException("Ambiguous booking id " + bookingId);
-		}
-		return c.iterator().next();
+		return Optional.empty();
 	}
 
 }

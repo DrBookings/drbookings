@@ -43,22 +43,15 @@ public class MinimumPriceCalulcator implements Function<Collection<RoomBean>, Nu
 		final double or = orc.apply(rooms).doubleValue();
 		final double ref2 = refIncome.doubleValue() / avDays.getAsDouble() * refDays.size();
 		final double daysBusy = refDays.size() * or;
-		if (logger.isDebugEnabled()) {
-			logger.debug("Days total: " + refDays.size());
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Days busy: " + daysBusy);
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("OccupancyRate: " + or);
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("RefIncome: " + (ref2));
-		}
 		final double result = ref2 / daysBusy / SettingsManager.getInstance().getNumberOfRooms();
-		if (logger.isDebugEnabled()) {
-			logger.debug("MinPrice: " + result);
-		}
+		// if (logger.isDebugEnabled()) {
+		// logger.debug("Days total: " + refDays.size());
+		// logger.debug("Days busy: " + daysBusy);
+		// logger.debug("OccupancyRate: " + or);
+		// logger.debug("RefIncome: " + (ref2));
+		// logger.debug("MinPrice: " + result);
+		// }
+
 		return result;
 	}
 

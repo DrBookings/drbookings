@@ -24,7 +24,6 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
-import com.github.drbookings.model.ProfitProvider;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
@@ -35,7 +34,6 @@ import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingFilter;
 import com.github.drbookings.ui.BookingReaderService;
 import com.github.drbookings.ui.BookingsByOrigin;
-import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.OccupancyCellFactory;
 import com.github.drbookings.ui.OccupancyCellValueFactory;
 import com.github.drbookings.ui.StatusLabelStringFactory;
@@ -46,9 +44,12 @@ import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
 import com.github.drbookings.ui.dialogs.CleaningPlanDialogFactory;
 import com.github.drbookings.ui.dialogs.EarningsChartFactory;
 import com.github.drbookings.ui.dialogs.GeneralSettingsDialogFactory;
+import com.github.drbookings.ui.dialogs.ProfitChartFactory;
 import com.github.drbookings.ui.dialogs.RoomDetailsDialogFactory;
+import com.github.drbookings.ui.dialogs.StatisticsFactory;
 import com.github.drbookings.ui.provider.MinimumPriceProvider;
 import com.github.drbookings.ui.provider.OccupancyRateProvider;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 import com.jcabi.manifests.Manifests;
 
 import javafx.application.Platform;
@@ -270,12 +271,16 @@ public class MainController implements Initializable {
 
 	private final MinimumPriceProvider minimumPriceProvider = new MinimumPriceProvider();
 
+	private StatisticsFactory monthlyMoneyFactory;
+
+	private ProfitChartFactory profitChartFactory;
+
 	public MainController() {
 		manager = new MainManager();
 	}
 
 	private void addBooking() {
-		final ObservableList<RoomBean> dates = CellSelectionManager.getInstance().getSelection();
+		final List<RoomBean> dates = RoomBeanSelectionManager.getInstance().selectionProperty();
 		Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate(), dates.get(0).getName()));
 	}
 
@@ -380,21 +385,14 @@ public class MainController implements Initializable {
 				final int r = tp.getRow();
 				final int c = tp.getColumn();
 				final Object cell = tp.getTableColumn().getCellData(r);
-				// if (logger.isDebugEnabled()) {
-				// logger.debug("Selection changed to " + cell);
-				// }
 				if (cell instanceof DateBean) {
 					final RoomBean room = ((DateBean) cell).getRoom("" + c);
 					if (room != null) {
 						cells.add(room);
 					}
-					// else {
-					// System.err.println(cell);
-					// }
 				}
 			}
-			// System.err.println(cells);
-			CellSelectionManager.getInstance().setSelection(cells);
+			RoomBeanSelectionManager.getInstance().setSelection(cells);
 		};
 	}
 
@@ -585,11 +583,35 @@ public class MainController implements Initializable {
 		Platform.runLater(() -> showEarningsChart());
 	}
 
+	@FXML
+	private void handleMenuItemShowProfitChart(final ActionEvent event) {
+		Platform.runLater(() -> showProfitChart());
+	}
+
+	@FXML
+	private void handleMenuItemShowMonthlyMoney(final ActionEvent event) {
+		Platform.runLater(() -> showMonthlyMoney());
+	}
+
 	private void showEarningsChart() {
 		// if (chartsViewFactory == null) {
-		earningsChartFactory = new EarningsChartFactory(this.getManager());
+		earningsChartFactory = new EarningsChartFactory();
 		// }
 		earningsChartFactory.showDialog();
+	}
+
+	private void showProfitChart() {
+		// if (chartsViewFactory == null) {
+		profitChartFactory = new ProfitChartFactory();
+		// }
+		profitChartFactory.showDialog();
+	}
+
+	private void showMonthlyMoney() {
+		// if (chartsViewFactory == null) {
+		monthlyMoneyFactory = new StatisticsFactory(this.getManager());
+		// }
+		monthlyMoneyFactory.showDialog();
 	}
 
 	@FXML
@@ -627,11 +649,19 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		overviewChartViewController.setMainController(this);
+		if (overviewChartViewController != null) {
+			overviewChartViewController.setMainController(this);
+		}
 
-		guestNameFilterInput.textProperty().addListener(
-				(ChangeListener<String>) (observable, oldValue, newValue) -> manager.applyFilter(newValue));
+		guestNameFilterInput.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+			tableView.getSelectionModel().clearSelection();
+			manager.applyFilter(newValue);
+		});
 		initTableView();
+
+		// clear selection when settings changed, otherwise app. will die
+		SettingsManager.getInstance().showNetEarningsProperty()
+				.addListener(c -> tableView.getSelectionModel().clearSelection());
 
 		tableView.getSelectionModel().getSelectedCells().addListener(getCellSelectionListener());
 		tableView.setOnMousePressed(event -> {
@@ -657,7 +687,7 @@ public class MainController implements Initializable {
 			updateStatusLabel();
 		});
 		// listen for selection changes
-		CellSelectionManager.getInstance().getSelection().addListener((ListChangeListener<RoomBean>) c -> {
+		RoomBeanSelectionManager.getInstance().selectionProperty().addListener((ListChangeListener<RoomBean>) c -> {
 			updateStatusLabel();
 		});
 		// listen for settings changes
@@ -963,8 +993,6 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private final ProfitProvider pc = new ProfitProvider();
-
 	public void shutDown() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Shutting down");
@@ -979,17 +1007,20 @@ public class MainController implements Initializable {
 
 	private void updateStatusLabelFX() {
 
-		final ObservableList<RoomBean> selectedRooms = CellSelectionManager.getInstance().getSelection();
+		final ObservableList<RoomBean> selectedRooms = RoomBeanSelectionManager.getInstance().selectionProperty();
 		final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
 				.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
-		final BookingsByOrigin bo = new BookingsByOrigin(selectedBookings);
+		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(selectedBookings);
 		final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
 		sb.append("\tOccupancyRate:");
 		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(occupancyRateProvider.getOccupancyRate() * 100));
 		sb.append("%\tMinPriceAtRate:");
 		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(minimumPriceProvider.getMinimumPrice()));
-		sb.append("\tPerformance total:" + StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfit()) + " \t"
-				+ "Performance/hour:" + StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfitPerHour()));
+		// sb.append("\tPerformance total:" +
+		// StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfit()) + "
+		// \t"
+		// + "Performance/hour:" +
+		// StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfitPerHour()));
 		statusLabel.textProperty().set(sb.toString());
 	}
 

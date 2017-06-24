@@ -42,6 +42,8 @@ public class SettingsManager {
 
 	public static final float DEFAULT_CLEANING_FEES = 0;
 
+	public static final float DEFAULT_EARNINGS_PAYOUT_PERCENT = 1;
+
 	public static final float DEFAULT_SERVICE_FEES = 0;
 
 	public static final float DEFAULT_SERVICE_FEES_PERCENT = 0;
@@ -51,6 +53,8 @@ public class SettingsManager {
 	public static final int DEFAULT_CLEANINGPLAN_LOOKBEHIND_DAYS = 7;
 
 	public static final boolean DEFAULT_COMPLETE_PAYMENT = false;
+
+	// public static final boolean DEFAULT_STATISTICS_HIDE_CLEANING = false;
 
 	public static final String DEFAULT_FILE_NAME = "booking-data.xml";
 
@@ -106,9 +110,14 @@ public class SettingsManager {
 
 	private final FloatProperty serviceFees = new SimpleFloatProperty(DEFAULT_SERVICE_FEES);
 
+	private final FloatProperty earningsPayoutPercent = new SimpleFloatProperty(DEFAULT_EARNINGS_PAYOUT_PERCENT);
+
 	private final FloatProperty serviceFeesPercent = new SimpleFloatProperty(DEFAULT_SERVICE_FEES_PERCENT);
 
 	private final BooleanProperty completePayment = new SimpleBooleanProperty(DEFAULT_COMPLETE_PAYMENT);
+
+	// private final BooleanProperty hideCleaningStatistics = new
+	// SimpleBooleanProperty(DEFAULT_STATISTICS_HIDE_CLEANING);
 
 	private final IntegerProperty numberOfRooms = new SimpleIntegerProperty(DEFAULT_NUMBER_OF_ROOMS);
 
@@ -342,5 +351,30 @@ public class SettingsManager {
 	public final void setServiceFeesPercent(final float serviceFeesPercent) {
 		this.serviceFeesPercentProperty().set(serviceFeesPercent);
 	}
+
+	public final FloatProperty earningsPayoutPercentProperty() {
+		return this.earningsPayoutPercent;
+	}
+
+	public final float getEarningsPayoutPercent() {
+		return this.earningsPayoutPercentProperty().get();
+	}
+
+	public final void setEarningsPayoutPercent(final float earningsPayoutPercent) {
+		this.earningsPayoutPercentProperty().set(earningsPayoutPercent);
+	}
+
+	// public final BooleanProperty hideCleaningStatisticsProperty() {
+	// return this.hideCleaningStatistics;
+	// }
+
+	// public final boolean isHideCleaningStatistics() {
+	// return this.hideCleaningStatisticsProperty().get();
+	// }
+
+	// public final void setHideCleaningStatistics(final boolean
+	// hideCleaningStatistics) {
+	// this.hideCleaningStatisticsProperty().set(hideCleaningStatistics);
+	// }
 
 }

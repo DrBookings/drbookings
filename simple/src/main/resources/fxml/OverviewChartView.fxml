@@ -12,34 +12,40 @@
 <?import javafx.scene.chart.PieChart?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.OverviewChartController"
+	fx:controller="com.github.drbookings.ui.controller.ProfitChartController"
 	maxWidth="Infinity" HBox.hgrow="ALWAYS" VBox.vgrow="SOMETIMES">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 		<URL value="@/css/overviewChart.css" />
 	</stylesheets>
 	<padding>
-		<Insets right="4" left="4" top="4" bottom="4" />
+		<Insets bottom="4" left="4" right="4" top="4" />
 	</padding>
 	<children>
-		<!-- <HBox alignment="CENTER"> -->
-		<!-- <padding> -->
-		<!-- <Insets right="8" left="8" /> -->
-		<!-- </padding> -->
-		<!-- <Label fx:id="labelStartDate" wrapText="true" alignment="CENTER"></Label> -->
-		<!-- </HBox> -->
-		<StackedBarChart legendVisible="true" fx:id="chart" categoryGap="0"
-			animated="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" maxHeight="140"
-			prefHeight="80" minHeight="60">
+		<StackedBarChart 
+			fx:id="chart" maxWidth="Infinity"  animated="false" VBox.vgrow="ALWAYS"
+			>
 			<xAxis>
-				<CategoryAxis fx:id="xAxis" tickLabelsVisible="true"
-					tickMarkVisible="false" tickLength="0" />
+				<CategoryAxis fx:id="xAxis" />
 			</xAxis>
 			<yAxis>
-				<NumberAxis fx:id="yAxis" tickMarkVisible="true"
-					autoRanging="false" upperBound="10" lowerBound="0"
-					minorTickVisible="false" />
+				<NumberAxis fx:id="yAxis" />
 			</yAxis>
 		</StackedBarChart>
+		<HBox spacing="4">
+			<children>
+				<VBox spacing="4" HBox.hgrow="ALWAYS" >
+					<padding>
+						<Insets bottom="4" left="4" right="4" top="4" />
+					</padding>
+					<children>
+						<Label text="Average over Days"></Label>
+						<Slider fx:id="slider" min="1" max="31" value="1"
+							blockIncrement="1" majorTickUnit="5"
+							showTickLabels="true" showTickMarks="true"></Slider>
+					</children>
+				</VBox>
+			</children>
+		</HBox>
 	</children>
 </VBox>
