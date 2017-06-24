@@ -83,7 +83,7 @@ public class DrBookingsApplication extends Application {
 
 	public static final String DATA_FILE_KEY = "data-file";
 
-	public static final String ADDITIONAL_COSTS_KEY = "additional-costs-permonth-perroom";
+	public static final String ADDITIONAL_COSTS_KEY = "fix-costs-permonth-perroom";
 
 	public static final String REFERENCE_COLD_RENT_LONGTERM_KEY = "reference-coldrent-longterm-permonth-perroom";
 
@@ -100,6 +100,8 @@ public class DrBookingsApplication extends Application {
 	private static final String SERVICE_FEES_KEY = "default-service-fees";
 
 	private static final String SERVICE_FEES_PERCENT_KEY = "default-service-fees-percent";
+
+	private static final String EARNINGS_PAYOUT_PERCENT_KEY = "earnings-payout-percent";
 
 	private static final String CLEANING_COSTS_KEY = "default-cleaning-costs";
 
@@ -198,6 +200,14 @@ public class DrBookingsApplication extends Application {
 			} catch (final Exception ex) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex.toString());
+				}
+			}
+			try {
+				SettingsManager.getInstance()
+						.setEarningsPayoutPercent(Float.parseFloat(prop.getProperty(EARNINGS_PAYOUT_PERCENT_KEY)));
+			} catch (final Exception ex) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Failed to parse " + EARNINGS_PAYOUT_PERCENT_KEY + ", " + ex.toString());
 				}
 			}
 		} catch (final Exception e) {

@@ -3,6 +3,7 @@ package com.github.drbookings.ser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -56,6 +57,7 @@ public class DataStore {
 		result.specialRequestNote = bb.getSpecialRequestNote();
 		result.checkOutNote = bb.getCheckOutNote();
 		result.calendarIds = bb.getCalendarIds();
+		result.dateOfPayment = bb.getDateOfPayment();
 
 		return result;
 	}
@@ -104,6 +106,7 @@ public class DataStore {
 				b.setCalendarIds(bb.calendarIds);
 				b.setCleaningFees(bb.cleaningFees);
 				b.setServiceFeesPercent(bb.serviceFeePercent);
+				b.setDateOfPayment(bb.dateOfPayment);
 				bookingsToAdd.add(b);
 			} catch (final Exception e) {
 				if (logger.isErrorEnabled()) {
@@ -127,8 +130,15 @@ public class DataStore {
 
 		for (final CleaningBeanSer cb : getCleaningsSer()) {
 
-			final Booking b = manager.getBooking(cb.bookingId);
-			manager.addCleaning(cb.date, cb.name, b).setCalendarIds(cb.calendarIds).setCleaningCosts(cb.cleaningCosts);
+			final Optional<Booking> b = manager.getBooking(cb.bookingId);
+			if (b.isPresent()) {
+				manager.addCleaning(cb.date, cb.name, b.get()).setCalendarIds(cb.calendarIds)
+						.setCleaningCosts(cb.cleaningCosts);
+			} else {
+				if (logger.isWarnEnabled()) {
+					logger.warn("Failed to add cleaning " + cb + ", failed to find booking for ID " + cb.bookingId);
+				}
+			}
 
 		}
 	}

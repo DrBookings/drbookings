@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.StatsViewController">
+	<stylesheets>
+		<URL value="@/css/root.css" />
+		<URL value="@/css/statistics.css" />
+	</stylesheets>
+	<padding>
+		<Insets bottom="4" left="4" right="4" top="4" />
+	</padding>
+	<children>
+		<TableView fx:id="tableView" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+			VBox.vgrow="ALWAYS">
+			<columns>
+				<TableColumn text="Performance" fx:id="cPerformance"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="performance" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Earnings Payout" fx:id="cEarningsPayout"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="earningsPayout" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Origin" prefWidth="100">
+					<cellValueFactory>
+						<PropertyValueFactory property="origin" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Payment Dates" prefWidth="200">
+					<cellValueFactory>
+						<PropertyValueFactory property="dateRange" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Number of Bookings" fx:id="cNumberOfBookings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="bookingCount" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Number of Nights" fx:id="cNumberOfNights"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="numberOfNights" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Gross Earnings" fx:id="cGrossEarnings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="grossEarnings" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Net Earnings" fx:id="cNetEarnings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="netEarnings" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Payout Unknown" fx:id="cPayoutUnknown"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="unknownPayout" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Payout Done" fx:id="cTotalPayout"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="totalPayout" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Nights %" fx:id="cNightsPercent"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="nightsPercent" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Relative Fix Costs" fx:id="cRelativeFixCosts"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="fixCosts" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Earnings" fx:id="cEarnings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="earnings" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Number of Cleanings" fx:id="cNumberOfCleanings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="cleaningCount" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Cleaning Fees" fx:id="cCleaningFees"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="cleaningFees" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Cleaning Costs" fx:id="cCleaningCosts"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="cleaningCosts" />
+					</cellValueFactory>
+				</TableColumn>
+			</columns>
+		</TableView>
+		<!-- <HBox spacing="4"> -->
+		<!-- <padding> -->
+		<!-- <Insets bottom="4" left="4" right="4" top="4" /> -->
+		<!-- </padding> -->
+		<!-- <children> -->
+		<!-- <Label text="Total Earnings Payout: " styleClass="totals"></Label> -->
+		<!-- <Label fx:id="totalEarningsPayout" styleClass="totals"></Label> -->
+		<!-- <Label text="Total Cleaning Costs: " styleClass="totals"></Label> -->
+		<!-- <Label fx:id="totalCleaningCosts" styleClass="totals"></Label> -->
+		<!-- </children> -->
+		<!-- </HBox> -->
+	</children>
+</VBox>

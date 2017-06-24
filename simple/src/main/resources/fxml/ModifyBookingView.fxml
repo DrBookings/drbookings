@@ -19,15 +19,17 @@
 			<Insets top="8" right="8" bottom="8" left="8" />
 		</padding>
 		<HBox spacing="8">
-		<padding>
-			<Insets top="8" right="0" bottom="8" left="0" />
-		</padding>
-		<Label fx:id="summaryLabel"></Label>
+			<padding>
+				<Insets top="8" right="0" bottom="8" left="0" />
+			</padding>
+			<Label fx:id="summaryLabel"></Label>
 		</HBox>
 		<Label text="Check-in" />
-		<DatePicker fx:id="datePickerCheckIn"  />
+		<DatePicker fx:id="datePickerCheckIn" />
 		<Label text="Check-out" />
 		<DatePicker fx:id="datePickerCheckOut" />
+		<Label text="Date of Payment" />
+		<DatePicker fx:id="dateOfPayment" />
 		<Button text="Save" prefWidth="100" onAction="#handleButtonSaveChanges"></Button>
 	</VBox>
 </ScrollPane>

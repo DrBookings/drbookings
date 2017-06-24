@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import com.github.drbookings.LocalDates;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.BookingEntry;
-import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.GuestNameAndBookingOriginView;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -114,8 +114,8 @@ public class RoomDetailsController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		updateUIRooms(CellSelectionManager.getInstance().getSelection());
-		CellSelectionManager.getInstance().getSelection().addListener(roomListener);
+		updateUIRooms(RoomBeanSelectionManager.getInstance().getSelection());
+		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
 
 	}
 
@@ -150,9 +150,9 @@ public class RoomDetailsController implements Initializable {
 	}
 
 	private void updateUIRooms(final List<? extends RoomBean> list) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Updating UI");
-		}
+		// if (logger.isDebugEnabled()) {
+		// logger.debug("Updating UI");
+		// }
 		if (list.isEmpty()) {
 			return;
 		}

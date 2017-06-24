@@ -19,19 +19,22 @@ public class GeneralSettingsController implements Initializable {
 	private final static Logger logger = LoggerFactory.getLogger(GeneralSettingsController.class);
 
 	@FXML
-	private TextField cleaningPlanLookBehind;
-
-	@FXML
-	private TextField upcomingLookAhead;
-
-	@FXML
 	private TextField cleaningFee;
+
+	@FXML
+	private TextField cleaningPlanLookBehind;
 
 	@FXML
 	private CheckBox completePayment;
 
+	// @FXML
+	// private CheckBox hideCleaningStatistics;
+
 	@FXML
 	private CheckBox netEarnings;
+
+	@FXML
+	private TextField upcomingLookAhead;
 
 	@FXML
 	public void handleActionSaveSettings(final ActionEvent event) {
@@ -40,6 +43,7 @@ public class GeneralSettingsController implements Initializable {
 		saveUpcomingLookAhead();
 		saveCompletePayment();
 		saveNetEarnings();
+		// saveHideCleaningStatistics();
 		SettingsManager.getInstance().saveToFile();
 		// final Stage stage = (Stage)
 		// cleaningPlanLookBehind.getScene().getWindow();
@@ -68,6 +72,10 @@ public class GeneralSettingsController implements Initializable {
 		completePayment.setSelected(SettingsManager.getInstance().isCompletePayment());
 	}
 
+	// private void initHideCleaningStatistics() {
+	// hideCleaningStatistics.setSelected(SettingsManager.getInstance().isHideCleaningStatistics());
+	// }
+
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -76,6 +84,7 @@ public class GeneralSettingsController implements Initializable {
 		initUpcomingLookAhead();
 		initCompletePayment();
 		initNetEarinings();
+		// initHideCleaningStatistics();
 	}
 
 	private void initNetEarinings() {
@@ -124,6 +133,10 @@ public class GeneralSettingsController implements Initializable {
 	private void saveCompletePayment() {
 		SettingsManager.getInstance().setCompletePayment(completePayment.isSelected());
 	}
+
+	// private void saveHideCleaningStatistics() {
+	// SettingsManager.getInstance().setHideCleaningStatistics(hideCleaningStatistics.isSelected());
+	// }
 
 	private void saveNetEarnings() {
 		SettingsManager.getInstance().setShowNetEarnings(netEarnings.isSelected());

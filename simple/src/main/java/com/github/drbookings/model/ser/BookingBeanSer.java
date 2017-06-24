@@ -34,8 +34,13 @@ public class BookingBeanSer {
 	public String checkOutNote;
 
 	@XmlAttribute
-	public String externalId;
+	public float cleaningFees;
 
+	@XmlAttribute
+	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+	public LocalDate dateOfPayment;
+	@XmlAttribute
+	public String externalId;
 	@XmlAttribute
 	public String grossEarningsExpression;
 	@XmlAttribute
@@ -44,11 +49,13 @@ public class BookingBeanSer {
 	public boolean paymentDone;
 	@XmlAttribute
 	public String roomName;
+
 	/**
 	 * E.g. Airbnb fees. Absolute value, such as 12€.
 	 */
 	@XmlAttribute
 	public float serviceFee;
+
 	/**
 	 * E.g. Booking fees. Relative value, such as 0.12 (12%).
 	 */
@@ -56,14 +63,10 @@ public class BookingBeanSer {
 	public float serviceFeePercent;
 
 	@XmlAttribute
-	public float cleaningFees;
-
-	@XmlAttribute
 	public String source;
 
 	@XmlAttribute
 	public String specialRequestNote;
-
 	@XmlAttribute
 	public boolean welcomeMailSend;
 

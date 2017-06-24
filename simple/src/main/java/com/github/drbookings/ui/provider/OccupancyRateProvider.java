@@ -3,8 +3,8 @@ package com.github.drbookings.ui.provider;
 import java.util.concurrent.Callable;
 
 import com.github.drbookings.model.OccupancyRateCalculator;
-import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
@@ -23,12 +23,12 @@ public class OccupancyRateProvider {
 
 	private void bindProperties() {
 		occupancyRate.bind(Bindings.createObjectBinding(calculateOccupancyRate(),
-				CellSelectionManager.getInstance().getSelection()));
+				RoomBeanSelectionManager.getInstance().selectionProperty()));
 	}
 
 	private Callable<Number> calculateOccupancyRate() {
 		return () -> {
-			final ObservableList<RoomBean> rooms = CellSelectionManager.getInstance().getSelection();
+			final ObservableList<RoomBean> rooms = RoomBeanSelectionManager.getInstance().selectionProperty();
 			return c.apply(rooms);
 		};
 	}

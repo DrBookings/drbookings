@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.ui.BookingEntry;
-import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.MapProperty;
@@ -52,7 +52,7 @@ public class MoneyMonitor {
 	private final DoubleProperty totalNetEarnings = new SimpleDoubleProperty();
 
 	private MoneyMonitor() {
-		CellSelectionManager.getInstance().getSelection().addListener(new SelectionListener());
+		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(new SelectionListener());
 	}
 
 	private void calculateDateToEarnings(final ObservableList<? extends RoomBean> list) {

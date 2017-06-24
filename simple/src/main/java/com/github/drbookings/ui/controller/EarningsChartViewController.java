@@ -2,32 +2,26 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.BinType;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.beans.DateBean;
+import com.github.drbookings.ui.selection.DateBeanSelectionManager;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.CategoryAxis;
@@ -35,30 +29,15 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import net.sf.kerner.utils.exception.ExceptionUnknownType;
 
-public class EarningsChartViewController implements Initializable {
-
-	private class DateBeanListener implements ListChangeListener<DateBean> {
-
-		@Override
-		public void onChanged(final javafx.collections.ListChangeListener.Change<? extends DateBean> c) {
-			while (c.next()) {
-
-			}
-			doChart(c.getList());
-		}
-
-	}
+public class EarningsChartViewController extends AbstractBinningChart<DateBean> implements Initializable {
 
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(EarningsChartViewController.class);
-
-	public final static int DEFAULT_BIN_SIZE = 1;
-
-	public final static int DEFAULT_MONTH_LOOKBACK = 1;
-
-	private MainManager mainManager;
 
 	@FXML
 	private StackedBarChart<String, Number> chart;
@@ -67,7 +46,10 @@ public class EarningsChartViewController implements Initializable {
 	private Slider slider;
 
 	@FXML
-	private Slider slider2;
+	private Label sliderValue;
+
+	@FXML
+	private ComboBox<BinType> toggle;
 
 	@FXML
 	private CategoryAxis xAxis;
@@ -75,56 +57,66 @@ public class EarningsChartViewController implements Initializable {
 	@FXML
 	private NumberAxis yAxis;
 
-	private final DoubleProperty binSize = new SimpleDoubleProperty(DEFAULT_BIN_SIZE);
-
-	private final DoubleProperty monthLookBack = new SimpleDoubleProperty(DEFAULT_MONTH_LOOKBACK);
-
-	private final List<DateBean> bin = new ArrayList<>();
-
 	public EarningsChartViewController() {
 
 	}
 
-	private final Set<String> categories = new LinkedHashSet<>();
-
-	private void doChart(final List<? extends DateBean> allElements) {
-
-		categories.clear();
-		mapSeries.clear();
-		chart.getData().clear();
-
-		for (int i = 0; i < allElements.size(); i++) {
-			final DateBean db = allElements.get(i);
-			if (db.getDate().isAfter(LocalDate.now().minusMonths(getMonthLookBack()))
-					&& db.getDate().isBefore(LocalDate.now())) {
-				bin.add(db);
-				if (bin.size() >= getBinSize()) {
-					flushBin();
+	private class UpdateUIListener implements ChangeListener<Object> {
+		@Override
+		public void changed(final ObservableValue<? extends Object> observable, final Object oldValue,
+				final Object newValue) {
+			if (oldValue instanceof Number && newValue instanceof Number) {
+				final int o = ((Number) oldValue).intValue();
+				final int n = ((Number) newValue).intValue();
+				if (o == n) {
+					return;
 				}
 			}
+			doChart(DateBeanSelectionManager.getInstance().selectionProperty());
 		}
-		flushBin();
-		// for (final Series<String, Number> s : chart.getData()) {
-		// Collections.sort(s.getData(), (o1, o2) -> {
-		// return o1.getXValue().compareTo(o2.getXValue());
-		// });
-		// }
-		// chart.getData().sort((o1, o2) ->
-		// o1.getName().compareTo(o2.getName()));
-		final ObservableList<String> c = FXCollections.observableArrayList(categories);
-		Collections.sort(c);
-		xAxis.setCategories(c);
-		xAxis.setAutoRanging(true);
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		toggle.setItems(FXCollections.observableArrayList(BinType.MEAN, BinType.SUM));
+		toggle.getSelectionModel().select(0);
+		toggle.getSelectionModel().selectedItemProperty().addListener(c -> doChart());
+		sliderValue.textProperty().bind(Bindings.createStringBinding(
+				() -> Integer.valueOf((int) slider.getValue()).toString(), slider.valueProperty()));
+		binSizeProperty().bind(slider.valueProperty());
+		slider.valueProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().additionalCostsProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().referenceColdRentLongTermProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().showNetEarningsProperty().addListener(new UpdateUIListener());
+		DateBeanSelectionManager.getInstance().selectionProperty()
+				.addListener((ListChangeListener<DateBean>) c -> doChart());
+
+		setChart(chart);
+		setxAxis(xAxis);
+		doChart();
 
 	}
 
-	public final DoubleProperty binSizeProperty() {
-		return this.binSize;
+	private Callable<String> createSliderLabel() {
+		return () -> {
+			switch (toggle.getSelectionModel().selectedItemProperty().get()) {
+			case MEAN:
+				return "Average over Days";
+			case SUM:
+				return "Sum over Days:";
+			default:
+				throw new ExceptionUnknownType(toggle.getSelectionModel().getSelectedItem());
+			}
+		};
 	}
 
-	Map<String, Series<String, Number>> mapSeries = new HashMap<>();
+	protected void doChart() {
+		doChart(DateBeanSelectionManager.getInstance().selectionProperty());
 
-	private void flushBin() {
+	}
+
+	@Override
+	protected void flushBin() {
 		if (bin.isEmpty()) {
 			return;
 		}
@@ -132,9 +124,15 @@ public class EarningsChartViewController implements Initializable {
 		final Map<String, Number> yValue = new TreeMap<>();
 
 		for (final DateBean d : bin) {
+			// System.err.println("now " + d);
 			for (final Entry<String, Number> e : d.getEarningsPerOrigin().entrySet()) {
 				double n = yValue.getOrDefault(e.getKey(), Double.valueOf(0)).doubleValue();
-				n += e.getValue().doubleValue() / bin.size();
+				if (BinType.MEAN.equals(toggle.getSelectionModel().getSelectedItem())) {
+					n += e.getValue().doubleValue() / bin.size();
+				} else if (BinType.SUM.equals(toggle.getSelectionModel().getSelectedItem())) {
+					n += e.getValue().doubleValue();
+				}
+
 				yValue.put(e.getKey(), n);
 
 			}
@@ -155,66 +153,8 @@ public class EarningsChartViewController implements Initializable {
 		bin.clear();
 	}
 
-	public final int getBinSize() {
-		return (int) this.binSizeProperty().get();
-	}
-
-	public MainManager getMainManager() {
-		return mainManager;
-	}
-
-	private class UpdateUIListener implements ChangeListener<Object> {
-		@Override
-		public void changed(final ObservableValue<? extends Object> observable, final Object oldValue,
-				final Object newValue) {
-			if (oldValue instanceof Number && newValue instanceof Number) {
-				final int o = ((Number) oldValue).intValue();
-				final int n = ((Number) newValue).intValue();
-				if (o == n) {
-					return;
-				}
-			}
-			doChart(mainManager.getUIData());
-		}
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		binSizeProperty().bind(slider.valueProperty());
-		monthLookBackProperty().bind(slider2.valueProperty());
-		slider.valueProperty().addListener(new UpdateUIListener());
-		slider2.valueProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().additionalCostsProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().referenceColdRentLongTermProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().showNetEarningsProperty().addListener(new UpdateUIListener());
-
-	}
-
-	public final void setBinSize(final int binSize) {
-		this.binSizeProperty().set(binSize);
-	}
-
-	public void setMainManager(final MainManager mainManager) {
-		this.mainManager = mainManager;
-		this.mainManager.getUIData().addListener(new DateBeanListener());
-		doChart(mainManager.getUIData());
-
-	}
-
 	public void shutDown() {
 
-	}
-
-	public final DoubleProperty monthLookBackProperty() {
-		return this.monthLookBack;
-	}
-
-	public final int getMonthLookBack() {
-		return (int) this.monthLookBackProperty().get();
-	}
-
-	public final void setMonthLookBack(final int monthLookBack) {
-		this.monthLookBackProperty().set(monthLookBack);
 	}
 
 }

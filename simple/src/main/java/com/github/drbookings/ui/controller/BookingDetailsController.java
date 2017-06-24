@@ -2,7 +2,9 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,21 +14,23 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.drbookings.LocalDates;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.CellSelectionManager;
 import com.github.drbookings.ui.CleaningEntry;
 import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -347,6 +351,8 @@ public class BookingDetailsController implements Initializable {
 		content.getChildren().clear();
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(BookingDetailsController.class);
+
 	private ModifyBookingDialogFactory modifyBookingDialogFactory;
 
 	@FXML
@@ -365,6 +371,18 @@ public class BookingDetailsController implements Initializable {
 		}
 		for (final Entry<Booking, CheckBox> en : booking2Payment.entrySet()) {
 			en.getKey().setPaymentDone(en.getValue().isSelected());
+			if (en.getKey().getDateOfPayment() == null && en.getValue().isSelected()) {
+				en.getKey().setDateOfPayment(LocalDate.now());
+				if (logger.isDebugEnabled()) {
+					logger.debug("Date-of-Payment set to " + en.getKey().getDateOfPayment());
+				}
+			}
+			if (!en.getValue().isSelected()) {
+				en.getKey().setDateOfPayment(null);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Date-of-Payment cleared");
+				}
+			}
 		}
 		for (final Entry<Booking, CheckBox> en : booking2WelcomeMail.entrySet()) {
 			en.getKey().setWelcomeMailSend(en.getValue().isSelected());
@@ -375,17 +393,18 @@ public class BookingDetailsController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		CellSelectionManager.getInstance().getSelection().addListener(roomListener);
+		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
 		SettingsManager.getInstance().cleaningFeesProperty().addListener((ChangeListener<Number>) (observable, oldValue,
-				newValue) -> update(CellSelectionManager.getInstance().getSelection()));
-		update(CellSelectionManager.getInstance().getSelection());
+				newValue) -> update(RoomBeanSelectionManager.getInstance().getSelection()));
+		update(RoomBeanSelectionManager.getInstance().getSelection());
 
 	}
 
-	private void update(final ObservableList<? extends RoomBean> rooms) {
+	private void update(final Collection<? extends RoomBean> rooms) {
 		clearAll();
-		final List<Booking> bookings = new ArrayList<>(rooms.stream()
-				.flatMap(r -> r.getBookingEntries().stream().map(b -> b.getElement())).collect(Collectors.toSet()));
+		final List<Booking> bookings = new ArrayList<>(
+				rooms.stream().flatMap(r -> r.getFilteredBookingEntries().stream().map(b -> b.getElement()))
+						.collect(Collectors.toSet()));
 		Collections.sort(bookings);
 		for (final Iterator<Booking> it = bookings.iterator(); it.hasNext();) {
 			final Booking be = it.next();

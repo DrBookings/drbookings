@@ -25,6 +25,7 @@ import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CleaningEntry;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
@@ -34,9 +35,17 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.util.Callback;
 
 public class Booking extends IDed
 		implements Comparable<Booking>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
+
+	public static Callback<Booking, Observable[]> extractor() {
+		return param -> new Observable[] { param.serviceFeeProperty(), param.serviceFeesPercentProperty(),
+				param.grossEarningsProperty(), param.cleaningProperty(), param.netEarningsProperty(),
+				param.checkInNoteProperty(), param.checkOutNoteProperty(), param.specialRequestNoteProperty(),
+				param.paymentDoneProperty(), param.welcomeMailSendProperty(), param.dateOfPaymentProperty() };
+	}
 
 	public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -78,6 +87,8 @@ public class Booking extends IDed
 	private final BooleanProperty welcomeMailSend = new SimpleBooleanProperty(false);
 
 	private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
+
+	private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
 
 	/**
 	 * Set by the cleaning entry.
@@ -395,6 +406,26 @@ public class Booking extends IDed
 	 */
 	public final void setCleaning(final CleaningEntry cleaning) {
 		this.cleaningProperty().set(cleaning);
+	}
+
+	@Override
+	public Booking getElement() {
+		return this;
+	}
+
+	public final ObjectProperty<LocalDate> dateOfPaymentProperty() {
+		return this.dateOfPayment;
+	}
+
+	public final LocalDate getDateOfPayment() {
+		return this.dateOfPaymentProperty().get();
+	}
+
+	public final void setDateOfPayment(final LocalDate dateOfPayment) {
+		this.dateOfPaymentProperty().set(dateOfPayment);
+		if (dateOfPayment != null) {
+			setPaymentDone(true);
+		}
 	}
 
 }

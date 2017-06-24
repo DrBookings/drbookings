@@ -46,19 +46,19 @@
 
 		<CheckBox fx:id="completePayment" GridPane.hgrow="SOMETIMES"
 			GridPane.columnIndex="1" GridPane.rowIndex="3" />
-			
-			
-			<Label GridPane.columnIndex="0" GridPane.rowIndex="4"
+
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="4"
 			text="Show Net Earnings" />
 
 		<CheckBox fx:id="netEarnings" GridPane.hgrow="SOMETIMES"
 			GridPane.columnIndex="1" GridPane.rowIndex="4" />
 			
-			
+		<Label GridPane.columnIndex="0" GridPane.rowIndex="5"
+			text="Hide Cleaning Statistics" />
+		<CheckBox fx:id="hideCleaningStatistics" GridPane.hgrow="SOMETIMES"
+			GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-		
-
-		<Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="5"
+		<Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="6"
 			prefWidth="100" GridPane.halignment="RIGHT" onAction="#handleActionSaveSettings" />
 	</children>
 
