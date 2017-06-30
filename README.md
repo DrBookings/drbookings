@@ -12,7 +12,7 @@
 + Managment of cleaning: Reminders and cleaning plan export.
 + Data import from iCal and xlsx.
 + Gross earnings, net earnings and expenses.
-+ [Profit calculation](https://github.com/DrBookings/drbookings/wiki/Profit-Calculation) (earnings compared to another reference earning).
++ [Performance calculation](https://github.com/DrBookings/drbookings/wiki/Profit-Calculation) (earnings compared to another reference earning).
 + Check-in/ Check-out notes/ times and reminders.
 
 ## Documentation
