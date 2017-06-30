@@ -1,15 +1,19 @@
 language: java
+sudo: false # faster builds
 jdk:
   - oraclejdk8
-# Use JDK 8u45. The above line just causes the use of a minor version of Java 8.
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+      - oracle-java8-installer # Use JDK 8u45. The above line just causes the use of a minor version of Java 8.
 before_script: cd simple
-script: "mvn clean package"
+#script: "mvn clean package"
+script: "mvn cobertura:cobertura"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
   email:
     recipients:
       - kerner1000@gmail.com
     on_failure: change # default: always
+
