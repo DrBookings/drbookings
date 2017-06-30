@@ -1,6 +1,6 @@
 # Dr.Bookings
 
-| | |
+|CI|Licence|
 |-|-|
 |[![Build Status](https://travis-ci.org/DrBookings/drbookings.svg?branch=master)](https://travis-ci.org/DrBookings/drbookings)|[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://github.com/DrBookings/drbookings/blob/master/LICENCE.txt)|
 
