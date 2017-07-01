@@ -42,25 +42,27 @@ public class SettingsManager {
 
 	public static final float DEFAULT_CLEANING_FEES = 0;
 
-	public static final float DEFAULT_EARNINGS_PAYOUT_PERCENT = 1;
-
-	public static final float DEFAULT_SERVICE_FEES = 0;
-
-	public static final float DEFAULT_SERVICE_FEES_PERCENT = 0;
-
 	public static final float DEFAULT_CLEANING_COSTS = DEFAULT_CLEANING_FEES;
 
 	public static final int DEFAULT_CLEANINGPLAN_LOOKBEHIND_DAYS = 7;
 
 	public static final boolean DEFAULT_COMPLETE_PAYMENT = false;
 
-	// public static final boolean DEFAULT_STATISTICS_HIDE_CLEANING = false;
+	public static final float DEFAULT_EARNINGS_PAYOUT_PERCENT = 1;
 
 	public static final String DEFAULT_FILE_NAME = "booking-data.xml";
+
+	public static final short DEFAULT_FIX_COSTS_PAYMENT_DAY = 1;
+
+	// public static final boolean DEFAULT_STATISTICS_HIDE_CLEANING = false;
 
 	public static final int DEFAULT_NUMBER_OF_ROOMS = 2;
 
 	public static final String DEFAULT_ROOM_NAME_PREFIX = "F";
+
+	public static final float DEFAULT_SERVICE_FEES = 0;
+
+	public static final float DEFAULT_SERVICE_FEES_PERCENT = 0;
 
 	public static final int DEFAULT_UPCOMING_LOOK_AHEAD_DAYS = 3;
 
@@ -108,13 +110,11 @@ public class SettingsManager {
 
 	private final FloatProperty cleaningFees = new SimpleFloatProperty(DEFAULT_CLEANING_FEES);
 
-	private final FloatProperty serviceFees = new SimpleFloatProperty(DEFAULT_SERVICE_FEES);
+	private final BooleanProperty completePayment = new SimpleBooleanProperty(DEFAULT_COMPLETE_PAYMENT);
 
 	private final FloatProperty earningsPayoutPercent = new SimpleFloatProperty(DEFAULT_EARNINGS_PAYOUT_PERCENT);
 
-	private final FloatProperty serviceFeesPercent = new SimpleFloatProperty(DEFAULT_SERVICE_FEES_PERCENT);
-
-	private final BooleanProperty completePayment = new SimpleBooleanProperty(DEFAULT_COMPLETE_PAYMENT);
+	private final IntegerProperty fixCostsPaymentDay = new SimpleIntegerProperty(DEFAULT_FIX_COSTS_PAYMENT_DAY);
 
 	// private final BooleanProperty hideCleaningStatistics = new
 	// SimpleBooleanProperty(DEFAULT_STATISTICS_HIDE_CLEANING);
@@ -124,6 +124,10 @@ public class SettingsManager {
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 
 	private final FloatProperty referenceColdRentLongTerm = new SimpleFloatProperty();
+
+	private final FloatProperty serviceFees = new SimpleFloatProperty(DEFAULT_SERVICE_FEES);
+
+	private final FloatProperty serviceFeesPercent = new SimpleFloatProperty(DEFAULT_SERVICE_FEES_PERCENT);
 
 	private final BooleanProperty showNetEarnings = new SimpleBooleanProperty();
 
@@ -155,6 +159,14 @@ public class SettingsManager {
 		return this.completePayment;
 	}
 
+	public final FloatProperty earningsPayoutPercentProperty() {
+		return this.earningsPayoutPercent;
+	}
+
+	public final IntegerProperty fixCostsPaymentDayProperty() {
+		return this.fixCostsPaymentDay;
+	}
+
 	public final float getAdditionalCosts() {
 		return this.additionalCostsProperty().get();
 	}
@@ -177,6 +189,14 @@ public class SettingsManager {
 		return new File(fileString);
 	}
 
+	public final float getEarningsPayoutPercent() {
+		return this.earningsPayoutPercentProperty().get();
+	}
+
+	public final int getFixCostsPaymentDay() {
+		return this.fixCostsPaymentDayProperty().get();
+	}
+
 	public final int getNumberOfRooms() {
 		return this.numberOfRoomsProperty().get();
 	}
@@ -197,6 +217,14 @@ public class SettingsManager {
 
 	public String getRoomNamePrefix() {
 		return prefs.get(roomNamePrefixKey, DEFAULT_ROOM_NAME_PREFIX);
+	}
+
+	public final float getServiceFees() {
+		return this.serviceFeesProperty().get();
+	}
+
+	public final float getServiceFeesPercent() {
+		return this.serviceFeesPercentProperty().get();
 	}
 
 	public int getUpcomingLookAhead() {
@@ -261,6 +289,14 @@ public class SettingsManager {
 
 	}
 
+	public final FloatProperty serviceFeesPercentProperty() {
+		return this.serviceFeesPercent;
+	}
+
+	public final FloatProperty serviceFeesProperty() {
+		return this.serviceFees;
+	}
+
 	public final void setAdditionalCosts(final float additionalCosts) {
 		this.additionalCostsProperty().set(additionalCosts);
 	}
@@ -286,6 +322,14 @@ public class SettingsManager {
 		prefs.put(fileKey, file.getAbsolutePath());
 	}
 
+	public final void setEarningsPayoutPercent(final float earningsPayoutPercent) {
+		this.earningsPayoutPercentProperty().set(earningsPayoutPercent);
+	}
+
+	public final void setFixCostsPaymentDay(final int fixCostsPaymentDay) {
+		this.fixCostsPaymentDayProperty().set(fixCostsPaymentDay);
+	}
+
 	public final void setNumberOfRooms(int numberOfRooms) {
 		if (numberOfRooms < DEFAULT_NUMBER_OF_ROOMS) {
 			numberOfRooms = DEFAULT_NUMBER_OF_ROOMS;
@@ -307,6 +351,14 @@ public class SettingsManager {
 		prefs.put(roomNamePrefixKey, prefix);
 	}
 
+	public final void setServiceFees(final float serviceFees) {
+		this.serviceFeesProperty().set(serviceFees);
+	}
+
+	public final void setServiceFeesPercent(final float serviceFeesPercent) {
+		this.serviceFeesPercentProperty().set(serviceFeesPercent);
+	}
+
 	public final void setShowNetEarnings(final boolean showNetEarnings) {
 		this.showNetEarningsProperty().set(showNetEarnings);
 	}
@@ -326,42 +378,6 @@ public class SettingsManager {
 
 	public final FloatProperty workHoursPerMonthProperty() {
 		return this.workHoursPerMonth;
-	}
-
-	public final FloatProperty serviceFeesProperty() {
-		return this.serviceFees;
-	}
-
-	public final float getServiceFees() {
-		return this.serviceFeesProperty().get();
-	}
-
-	public final void setServiceFees(final float serviceFees) {
-		this.serviceFeesProperty().set(serviceFees);
-	}
-
-	public final FloatProperty serviceFeesPercentProperty() {
-		return this.serviceFeesPercent;
-	}
-
-	public final float getServiceFeesPercent() {
-		return this.serviceFeesPercentProperty().get();
-	}
-
-	public final void setServiceFeesPercent(final float serviceFeesPercent) {
-		this.serviceFeesPercentProperty().set(serviceFeesPercent);
-	}
-
-	public final FloatProperty earningsPayoutPercentProperty() {
-		return this.earningsPayoutPercent;
-	}
-
-	public final float getEarningsPayoutPercent() {
-		return this.earningsPayoutPercentProperty().get();
-	}
-
-	public final void setEarningsPayoutPercent(final float earningsPayoutPercent) {
-		this.earningsPayoutPercentProperty().set(earningsPayoutPercent);
 	}
 
 	// public final BooleanProperty hideCleaningStatisticsProperty() {

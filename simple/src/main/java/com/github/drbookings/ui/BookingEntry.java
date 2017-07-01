@@ -76,8 +76,8 @@ public class BookingEntry extends DateRoomEntry<Booking>
 		super(date, booking.getRoom(), booking);
 		grossEarningsProperty().bind(Bindings.createObjectBinding(calculateGrossEarnings(),
 				getElement().grossEarningsProperty(), SettingsManager.getInstance().showNetEarningsProperty()));
-		netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
-				SettingsManager.getInstance().showNetEarningsProperty()));
+		netEarningsProperty()
+				.bind(Bindings.createObjectBinding(calculateNetEarnings(), getElement().netEarningsProperty()));
 	}
 
 	private Callable<Number> calculateGrossEarnings() {

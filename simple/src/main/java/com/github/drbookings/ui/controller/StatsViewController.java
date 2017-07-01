@@ -1,20 +1,27 @@
 package com.github.drbookings.ui.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.FXUtils;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.TemporalQueries;
+import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.IntegerCellValueFactory;
+import com.github.drbookings.ui.beans.StatisticsTableBean;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
 
 import javafx.collections.FXCollections;
@@ -112,17 +119,19 @@ public class StatsViewController implements Initializable {
 		tableView.setOnContextMenuRequested(e -> System.out.println("Context menu requested " + e));
 		tableView.setTableMenuButtonVisible(true);
 		tableView.setItems(data);
-		updateUI(BookingSelectionManager.getInstance().bookingsProperty());
-		BookingSelectionManager.getInstance().bookingsProperty().addListener(new ListChangeListener<Booking>() {
+
+		BookingSelectionManager.getInstance().selectionProperty().addListener(new ListChangeListener<BookingEntry>() {
 
 			@Override
-			public void onChanged(final javafx.collections.ListChangeListener.Change<? extends Booking> c) {
+			public void onChanged(final javafx.collections.ListChangeListener.Change<? extends BookingEntry> c) {
 				while (c.next()) {
 
 				}
 				updateUI(c.getList());
 			}
 		});
+
+		updateUI(BookingSelectionManager.getInstance().selectionProperty());
 
 		// setHideCleaningStatistics(SettingsManager.getInstance().isHideCleaningStatistics());
 		// SettingsManager.getInstance().hideCleaningStatisticsProperty()
@@ -165,33 +174,59 @@ public class StatsViewController implements Initializable {
 
 	}
 
-	private void updateUI(final Collection<? extends Booking> bookings) {
-		data.clear();
-		if (bookings != null && !bookings.isEmpty()) {
-			final BookingsByOrigin<Booking> bo = new BookingsByOrigin<>(bookings);
-			final float allNights = bo.getAllBookings().stream().mapToLong(b -> b.getNumberOfNights()).sum();
-			final float additionalCosts = SettingsManager.getInstance().getAdditionalCosts();
-			final float numberOfRooms = SettingsManager.getInstance().getNumberOfRooms();
-			final float totalAdditionalCosts = additionalCosts * numberOfRooms;
-			for (final Entry<BookingOrigin, Collection<Booking>> e : bo.getMap().entrySet()) {
-				final float thisNights = e.getValue().stream().mapToLong(b -> b.getNumberOfNights()).sum();
-				final float percentage = thisNights / allNights * 100;
-				final float relativeFixCosts = totalAdditionalCosts * percentage / 100;
-				final StatisticsTableBean b = StatisticsTableBean.build(e.getKey().getName(), e.getValue());
-				b.setFixCosts(relativeFixCosts);
-				b.setNightsPercent(percentage);
-				data.add(b);
+	private void updateUI(final BookingsByOrigin<BookingEntry> bookings) {
+		final float allNights = BookingEntries.countNights(bookings);
+		final NavigableSet<LocalDate> allDates = bookings.stream().map(b -> b.getDate())
+				.collect(Collectors.toCollection(TreeSet::new));
+		long monthCount = TemporalQueries.countOccurrences(allDates,
+				SettingsManager.getInstance().getFixCostsPaymentDay());
+		if (logger.isDebugEnabled()) {
+			logger.debug("Month count: " + monthCount);
+		}
+		if (monthCount < 1) {
+			monthCount = 1;
+			if (logger.isDebugEnabled()) {
+				logger.debug("Month count (corrected): " + monthCount);
 			}
-			// add a total row
-			final float thisNights = bookings.stream().mapToLong(b -> b.getNumberOfNights()).sum();
+		}
+		final float additionalCosts = SettingsManager.getInstance().getAdditionalCosts() * monthCount;
+		final float numberOfRooms = SettingsManager.getInstance().getNumberOfRooms();
+		final float totalAdditionalCosts = additionalCosts * numberOfRooms;
+		if (logger.isDebugEnabled()) {
+			logger.debug("Fix costs total: " + totalAdditionalCosts);
+		}
+		for (final Entry<BookingOrigin, Collection<BookingEntry>> e : bookings.getMap().entrySet()) {
+			final float thisNights = BookingEntries.countNights(e.getValue());
 			final float percentage = thisNights / allNights * 100;
-			final float relativeFixCosts = totalAdditionalCosts * percentage / 100;
-			final StatisticsTableBean b = StatisticsTableBean.build("all", bookings);
-			b.setFixCosts(relativeFixCosts);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Percentage: " + percentage);
+			}
+			final double relativeFixCosts = totalAdditionalCosts * percentage / 100;
+			if (logger.isDebugEnabled()) {
+				logger.debug(e.getKey() + " relative fix costs " + relativeFixCosts);
+			}
+			final StatisticsTableBean b = StatisticsTableBean.build(e.getKey().getName(), e.getValue());
+			b.setFixCosts((float) relativeFixCosts);
 			b.setNightsPercent(percentage);
 			data.add(b);
-
 		}
+		// add a total row
+		final float thisNights = BookingEntries.countNights(bookings.getAllBookings());
+		final float percentage = thisNights / allNights * 100;
+		final float relativeFixCosts = totalAdditionalCosts * percentage / 100;
+		final StatisticsTableBean b = StatisticsTableBean.build("all", bookings);
+		b.setFixCosts(relativeFixCosts);
+		b.setNightsPercent(percentage);
+		data.add(b);
+	}
+
+	private void updateUI(final Collection<? extends BookingEntry> bookings) {
+		data.clear();
+		if (bookings == null || bookings.isEmpty()) {
+			return;
+		}
+		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings, true);
+		updateUI(bo);
 		// updateTotals();
 	}
 

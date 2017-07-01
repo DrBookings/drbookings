@@ -3,6 +3,7 @@ package com.github.drbookings.model;
 import java.time.LocalDate;
 
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Range;
 
 public class Payout {
@@ -41,17 +42,22 @@ public class Payout {
 		return payoutUnkown;
 	}
 
-	public static Payout build(final Booking booking) {
-		final LocalDate date = booking.getDateOfPayment();
+	public static Payout build(final BookingEntry booking) {
+		final LocalDate date = booking.getElement().getDateOfPayment();
 		final double grossEarnings = booking.getGrossEarnings();
-		final double cleaningFees = booking.getCleaningFees();
-		final double comissonable = grossEarnings - cleaningFees;
-		final double comisson = comissonable * booking.getServiceFeesPercent() / 100;
+		final double comisson = getComissionableAmount(booking.getElement())
+				* booking.getElement().getServiceFeesPercent() / 100;
 		final double result = grossEarnings - comisson;
 		if (date == null) {
 			return buildUnknown(result);
 		}
 		return build(date, result);
+	}
+
+	private static float getComissionableAmount(final Booking booking) {
+		final double cleaningFees = booking.getCleaningFees();
+		final double comissonable = booking.getGrossEarnings() - cleaningFees;
+		return (float) comissonable;
 	}
 
 	public Range<LocalDate> getDateRange() {

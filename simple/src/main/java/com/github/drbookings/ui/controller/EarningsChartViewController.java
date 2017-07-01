@@ -2,26 +2,29 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.BinType;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.beans.DateBean;
-import com.github.drbookings.ui.selection.DateBeanSelectionManager;
+import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.ui.selection.BookingSelectionManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.CategoryAxis;
@@ -34,7 +37,22 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import net.sf.kerner.utils.exception.ExceptionUnknownType;
 
-public class EarningsChartViewController extends AbstractBinningChart<DateBean> implements Initializable {
+public class EarningsChartViewController extends AbstractBinningChart<BookingEntry> implements Initializable {
+
+	private class UpdateUIListener implements ChangeListener<Object> {
+		@Override
+		public void changed(final ObservableValue<? extends Object> observable, final Object oldValue,
+				final Object newValue) {
+			if (oldValue instanceof Number && newValue instanceof Number) {
+				final int o = ((Number) oldValue).intValue();
+				final int n = ((Number) newValue).intValue();
+				if (o == n) {
+					return;
+				}
+			}
+			doChart(BookingSelectionManager.getInstance().selectionProperty());
+		}
+	}
 
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(EarningsChartViewController.class);
@@ -61,42 +79,6 @@ public class EarningsChartViewController extends AbstractBinningChart<DateBean> 
 
 	}
 
-	private class UpdateUIListener implements ChangeListener<Object> {
-		@Override
-		public void changed(final ObservableValue<? extends Object> observable, final Object oldValue,
-				final Object newValue) {
-			if (oldValue instanceof Number && newValue instanceof Number) {
-				final int o = ((Number) oldValue).intValue();
-				final int n = ((Number) newValue).intValue();
-				if (o == n) {
-					return;
-				}
-			}
-			doChart(DateBeanSelectionManager.getInstance().selectionProperty());
-		}
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		toggle.setItems(FXCollections.observableArrayList(BinType.MEAN, BinType.SUM));
-		toggle.getSelectionModel().select(0);
-		toggle.getSelectionModel().selectedItemProperty().addListener(c -> doChart());
-		sliderValue.textProperty().bind(Bindings.createStringBinding(
-				() -> Integer.valueOf((int) slider.getValue()).toString(), slider.valueProperty()));
-		binSizeProperty().bind(slider.valueProperty());
-		slider.valueProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().additionalCostsProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().referenceColdRentLongTermProperty().addListener(new UpdateUIListener());
-		SettingsManager.getInstance().showNetEarningsProperty().addListener(new UpdateUIListener());
-		DateBeanSelectionManager.getInstance().selectionProperty()
-				.addListener((ListChangeListener<DateBean>) c -> doChart());
-
-		setChart(chart);
-		setxAxis(xAxis);
-		doChart();
-
-	}
-
 	private Callable<String> createSliderLabel() {
 		return () -> {
 			switch (toggle.getSelectionModel().selectedItemProperty().get()) {
@@ -111,7 +93,31 @@ public class EarningsChartViewController extends AbstractBinningChart<DateBean> 
 	}
 
 	protected void doChart() {
-		doChart(DateBeanSelectionManager.getInstance().selectionProperty());
+		doChart(BookingSelectionManager.getInstance().selectionProperty());
+
+	}
+
+	protected void doChart(final List<? extends BookingEntry> allElements) {
+
+		categories.clear();
+		mapSeries.clear();
+		chart.getData().clear();
+		// final int size = allElements.stream().map(e ->
+		// e.getDate()).collect(Collectors.toSet()).size();
+
+		for (int i = 0; i < allElements.size(); i++) {
+			final BookingEntry db = allElements.get(i);
+			bin.add(db);
+			if (bin.stream().map(e -> e.getDate()).collect(Collectors.toSet()).size() >= getBinSize()) {
+				flushBin();
+			}
+		}
+		flushBin();
+
+		final ObservableList<String> c = FXCollections.observableArrayList(categories);
+		Collections.sort(c);
+		xAxis.setCategories(c);
+		xAxis.setAutoRanging(true);
 
 	}
 
@@ -120,22 +126,16 @@ public class EarningsChartViewController extends AbstractBinningChart<DateBean> 
 		if (bin.isEmpty()) {
 			return;
 		}
-		final Optional<LocalDate> xValue = bin.stream().map(d -> d.getDate()).max((d1, d2) -> d1.compareTo(d2));
+		final LocalDate xValue = bin.stream().map(d -> d.getDate()).max((d1, d2) -> d1.compareTo(d2)).get();
 		final Map<String, Number> yValue = new TreeMap<>();
+		final int dayCnt = bin.stream().map(d -> d.getDate()).collect(Collectors.toSet()).size();
 
-		for (final DateBean d : bin) {
-			// System.err.println("now " + d);
-			for (final Entry<String, Number> e : d.getEarningsPerOrigin().entrySet()) {
-				double n = yValue.getOrDefault(e.getKey(), Double.valueOf(0)).doubleValue();
-				if (BinType.MEAN.equals(toggle.getSelectionModel().getSelectedItem())) {
-					n += e.getValue().doubleValue() / bin.size();
-				} else if (BinType.SUM.equals(toggle.getSelectionModel().getSelectedItem())) {
-					n += e.getValue().doubleValue();
-				}
+		for (final BookingEntry d : bin) {
+			final String originName = d.getElement().getBookingOrigin().getName();
 
-				yValue.put(e.getKey(), n);
-
-			}
+			Number n = yValue.getOrDefault(originName, 0);
+			n = n.doubleValue() + d.getEarnings(SettingsManager.getInstance().isShowNetEarnings());
+			yValue.put(originName, n);
 		}
 
 		for (final Entry<String, Number> e : yValue.entrySet()) {
@@ -146,11 +146,46 @@ public class EarningsChartViewController extends AbstractBinningChart<DateBean> 
 				mapSeries.put(e.getKey(), s);
 				chart.getData().add(s);
 			}
-			final XYChart.Data<String, Number> data = new XYChart.Data<>(xValue.get().toString(), e.getValue());
-			categories.add(xValue.get().toString());
+			Number value = e.getValue();
+			if (BinType.MEAN.equals(toggle.getSelectionModel().getSelectedItem())) {
+				if (dayCnt < 1) {
+					if (logger.isWarnEnabled()) {
+						logger.warn("Invalid data, day cnt: " + dayCnt + " for "
+								+ bin.stream().map(d -> d.getDate()).collect(Collectors.toSet()));
+					}
+				}
+				value = value.doubleValue() / dayCnt;
+			}
+			final XYChart.Data<String, Number> data = new XYChart.Data<>(xValue.toString(), value);
+			categories.add(xValue.toString());
 			s.getData().add(data);
 		}
+		if (logger.isDebugEnabled()) {
+			logger.debug(xValue + ": " + yValue);
+		}
+
 		bin.clear();
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		toggle.setItems(FXCollections.observableArrayList(BinType.MEAN, BinType.SUM));
+		toggle.getSelectionModel().select(0);
+		toggle.getSelectionModel().selectedItemProperty().addListener(c -> doChart());
+		sliderValue.textProperty().bind(Bindings.createStringBinding(
+				() -> Integer.valueOf((int) slider.getValue()).toString(), slider.valueProperty()));
+		binSizeProperty().bind(slider.valueProperty());
+		slider.valueProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().additionalCostsProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().referenceColdRentLongTermProperty().addListener(new UpdateUIListener());
+		SettingsManager.getInstance().showNetEarningsProperty().addListener(new UpdateUIListener());
+		BookingSelectionManager.getInstance().selectionProperty()
+				.addListener((ListChangeListener<BookingEntry>) c -> doChart());
+
+		setChart(chart);
+		setxAxis(xAxis);
+		doChart();
+
 	}
 
 	public void shutDown() {

@@ -22,7 +22,12 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 
 	@Override
 	public Number apply(final BookingEntry booking) {
-		final long numberOfNights = booking.getElement().getNumberOfNights();
+		final double numberOfNights = booking.getElement().getNumberOfNights();
+		// if (booking.getElement().getGuest().getName().contains("Peter")) {
+		// System.err.println(apply(booking.getElement()) + " " + numberOfNights
+		// + " "
+		// + apply(booking.getElement()).doubleValue() / numberOfNights);
+		// }
 		return apply(booking.getElement()).doubleValue() / numberOfNights;
 	}
 

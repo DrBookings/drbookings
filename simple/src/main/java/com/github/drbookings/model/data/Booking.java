@@ -22,6 +22,7 @@ import com.github.drbookings.model.GrossEarningsProvider;
 import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.NetEarningsCalculator;
 import com.github.drbookings.model.NetEarningsProvider;
+import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CleaningEntry;
 
@@ -136,7 +137,8 @@ public class Booking extends IDed
 		grossEarningsProperty()
 				.bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
 		netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
-				cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty()));
+				cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(), cleaningProperty(),
+				SettingsManager.getInstance().showNetEarningsProperty()));
 	}
 
 	private Callable<Number> calculateNetEarnings() {
