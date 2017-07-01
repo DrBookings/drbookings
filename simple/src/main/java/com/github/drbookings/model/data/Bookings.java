@@ -1,19 +1,22 @@
 package com.github.drbookings.model.data;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.BookingEntry;
 
 public class Bookings {
 
-    public static Stream<BookingEntry> getBookingEntriesToday(final MainManager manager) {
-	return getBookingEntries(manager, LocalDate.now());
+
+
+    public static long countNights(Collection<? extends Booking> bookings){
+        return bookings.stream().mapToLong(b -> b.getNumberOfNights()).sum();
     }
 
-    public static Stream<BookingEntry> getBookingEntries(final MainManager manager, final LocalDate date) {
-	return manager.getBookingEntries().stream().filter(b -> b.getDate().equals(date));
-    }
 
 }

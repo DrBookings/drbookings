@@ -32,12 +32,6 @@
 						<PropertyValueFactory property="performance" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Earnings Payout" fx:id="cEarningsPayout"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="earningsPayout" />
-					</cellValueFactory>
-				</TableColumn>
 				<TableColumn text="Origin" prefWidth="100">
 					<cellValueFactory>
 						<PropertyValueFactory property="origin" />
@@ -60,13 +54,13 @@
 						<PropertyValueFactory property="numberOfNights" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Gross Earnings" fx:id="cGrossEarnings"
+				<TableColumn text="Gross Income" fx:id="cGrossEarnings"
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="grossEarnings" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Net Earnings" fx:id="cNetEarnings"
+				<TableColumn text="Net Income" fx:id="cNetEarnings"
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="netEarnings" />
@@ -100,6 +94,12 @@
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="earnings" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Earnings Payout" fx:id="cEarningsPayout"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="earningsPayout" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="Number of Cleanings" fx:id="cNumberOfCleanings"

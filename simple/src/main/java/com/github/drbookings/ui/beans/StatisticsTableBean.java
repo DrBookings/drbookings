@@ -1,13 +1,15 @@
-package com.github.drbookings.ui.controller;
+package com.github.drbookings.ui.beans;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import com.github.drbookings.model.Payout;
 import com.github.drbookings.model.PayoutCalculator;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Range;
 
 import javafx.beans.binding.Bindings;
@@ -88,25 +90,22 @@ public class StatisticsTableBean {
 
 	private Callable<Number> calculateEarnings() {
 		return () -> {
-			return getTotalPayout() + getUnknownPayout() - getFixCosts();
+			return getTotalPayout() - getFixCosts();
 		};
 	}
 
-	public static StatisticsTableBean build(final String origin, final Collection<? extends Booking> bookings) {
+	public static StatisticsTableBean build(final String origin, final Collection<? extends BookingEntry> bookings) {
 		final StatisticsTableBean result = new StatisticsTableBean();
 		result.setOrigin(origin);
-		result.setNumberOfNights((int) bookings.stream().mapToLong(b -> b.getNumberOfNights()).sum());
-		result.setBookingCount(bookings.size());
+		result.setNumberOfNights((int) BookingEntries.countNights(bookings));
+		result.setBookingCount(bookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).size());
 		final Payout p = pc.apply(bookings);
 		result.setTotalPayout((float) p.getPayout());
 		result.setUnknownPayout((float) p.getPayoutUnkown());
 		result.setDateRange(p.getDateRange());
-		result.setCleaningCount(
-				(int) bookings.stream().filter(b -> b.getCleaning() != null).map(b -> b.getCleaning()).count());
-		result.setCleaningCosts((float) bookings.stream().filter(b -> b.getCleaning() != null)
-				.mapToDouble(b -> b.getCleaning().getCleaningCosts()).sum());
-		result.setCleaningFees((float) bookings.stream().mapToDouble(b -> b.getCleaningFees()).sum());
-		result.setCleaningCount((int) bookings.stream().map(b -> b.getCleaning()).filter(c -> c != null).count());
+		result.setCleaningCount((int) BookingEntries.countCleanings(bookings));
+		result.setCleaningCosts((float) BookingEntries.getCleaningCosts(bookings));
+		result.setCleaningFees((float) BookingEntries.getCleaningFees(bookings));
 		result.setGrossEarnings((float) bookings.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
 		result.setNetEarnings((float) bookings.stream().mapToDouble(b -> b.getNetEarnings()).sum());
 		return result;

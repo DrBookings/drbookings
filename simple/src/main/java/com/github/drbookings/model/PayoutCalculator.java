@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.ui.BookingEntry;
 
-public class PayoutCalculator implements Function<Collection<? extends Booking>, Payout> {
+public class PayoutCalculator implements Function<Collection<? extends BookingEntry>, Payout> {
 
 	public PayoutCalculator() {
 
 	}
 
 	@Override
-	public Payout apply(final Collection<? extends Booking> bookings) {
+	public Payout apply(final Collection<? extends BookingEntry> bookings) {
 		final List<Payout> result = bookings.stream().map(b -> Payout.build(b)).collect(Collectors.toList());
 		return collapse(result);
 	}
