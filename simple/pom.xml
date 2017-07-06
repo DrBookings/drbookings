@@ -21,12 +21,11 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-		<repository>
-			<id>local-release-repo</id>
-			<name>alex-local</name>
-			<url>file://${user.home}/local-maven-repository</url>
-		</repository>
-	</distributionManagement>
+        <site>
+            <id>github-pages</id>
+            <url>https://github.com/yegor256/cactoos</url>
+        </site>
+    </distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
