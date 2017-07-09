@@ -27,10 +27,6 @@
 			<name>alex-local</name>
 			<url>file://${user.home}/local-maven-repository</url>
 		</repository>
-		<site>
-			<id>github-pages</id>
-			<url>https://github.com/${github-user}/${github-repo}</url>
-		</site>
 	</distributionManagement>
 	<build>
 		<plugins>
@@ -48,7 +44,7 @@
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
-						<phase>deploy</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
