@@ -44,7 +44,7 @@ public class DefaultNetEarningsCalculatorTest {
 		final CleaningEntry ce = new CleaningEntry(LocalDate.now(), b, new Cleaning("testCleaning"), null);
 		ce.setCleaningCosts(40);
 		b.setCleaning(ce);
-		assertEquals(284, c.apply(b).doubleValue(), 0.001);
+		assertEquals(360 - ((360 - 60) * 0.12), c.apply(b).doubleValue(), 0.001);
 
 	}
 

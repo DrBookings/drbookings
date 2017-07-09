@@ -14,9 +14,9 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 		double result = booking.getGrossEarnings();
 		result -= (booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent() / 100.0;
 		result -= booking.getServiceFee();
-		if (booking.getCleaning() != null) {
-			result -= booking.getCleaning().getCleaningCosts();
-		}
+		// if (booking.getCleaning() != null) {
+		// result -= booking.getCleaning().getCleaningCosts();
+		// }
 		return result;
 	}
 

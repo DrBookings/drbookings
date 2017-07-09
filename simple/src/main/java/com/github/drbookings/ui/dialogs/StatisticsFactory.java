@@ -16,7 +16,7 @@ public class StatisticsFactory extends AbstractViewFactory implements ViewFactor
 		setFxml("/fxml/StatisticsView.fxml");
 		setTitle("Statistics for Selection");
 		setHeight(240);
-		setWidth(400);
+		setWidth(1000);
 		this.manager = manager;
 	}
 

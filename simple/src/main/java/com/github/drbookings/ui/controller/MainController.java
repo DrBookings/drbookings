@@ -262,9 +262,6 @@ public class MainController implements Initializable {
 
 	private EarningsChartFactory earningsChartFactory;
 
-	@FXML
-	private OverviewChartController overviewChartViewController;
-
 	private RoomDetailsDialogFactory roomDetailsDialogFactory;
 
 	private final OccupancyRateProvider occupancyRateProvider = new OccupancyRateProvider();
@@ -648,10 +645,6 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
-		if (overviewChartViewController != null) {
-			overviewChartViewController.setMainController(this);
-		}
 
 		guestNameFilterInput.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 			tableView.getSelectionModel().clearSelection();

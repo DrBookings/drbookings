@@ -9,10 +9,13 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.FXUtils;
+import com.github.drbookings.LocalDates;
+import com.github.drbookings.PaymentDateFilter;
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.BookingOrigin;
@@ -20,10 +23,14 @@ import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
+import com.github.drbookings.ui.CurrencyCellValueFactory;
 import com.github.drbookings.ui.IntegerCellValueFactory;
 import com.github.drbookings.ui.beans.StatisticsTableBean;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
+import com.google.common.collect.Range;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -48,23 +55,24 @@ public class StatsViewController implements Initializable {
 	@FXML
 	private TableColumn<StatisticsTableBean, Number> cNumberOfBookings;
 	@FXML
-	private TableColumn<StatisticsTableBean, Number> cPayoutUnknown;
-	@FXML
-	private TableColumn<StatisticsTableBean, Number> cTotalPayout;
-	@FXML
 	private TableColumn<StatisticsTableBean, Number> cNightsPercent;
 	@FXML
 	private TableColumn<StatisticsTableBean, Number> cRelativeFixCosts;
 	@FXML
 	private TableColumn<StatisticsTableBean, Number> cEarnings;
 	@FXML
-	private TableColumn<StatisticsTableBean, Number> cEarningsPayout;
-	@FXML
-	private TableColumn<StatisticsTableBean, Number> cGrossEarnings;
-	@FXML
 	private TableColumn<StatisticsTableBean, Number> cNetEarnings;
 	@FXML
-	private TableColumn<StatisticsTableBean, Number> cPerformance;
+	private TableColumn<StatisticsTableBean, Number> cEarningsPayout;
+	@FXML
+	private TableColumn<StatisticsTableBean, Number> cGrossIncome;
+	@FXML
+	private TableColumn<StatisticsTableBean, Number> cNetIncome;
+	@FXML
+	private TableColumn<StatisticsTableBean, Number> cServiceFees;
+
+	private final ObjectProperty<Range<LocalDate>> dateRange = new SimpleObjectProperty<>();
+
 	// @FXML
 	// private Label totalEarningsPayout;
 	// @FXML
@@ -87,34 +95,33 @@ public class StatsViewController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		cCleaningCosts.setCellFactory(new IntegerCellValueFactory<>());
-		cCleaningFees.setCellFactory(new IntegerCellValueFactory<>());
+		cCleaningCosts.setCellFactory(new CurrencyCellValueFactory<>());
+		cCleaningFees.setCellFactory(new CurrencyCellValueFactory<>());
 		cNumberOfBookings.setCellFactory(new IntegerCellValueFactory<>());
 		cNumberOfNights.setCellFactory(new IntegerCellValueFactory<>());
-		cPayoutUnknown.setCellFactory(new IntegerCellValueFactory<>());
-		cTotalPayout.setCellFactory(new IntegerCellValueFactory<>());
 		cNumberOfCleanings.setCellFactory(new IntegerCellValueFactory<>());
-		cNightsPercent.setCellFactory(new IntegerCellValueFactory<>());
-		cRelativeFixCosts.setCellFactory(new IntegerCellValueFactory<>());
-		cEarnings.setCellFactory(new IntegerCellValueFactory<>());
-		cEarningsPayout.setCellFactory(new IntegerCellValueFactory<>());
-		cGrossEarnings.setCellFactory(new IntegerCellValueFactory<>());
-		cNetEarnings.setCellFactory(new IntegerCellValueFactory<>());
-		cPerformance.setCellFactory(new IntegerCellValueFactory<>());
+		cNightsPercent.setCellFactory(new CurrencyCellValueFactory<>());
+		cRelativeFixCosts.setCellFactory(new CurrencyCellValueFactory<>());
+		cEarnings.setCellFactory(new CurrencyCellValueFactory<>());
+		cNetEarnings.setCellFactory(new CurrencyCellValueFactory<>());
+		cEarningsPayout.setCellFactory(new CurrencyCellValueFactory<>());
+		cGrossIncome.setCellFactory(new CurrencyCellValueFactory<>());
+		cNetIncome.setCellFactory(new CurrencyCellValueFactory<>());
+		cServiceFees.setCellFactory(new CurrencyCellValueFactory<>());
+
 		FXUtils.makeHeaderWrappable(cCleaningCosts);
 		FXUtils.makeHeaderWrappable(cCleaningFees);
 		FXUtils.makeHeaderWrappable(cNumberOfBookings);
 		FXUtils.makeHeaderWrappable(cNumberOfNights);
-		FXUtils.makeHeaderWrappable(cPayoutUnknown);
-		FXUtils.makeHeaderWrappable(cTotalPayout);
 		FXUtils.makeHeaderWrappable(cNumberOfCleanings);
 		FXUtils.makeHeaderWrappable(cNightsPercent);
 		FXUtils.makeHeaderWrappable(cRelativeFixCosts);
 		FXUtils.makeHeaderWrappable(cEarnings);
-		FXUtils.makeHeaderWrappable(cEarningsPayout);
-		FXUtils.makeHeaderWrappable(cGrossEarnings);
 		FXUtils.makeHeaderWrappable(cNetEarnings);
-		FXUtils.makeHeaderWrappable(cPerformance);
+		FXUtils.makeHeaderWrappable(cEarningsPayout);
+		FXUtils.makeHeaderWrappable(cGrossIncome);
+		FXUtils.makeHeaderWrappable(cNetIncome);
+		FXUtils.makeHeaderWrappable(cServiceFees);
 
 		tableView.setOnContextMenuRequested(e -> System.out.println("Context menu requested " + e));
 		tableView.setTableMenuButtonVisible(true);
@@ -127,6 +134,7 @@ public class StatsViewController implements Initializable {
 				while (c.next()) {
 
 				}
+
 				updateUI(c.getList());
 			}
 		});
@@ -175,8 +183,8 @@ public class StatsViewController implements Initializable {
 	}
 
 	private void updateUI(final BookingsByOrigin<BookingEntry> bookings) {
-		final float allNights = BookingEntries.countNights(bookings);
-		final NavigableSet<LocalDate> allDates = bookings.stream().map(b -> b.getDate())
+		final float allNights = BookingEntries.countNights(bookings, false);
+		final NavigableSet<LocalDate> allDates = bookings.getAllBookings(true).stream().map(b -> b.getDate())
 				.collect(Collectors.toCollection(TreeSet::new));
 		long monthCount = TemporalQueries.countOccurrences(allDates,
 				SettingsManager.getInstance().getFixCostsPaymentDay());
@@ -196,8 +204,13 @@ public class StatsViewController implements Initializable {
 			logger.debug("Fix costs total: " + totalAdditionalCosts);
 		}
 		for (final Entry<BookingOrigin, Collection<BookingEntry>> e : bookings.getMap().entrySet()) {
-			final float thisNights = BookingEntries.countNights(e.getValue());
-			final float percentage = thisNights / allNights * 100;
+			final float thisNights = BookingEntries.countNights(new BookingsByOrigin<>(e.getValue()), false);
+			final float percentage;
+			if (StringUtils.isBlank(e.getKey().getName())) {
+				percentage = 0;
+			} else {
+				percentage = thisNights / allNights * 100;
+			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Percentage: " + percentage);
 			}
@@ -211,12 +224,11 @@ public class StatsViewController implements Initializable {
 			data.add(b);
 		}
 		// add a total row
-		final float thisNights = BookingEntries.countNights(bookings.getAllBookings());
-		final float percentage = thisNights / allNights * 100;
-		final float relativeFixCosts = totalAdditionalCosts * percentage / 100;
-		final StatisticsTableBean b = StatisticsTableBean.build("all", bookings);
+
+		final float relativeFixCosts = totalAdditionalCosts;
+		final StatisticsTableBean b = StatisticsTableBean.buildSum(data);
 		b.setFixCosts(relativeFixCosts);
-		b.setNightsPercent(percentage);
+		b.setNightsPercent(100);
 		data.add(b);
 	}
 
@@ -225,7 +237,10 @@ public class StatsViewController implements Initializable {
 		if (bookings == null || bookings.isEmpty()) {
 			return;
 		}
-		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings, true);
+		dateRange.set(LocalDates.getDateRange(bookings.stream().map(e -> e.getDate()).collect(Collectors.toList())));
+		final Collection<? extends BookingEntry> bookingsFiltered = bookings.stream()
+				.filter(new PaymentDateFilter(dateRange.get())).collect(Collectors.toList());
+		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookingsFiltered);
 		updateUI(bo);
 		// updateTotals();
 	}
