@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.drbookings</groupId>
 	<artifactId>drbookings</artifactId>
@@ -21,11 +22,16 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-        <site>
-            <id>github-pages</id>
-            <url>https://github.com/yegor256/cactoos</url>
-        </site>
-    </distributionManagement>
+		<repository>
+			<id>local-release-repo</id>
+			<name>alex-local</name>
+			<url>file://${user.home}/local-maven-repository</url>
+		</repository>
+		<site>
+			<id>github-pages</id>
+			<url>https://github.com/${github-user}/${github-repo}</url>
+		</site>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -35,6 +41,21 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>
 			<plugin>

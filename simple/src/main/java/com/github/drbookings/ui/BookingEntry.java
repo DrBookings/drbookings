@@ -16,6 +16,7 @@ import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.NetEarningsCalculator;
 import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
 
 import javafx.beans.Observable;
@@ -174,6 +175,16 @@ public class BookingEntry extends DateRoomEntry<Booking>
 	@Override
 	public String toString() {
 		return "date:" + getDate() + ",room:" + getRoom() + ",guest:" + getElement().getGuest();
+	}
+
+	@Override
+	public BookingOrigin getBookingOrigin() {
+		return getElement().getBookingOrigin();
+	}
+
+	@Override
+	public boolean isPaymentDone() {
+		return getElement().isPaymentDone();
 	}
 
 }

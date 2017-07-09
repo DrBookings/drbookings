@@ -1,9 +1,13 @@
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingOrigin;
 
 public interface IBooking {
 
-	Booking getElement();
+	float getGrossEarnings();
+
+	float getNetEarnings();
+
+	BookingOrigin getBookingOrigin();
 
 }

@@ -24,6 +24,7 @@ import com.github.drbookings.DateRange;
 import com.github.drbookings.OverbookingException;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.BookingOrigin;
+import com.github.drbookings.model.data.Bookings;
 import com.github.drbookings.model.data.Cleaning;
 import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.data.MatchException;
@@ -82,8 +83,13 @@ public class MainManager {
 	}
 
 	public synchronized Booking addBooking(final Booking booking) throws OverbookingException {
-		for (final LocalDate d : new DateRange(booking.getCheckIn(), booking.getCheckOut())) {
-			addBookingEntry(d, booking);
+		for (final BookingEntry b : Bookings.toEntries(booking)) {
+			if (roomBusy(b)) {
+				throw new OverbookingException("Cannot add " + booking);
+			}
+		}
+		for (final BookingEntry b : Bookings.toEntries(booking)) {
+			addBookingEntry(b);
 		}
 		// if (logger.isDebugEnabled()) {
 		// logger.debug("Adding booking " + booking);
@@ -92,13 +98,8 @@ public class MainManager {
 		return booking;
 	}
 
-	protected synchronized void addBookingEntry(final LocalDate date, final Booking booking)
-			throws OverbookingException {
-		final BookingEntry bookingEntry = new BookingEntry(date, booking);
-		if (roomBusy(bookingEntry)) {
-			throw new OverbookingException("Cannot add " + booking);
-		}
-		bookingEntries.put(date, bookingEntry);
+	protected synchronized void addBookingEntry(final BookingEntry bookingEntry) throws OverbookingException {
+		bookingEntries.put(bookingEntry.getDate(), bookingEntry);
 		addUiDataBooking(bookingEntry);
 	}
 

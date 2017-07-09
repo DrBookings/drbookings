@@ -10,12 +10,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.Scripting;
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.model.GrossEarningsProvider;
@@ -165,22 +163,11 @@ public class Booking extends IDed
 
 	private Callable<Number> evaluateExpression() {
 		return () -> {
-			final String expression = getGrossEarningsExpression();
-			if (expression == null || expression.trim().length() < 1) {
-				return 0;
-			}
-			final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-			final Object result = engine.eval(expression);
-			// if (logger.isDebugEnabled()) {
-			// logger.debug("Expression result: " + result);
-			// }
-			if (result instanceof Number) {
-				return ((Number) result);
-			}
-			return -1;
+			return Scripting.evaluateExpression(getGrossEarningsExpression());
 		};
 	}
 
+	@Override
 	public BookingOrigin getBookingOrigin() {
 		return bookingOrigin;
 	}
@@ -270,6 +257,7 @@ public class Booking extends IDed
 		return this.grossEarnings;
 	}
 
+	@Override
 	public boolean isPaymentDone() {
 		return this.paymentDoneProperty().get();
 	}
@@ -348,8 +336,8 @@ public class Booking extends IDed
 
 	@Override
 	public String toString() {
-		return "room:" + getRoom() + ",guest:" + getGuest() + ",checkIn:" + getCheckIn() + ",checkOut:" + getCheckOut()
-				+ ",earnings:" + getGrossEarnings();
+		return "id:" + getId() + ", room:" + getRoom() + ",guest:" + getGuest() + ",checkIn:" + getCheckIn()
+				+ ",checkOut:" + getCheckOut() + ",earnings:" + getGrossEarnings();
 	}
 
 	public BooleanProperty welcomeMailSendProperty() {
@@ -408,11 +396,6 @@ public class Booking extends IDed
 	 */
 	public final void setCleaning(final CleaningEntry cleaning) {
 		this.cleaningProperty().set(cleaning);
-	}
-
-	@Override
-	public Booking getElement() {
-		return this;
 	}
 
 	public final ObjectProperty<LocalDate> dateOfPaymentProperty() {

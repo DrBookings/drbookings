@@ -128,8 +128,8 @@ public class DrBookingsApplication extends Application {
 				}
 			}
 			try {
-				SettingsManager.getInstance()
-						.setAdditionalCosts(Float.parseFloat(prop.getProperty(ADDITIONAL_COSTS_KEY)));
+				final Number n = Scripting.evaluateExpression(prop.getProperty(ADDITIONAL_COSTS_KEY));
+				SettingsManager.getInstance().setAdditionalCosts(n.floatValue());
 			} catch (final Exception ex) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Failed to parse " + ADDITIONAL_COSTS_KEY + ", " + ex.toString());

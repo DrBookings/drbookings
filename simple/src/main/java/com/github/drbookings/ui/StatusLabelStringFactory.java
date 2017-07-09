@@ -99,7 +99,7 @@ public class StatusLabelStringFactory {
 		// completePayment, netEarnings));
 		// sb.append(")");
 		sb.append("\tAv.Earnings/Night/Room:");
-		final OptionalDouble av = bookings.getAllBookings().stream().filter(b -> !b.isCheckOut())
+		final OptionalDouble av = bookings.getAllBookings(false).stream().filter(b -> !b.isCheckOut())
 				.mapToDouble(b -> b.getEarnings(netEarnings)).average();
 		if (av.isPresent()) {
 			sb.append(DECIMAL_FORMAT.format(av.getAsDouble()));

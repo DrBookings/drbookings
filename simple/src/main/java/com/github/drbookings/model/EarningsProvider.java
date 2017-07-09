@@ -1,7 +1,7 @@
 package com.github.drbookings.model;
 
-public interface EarningsProvider {
+public interface EarningsProvider extends PaymentProvider {
 
-    float getEarnings(boolean netEarnings);
+	float getEarnings(boolean netEarnings);
 
 }

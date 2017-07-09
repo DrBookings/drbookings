@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import com.github.drbookings.model.Payout;
-import com.github.drbookings.model.PayoutCalculator;
+import org.apache.commons.lang3.StringUtils;
+
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
@@ -28,8 +28,6 @@ public class StatisticsTableBean {
 
 	private final IntegerProperty numberOfNights = new SimpleIntegerProperty();
 
-	private final FloatProperty totalPayout = new SimpleFloatProperty();
-
 	private final FloatProperty cleaningFees = new SimpleFloatProperty();
 
 	private final FloatProperty cleaningCosts = new SimpleFloatProperty();
@@ -38,35 +36,39 @@ public class StatisticsTableBean {
 
 	private final FloatProperty earnings = new SimpleFloatProperty();
 
-	private final FloatProperty grossEarnings = new SimpleFloatProperty();
-
 	private final FloatProperty netEarnings = new SimpleFloatProperty();
+
+	private final FloatProperty grossIncome = new SimpleFloatProperty();
+
+	private final FloatProperty netIncome = new SimpleFloatProperty();
 
 	private final FloatProperty earningsPayout = new SimpleFloatProperty();
 
 	private final FloatProperty nightsPercent = new SimpleFloatProperty();
 
-	private final FloatProperty performance = new SimpleFloatProperty();
+	private final FloatProperty serviceFees = new SimpleFloatProperty();
 
 	private final IntegerProperty cleaningCount = new SimpleIntegerProperty();
 
 	private final IntegerProperty bookingCount = new SimpleIntegerProperty();
 
-	private final FloatProperty unknownPayout = new SimpleFloatProperty();
-
 	private final ObjectProperty<Range<LocalDate>> dateRange = new SimpleObjectProperty<>();
 
-	private static final PayoutCalculator pc = new PayoutCalculator();
-
 	public StatisticsTableBean() {
-		earningsPayoutProperty().bind(Bindings.createObjectBinding(calculateEarningsPayout(), earningsProperty()));
-		earningsProperty().bind(Bindings.createObjectBinding(calculateEarnings(), totalPayoutProperty(),
-				unknownPayoutProperty(), fixCostsProperty()));
-		performanceProperty()
-				.bind(Bindings.createObjectBinding(calculatePerformance(), earningsProperty(), cleaningCostsProperty(),
-						nightsPercentProperty(), SettingsManager.getInstance().referenceColdRentLongTermProperty(),
-						SettingsManager.getInstance().numberOfRoomsProperty()));
+		this(true);
+	}
 
+	public StatisticsTableBean(final boolean bind) {
+		if (bind) {
+			earningsPayoutProperty().bind(Bindings.createObjectBinding(calculateEarningsPayout(), earningsProperty()));
+			netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarningsPayout(), earningsProperty()));
+			earningsProperty().bind(
+					Bindings.createObjectBinding(calculateEarnings(), fixCostsProperty(), cleaningCostsProperty()));
+		}
+	}
+
+	private Callable<Number> calculateNetEarningsPayout() {
+		return () -> getEarnings() - getCleaningCosts();
 	}
 
 	private Callable<Number> calculatePerformance() {
@@ -84,30 +86,51 @@ public class StatisticsTableBean {
 
 	private Callable<Number> calculateEarningsPayout() {
 		return () -> {
+			if (StringUtils.isBlank(getOrigin())) {
+				return getEarnings();
+			}
+
+			// not earnings, since here cleaning is already included. But
+			// cleaning costs go cash, so its net income times payout percent
 			return getEarnings() * SettingsManager.getInstance().getEarningsPayoutPercent();
 		};
 	}
 
 	private Callable<Number> calculateEarnings() {
 		return () -> {
-			return getTotalPayout() - getFixCosts();
+			return (double) getNetIncome() - getFixCosts();
 		};
 	}
 
 	public static StatisticsTableBean build(final String origin, final Collection<? extends BookingEntry> bookings) {
 		final StatisticsTableBean result = new StatisticsTableBean();
 		result.setOrigin(origin);
-		result.setNumberOfNights((int) BookingEntries.countNights(bookings));
+		result.setNumberOfNights((int) BookingEntries.countNights(origin, bookings));
 		result.setBookingCount(bookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).size());
-		final Payout p = pc.apply(bookings);
-		result.setTotalPayout((float) p.getPayout());
-		result.setUnknownPayout((float) p.getPayoutUnkown());
-		result.setDateRange(p.getDateRange());
 		result.setCleaningCount((int) BookingEntries.countCleanings(bookings));
 		result.setCleaningCosts((float) BookingEntries.getCleaningCosts(bookings));
 		result.setCleaningFees((float) BookingEntries.getCleaningFees(bookings));
-		result.setGrossEarnings((float) bookings.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
-		result.setNetEarnings((float) bookings.stream().mapToDouble(b -> b.getNetEarnings()).sum());
+		result.setGrossIncome((float) BookingEntries.getGrossEarnings(bookings));
+		result.setNetIncome((float) BookingEntries.getNetEarnings(bookings));
+		result.setServiceFees((float) BookingEntries.getServiceFees(bookings));
+		return result;
+
+	}
+
+	public static StatisticsTableBean buildSum(final Collection<StatisticsTableBean> data) {
+		final StatisticsTableBean result = new StatisticsTableBean(false);
+		result.setOrigin("sum");
+		result.setNumberOfNights(data.stream().mapToInt(b -> b.getNumberOfNights()).sum());
+		result.setBookingCount(data.stream().mapToInt(b -> b.getBookingCount()).sum());
+		result.setCleaningCount(data.stream().mapToInt(b -> b.getCleaningCount()).sum());
+		result.setCleaningCosts((float) data.stream().mapToDouble(b -> b.getCleaningCosts()).sum());
+		result.setCleaningFees((float) data.stream().mapToDouble(b -> b.getCleaningFees()).sum());
+		result.setGrossIncome((float) data.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
+		result.setNetIncome((float) data.stream().mapToDouble(b -> b.getNetIncome()).sum());
+		result.setServiceFees((float) data.stream().mapToDouble(b -> b.getServiceFees()).sum());
+		result.setEarnings((float) data.stream().mapToDouble(b -> b.getEarnings()).sum());
+		result.setEarningsPayout((float) data.stream().mapToDouble(b -> b.getEarningsPayout()).sum());
+		result.setNetEarnings((float) data.stream().mapToDouble(b -> b.getNetEarnings()).sum());
 		return result;
 
 	}
@@ -134,18 +157,6 @@ public class StatisticsTableBean {
 
 	public final void setNumberOfNights(final int numberOfNights) {
 		this.numberOfNightsProperty().set(numberOfNights);
-	}
-
-	public final FloatProperty totalPayoutProperty() {
-		return this.totalPayout;
-	}
-
-	public final float getTotalPayout() {
-		return this.totalPayoutProperty().get();
-	}
-
-	public final void setTotalPayout(final float totalPayout) {
-		this.totalPayoutProperty().set(totalPayout);
 	}
 
 	public final FloatProperty cleaningFeesProperty() {
@@ -182,18 +193,6 @@ public class StatisticsTableBean {
 
 	public final void setCleaningCount(final int cleaningCount) {
 		this.cleaningCountProperty().set(cleaningCount);
-	}
-
-	public final FloatProperty unknownPayoutProperty() {
-		return this.unknownPayout;
-	}
-
-	public final float getUnknownPayout() {
-		return this.unknownPayoutProperty().get();
-	}
-
-	public final void setUnknownPayout(final float unknownPayout) {
-		this.unknownPayoutProperty().set(unknownPayout);
 	}
 
 	public final ObjectProperty<Range<LocalDate>> dateRangeProperty() {
@@ -268,16 +267,40 @@ public class StatisticsTableBean {
 		this.earningsPayoutProperty().set(earningsPayout);
 	}
 
-	public final FloatProperty grossEarningsProperty() {
-		return this.grossEarnings;
+	public final FloatProperty grossIncomeProperty() {
+		return this.grossIncome;
 	}
 
 	public final float getGrossEarnings() {
-		return this.grossEarningsProperty().get();
+		return this.grossIncomeProperty().get();
 	}
 
-	public final void setGrossEarnings(final float grossEarnings) {
-		this.grossEarningsProperty().set(grossEarnings);
+	public final void setGrossIncome(final float grossIncome) {
+		this.grossIncomeProperty().set(grossIncome);
+	}
+
+	public final FloatProperty netIncomeProperty() {
+		return this.netIncome;
+	}
+
+	public final float getNetIncome() {
+		return this.netIncomeProperty().get();
+	}
+
+	public final void setNetIncome(final float netEarnings) {
+		this.netIncomeProperty().set(netEarnings);
+	}
+
+	public final FloatProperty serviceFeesProperty() {
+		return this.serviceFees;
+	}
+
+	public final float getServiceFees() {
+		return this.serviceFeesProperty().get();
+	}
+
+	public final void setServiceFees(final float serviceFees) {
+		this.serviceFeesProperty().set(serviceFees);
 	}
 
 	public final FloatProperty netEarningsProperty() {
@@ -290,18 +313,6 @@ public class StatisticsTableBean {
 
 	public final void setNetEarnings(final float netEarnings) {
 		this.netEarningsProperty().set(netEarnings);
-	}
-
-	public final FloatProperty performanceProperty() {
-		return this.performance;
-	}
-
-	public final float getPerformance() {
-		return this.performanceProperty().get();
-	}
-
-	public final void setPerformance(final float performance) {
-		this.performanceProperty().set(performance);
 	}
 
 }

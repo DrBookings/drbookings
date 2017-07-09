@@ -26,20 +26,9 @@
 		<TableView fx:id="tableView" maxWidth="Infinity" HBox.hgrow="ALWAYS"
 			VBox.vgrow="ALWAYS">
 			<columns>
-				<TableColumn text="Performance" fx:id="cPerformance"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="performance" />
-					</cellValueFactory>
-				</TableColumn>
 				<TableColumn text="Origin" prefWidth="100">
 					<cellValueFactory>
 						<PropertyValueFactory property="origin" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="Payment Dates" prefWidth="200">
-					<cellValueFactory>
-						<PropertyValueFactory property="dateRange" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="Number of Bookings" fx:id="cNumberOfBookings"
@@ -54,34 +43,28 @@
 						<PropertyValueFactory property="numberOfNights" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Gross Income" fx:id="cGrossEarnings"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="grossEarnings" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="Net Income" fx:id="cNetEarnings"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="netEarnings" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="Payout Unknown" fx:id="cPayoutUnknown"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="unknownPayout" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="Payout Done" fx:id="cTotalPayout"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="totalPayout" />
-					</cellValueFactory>
-				</TableColumn>
 				<TableColumn text="Nights %" fx:id="cNightsPercent"
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="nightsPercent" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Gross Income" fx:id="cGrossIncome"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="grossIncome" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Service Fees" fx:id="cServiceFees"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="serviceFees" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Net Income" fx:id="cNetIncome"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="netIncome" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="Relative Fix Costs" fx:id="cRelativeFixCosts"
@@ -94,6 +77,12 @@
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="earnings" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Net Earnings" fx:id="cNetEarnings"
+					prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="netEarnings" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="Earnings Payout" fx:id="cEarningsPayout"
