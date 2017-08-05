@@ -172,7 +172,7 @@
 		<dependency>
 			<groupId>com.github.kerner1000</groupId>
 			<artifactId>k-tools1000</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
