@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
+<?import javafx.scene.control.CheckBox?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
 	fx:controller="com.github.drbookings.ui.controller.ModifyBookingController"
@@ -16,7 +17,7 @@
 	</stylesheets>
 	<VBox fillWidth="true" spacing="8">
 		<padding>
-			<Insets top="8" right="8" bottom="8" left="8" />
+			<Insets top="4" right="8" bottom="4" left="8" />
 		</padding>
 		<HBox spacing="8">
 			<padding>
@@ -30,6 +31,7 @@
 		<DatePicker fx:id="datePickerCheckOut" />
 		<Label text="Date of Payment" />
 		<DatePicker fx:id="dateOfPayment" />
+		<CheckBox text="Split Booking" fx:id="splitBooking"></CheckBox>
 		<Button text="Save" prefWidth="100" onAction="#handleButtonSaveChanges"></Button>
 	</VBox>
 </ScrollPane>

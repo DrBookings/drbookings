@@ -72,4 +72,12 @@ public class BookingsByOrigin<T extends IBooking> {
 		return bookingEntries.hashCode();
 	}
 
+	public boolean isEmpty() {
+		return bookingEntries.isEmpty();
+	}
+
+	public Collection<T> getAllBookings() {
+		return getAllBookings(false);
+	}
+
 }

@@ -376,6 +376,7 @@ public class MainManager {
 		newBooking.setDateOfPayment(booking.getDateOfPayment());
 		newBooking.setServiceFee(booking.getServiceFee());
 		newBooking.setServiceFeesPercent(booking.getServiceFeesPercent());
+		newBooking.setSplitBooking(booking.isSplitBooking());
 		try {
 			addBooking(newBooking);
 		} catch (final OverbookingException e) {

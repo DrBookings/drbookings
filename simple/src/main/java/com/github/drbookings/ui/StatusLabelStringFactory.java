@@ -6,7 +6,10 @@ import java.util.OptionalDouble;
 
 import com.github.drbookings.model.BookingEntryToBooking;
 import com.github.drbookings.model.EarningsProvider;
+import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.provider.MinimumPriceProvider;
+import com.github.drbookings.ui.provider.OccupancyRateProvider;
 
 public class StatusLabelStringFactory {
 
@@ -67,46 +70,35 @@ public class StatusLabelStringFactory {
 	}
 
 	public String build() {
-
+		if (bookings.isEmpty()) {
+			return "";
+		}
 		final boolean completePayment = SettingsManager.getInstance().isCompletePayment();
 		final boolean netEarnings = SettingsManager.getInstance().isShowNetEarnings();
-
 		return build(completePayment, netEarnings);
 
 	}
 
 	private String build(final boolean completePayment, final boolean netEarnings) {
 		final StringBuilder sb = new StringBuilder();
-		// sb.append(buildAirbnbStringNightCount(bookings, completePayment));
-		// sb.append("(");
-		// sb.append(buildStringEarnings(bookings.getAirbnbBookings(),
-		// completePayment, netEarnings));
-		// sb.append(")\t");
-		// sb.append(buildBookingStringNightCount(bookings, completePayment));
-		// sb.append("(");
-		// sb.append(buildStringEarnings(bookings.getBookingBookings(),
-		// completePayment, netEarnings));
-		// sb.append(")\t");
-		// sb.append(buildOtherStringNightCount(bookings, completePayment));
-		// sb.append("(");
-		// sb.append(buildStringEarnings(bookings.getOtherBookings(),
-		// completePayment, netEarnings));
-		// sb.append(")\t");
-		// sb.append(buildStringNightCount("Total", bookings.getAllBookings(),
-		// completePayment));
-		// sb.append("(");
-		// sb.append(buildStringEarnings(bookings.getAllBookings(),
-		// completePayment, netEarnings));
-		// sb.append(")");
+		sb.append(BookingEntries.getMinDate(bookings.getAllBookings()).get());
+		sb.append(" ▶ ");
+		sb.append(BookingEntries.getMaxDate(bookings.getAllBookings()).get());
+		sb.append("\tEarnings:");
+		sb.append(DECIMAL_FORMAT.format(bookings.getAllBookings(false).stream().filter(b -> !b.isCheckOut())
+				.mapToDouble(b -> b.getEarnings(netEarnings)).sum()));
 		sb.append("\tAv.Earnings/Night/Room:");
 		final OptionalDouble av = bookings.getAllBookings(false).stream().filter(b -> !b.isCheckOut())
 				.mapToDouble(b -> b.getEarnings(netEarnings)).average();
 		if (av.isPresent()) {
 			sb.append(DECIMAL_FORMAT.format(av.getAsDouble()));
 		} else {
-			sb.append(DECIMAL_FORMAT.format(0.0));
+			sb.append(DECIMAL_FORMAT.format(0));
 		}
-
+		sb.append("\tOccupancyRate:");
+		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(new OccupancyRateProvider().getOccupancyRate() * 100));
+		sb.append("\tMinPriceAtRate:");
+		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(new MinimumPriceProvider().getMinimumPrice()));
 		return sb.toString();
 	}
 

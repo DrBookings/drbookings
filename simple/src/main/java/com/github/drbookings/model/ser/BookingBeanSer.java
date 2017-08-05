@@ -48,6 +48,8 @@ public class BookingBeanSer {
 	@XmlAttribute
 	public boolean paymentDone;
 	@XmlAttribute
+	public boolean splitBooking;
+	@XmlAttribute
 	public String roomName;
 
 	/**

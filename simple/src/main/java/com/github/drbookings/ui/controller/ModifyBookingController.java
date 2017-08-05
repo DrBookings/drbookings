@@ -21,6 +21,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 
@@ -35,6 +36,9 @@ public class ModifyBookingController implements Initializable {
 	public void setManager(final MainManager manager) {
 		this.manager = manager;
 	}
+
+	@FXML
+	private CheckBox splitBooking;
 
 	@FXML
 	private DatePicker datePickerCheckIn;
@@ -52,7 +56,6 @@ public class ModifyBookingController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
 		update(RoomBeanSelectionManager.getInstance().getSelection());
-
 	}
 
 	private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
@@ -73,7 +76,10 @@ public class ModifyBookingController implements Initializable {
 	}
 
 	private void update(final Booking booking) {
+
 		this.booking = booking;
+		System.err.println(booking.isSplitBooking());
+		splitBooking.setSelected(booking.isSplitBooking());
 		summaryLabel.setText(booking.getGuest().toString());
 		datePickerCheckIn.setValue(booking.getCheckIn());
 		datePickerCheckOut.setValue(booking.getCheckOut());
@@ -89,8 +95,10 @@ public class ModifyBookingController implements Initializable {
 
 	@FXML
 	void handleButtonSaveChanges(final ActionEvent event) {
+		booking.setDateOfPayment(dateOfPayment.getValue());
+		System.err.println(splitBooking.isSelected());
+		booking.setSplitBooking(splitBooking.isSelected());
 		try {
-			booking.setDateOfPayment(dateOfPayment.getValue());
 			manager.modifyBooking(booking, datePickerCheckIn.getValue(), datePickerCheckOut.getValue());
 		} catch (final OverbookingException e) {
 			if (logger.isErrorEnabled()) {
@@ -98,5 +106,4 @@ public class ModifyBookingController implements Initializable {
 			}
 		}
 	}
-
 }

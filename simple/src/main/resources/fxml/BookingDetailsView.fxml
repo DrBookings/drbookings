@@ -8,23 +8,26 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.HBox?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.BookingDetailsController"
-	vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToWidth="true">
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="com.github.drbookings.ui.controller.BookingDetailsController">
+<ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+	fitToWidth="true" VBox.vgrow="always">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 		<URL value="@/css/bookingDetails.css" />
 	</stylesheets>
-	<VBox  fillWidth="true" spacing="8">
+	<VBox fillWidth="true" spacing="8">
 		<padding>
 			<Insets top="8" right="8" bottom="8" left="8" />
 		</padding>
 		<VBox fx:id="content" fillWidth="true">
 		</VBox>
-		<HBox spacing="8">
-		<Button text="Save" prefWidth="100" onAction="#handleActionSaveBookingDetails" defaultButton="true" />
-		</HBox>
-		
 	</VBox>
-
 </ScrollPane>
+<HBox  >
+<padding>
+<Insets bottom="4" left="4" right="4" top="4"></Insets>
+</padding>
+<Button text="Save" prefWidth="100" onAction="#handleActionSaveBookingDetails"
+	defaultButton="true" /></HBox>
+</VBox>

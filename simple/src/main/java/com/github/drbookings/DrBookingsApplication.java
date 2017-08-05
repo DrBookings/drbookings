@@ -18,6 +18,7 @@ import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.controller.MainController;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -65,14 +66,20 @@ public class DrBookingsApplication extends Application {
 				} catch (final Exception e) {
 					logger.error(e.getLocalizedMessage(), e);
 				}
-				// go ahead..
+				exit();
 			} else if (result.get() == buttonTypeTwo) {
-				// go ahead..
+				exit();
 			} else {
 				// cancel shutdown
 				event.consume();
 			}
 		}
+
+	}
+
+	void exit() {
+		Platform.exit();
+
 	}
 
 	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM.yyyy");

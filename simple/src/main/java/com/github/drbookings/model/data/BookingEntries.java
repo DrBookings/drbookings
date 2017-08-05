@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,10 +109,12 @@ public class BookingEntries {
 			final LocalDate ci = en.getKey().getCheckIn();
 			final int daysCurrentMonth = YearMonth.from(ci).lengthOfMonth();
 			if (en.getValue().size() >= daysCurrentMonth) {
+				final double earnings = getEarningsGeneral(en.getValue(), earningsProvider);
 				if (logger.isInfoEnabled()) {
-					logger.info("Split-payment for " + en.getKey() + ", days of month " + daysCurrentMonth);
+					logger.info("Split-payment (" + earnings + ") for " + en.getKey() + ", days of month "
+							+ daysCurrentMonth);
 				}
-				result += getEarningsGeneral(en.getValue(), earningsProvider);
+				result += earnings;
 			} else {
 				result += getEarningsBooking(en.getValue(), earningsProvider);
 			}
@@ -152,6 +155,14 @@ public class BookingEntries {
 	public static double getServiceFees(final Collection<? extends BookingEntry> bookings) {
 		return bookings.stream().filter(PAYMENT_DONE).map(b -> b.getElement()).collect(Collectors.toSet()).stream()
 				.mapToDouble(b -> b.getServiceFee() + Bookings.getServiceFeePercentAmount(b)).sum();
+	}
+
+	public static Optional<LocalDate> getMaxDate(final Collection<? extends BookingEntry> bookings) {
+		return bookings.stream().map(b -> b.getDate()).max((d1, d2) -> d1.compareTo(d2));
+	}
+
+	public static Optional<LocalDate> getMinDate(final Collection<? extends BookingEntry> bookings) {
+		return bookings.stream().map(b -> b.getDate()).min((d1, d2) -> d1.compareTo(d2));
 	}
 
 	public static long countNights(final String origin, final Collection<? extends BookingEntry> bookings) {

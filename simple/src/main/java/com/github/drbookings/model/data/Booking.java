@@ -87,6 +87,8 @@ public class Booking extends IDed
 
 	private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
 
+	private final BooleanProperty splitBooking = new SimpleBooleanProperty(false);
+
 	private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
 
 	/**
@@ -137,6 +139,20 @@ public class Booking extends IDed
 		netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
 				cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(), cleaningProperty(),
 				SettingsManager.getInstance().showNetEarningsProperty()));
+		paymentDoneProperty().addListener((c, o, n) -> {
+			if (n && getDateOfPayment() == null) {
+				setDateOfPayment(LocalDate.now());
+			} else if (!n) {
+				setDateOfPayment(null);
+			}
+		});
+		dateOfPaymentProperty().addListener((c, o, n) -> {
+			if (n != null) {
+				setPaymentDone(true);
+			} else {
+				setPaymentDone(false);
+			}
+		});
 	}
 
 	private Callable<Number> calculateNetEarnings() {
@@ -336,8 +352,8 @@ public class Booking extends IDed
 
 	@Override
 	public String toString() {
-		return "id:" + getId() + ", room:" + getRoom() + ",guest:" + getGuest() + ",checkIn:" + getCheckIn()
-				+ ",checkOut:" + getCheckOut() + ",earnings:" + getGrossEarnings();
+		return "room:" + getRoom() + ",guest:" + getGuest() + ",checkIn:" + getCheckIn() + ",checkOut:" + getCheckOut()
+				+ ",earnings:" + getGrossEarnings();
 	}
 
 	public BooleanProperty welcomeMailSendProperty() {
@@ -408,9 +424,18 @@ public class Booking extends IDed
 
 	public final void setDateOfPayment(final LocalDate dateOfPayment) {
 		this.dateOfPaymentProperty().set(dateOfPayment);
-		if (dateOfPayment != null) {
-			setPaymentDone(true);
-		}
+	}
+
+	public final BooleanProperty splitBookingProperty() {
+		return this.splitBooking;
+	}
+
+	public final boolean isSplitBooking() {
+		return this.splitBookingProperty().get();
+	}
+
+	public final void setSplitBooking(final boolean splitBooking) {
+		this.splitBookingProperty().set(splitBooking);
 	}
 
 }

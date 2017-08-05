@@ -98,9 +98,6 @@ public class XMLStorage {
 
 	protected void doSave(final MainManager manager, final File file) {
 		makeBackup(file);
-		if (logger.isInfoEnabled()) {
-			logger.info("Saving data to " + file);
-		}
 		try {
 			save(buildDataStore(manager), file);
 		} catch (final Exception e1) {
@@ -113,7 +110,9 @@ public class XMLStorage {
 	}
 
 	public void save(final DataStore ds, final File file) throws Exception {
-
+		if (logger.isInfoEnabled()) {
+			logger.info("Saving " + ds + " to " + file);
+		}
 		final JAXBContext jc = JAXBContext.newInstance(DataStore.class);
 		final Marshaller jaxbMarshaller = jc.createMarshaller();
 		jaxbMarshaller.setListener(new MarshallListener());

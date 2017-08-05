@@ -2,7 +2,6 @@ package com.github.drbookings.ui.controller;
 
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
@@ -104,6 +104,8 @@ public class BookingDetailsController implements Initializable {
 	private final Map<Booking, CheckBox> booking2WelcomeMail = new HashMap<>();
 
 	private final Map<Booking, CheckBox> booking2Payment = new HashMap<>();
+
+	private final Map<Booking, DatePicker> booking2PaymentDate = new HashMap<>();
 
 	private MainManager manager;
 
@@ -302,11 +304,23 @@ public class BookingDetailsController implements Initializable {
 		cb0.setSelected(be.isWelcomeMailSend());
 		booking2WelcomeMail.put(be, cb0);
 		final Text t1 = new Text(" \tPayment done: ");
+
 		final CheckBox cb1 = new CheckBox();
 		cb1.setSelected(be.isPaymentDone());
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("DateOfPayment for " + be + "(" + be.hashCode() + ") is " + be.getDateOfPayment());
+		}
+
+		final DatePicker dp = new DatePicker();
+		dp.setValue(be.getDateOfPayment());
+
+		dp.setPrefWidth(140);
+		booking2PaymentDate.put(be, dp);
+
 		booking2Payment.put(be, cb1);
 		final TextFlow tf = new TextFlow();
-		tf.getChildren().addAll(t0, cb0, t1, cb1);
+		tf.getChildren().addAll(t0, cb0, t1, cb1, dp);
 		box.getChildren().add(tf);
 		if (!be.isWelcomeMailSend()) {
 			box.getStyleClass().addAll("warning", "warning-bg");
@@ -369,23 +383,16 @@ public class BookingDetailsController implements Initializable {
 		for (final Entry<Booking, TextInputControl> en : booking2GrossEarnings.entrySet()) {
 			en.getKey().setGrossEarningsExpression(en.getValue().getText());
 		}
-		for (final Entry<Booking, CheckBox> en : booking2Payment.entrySet()) {
-			en.getKey().setPaymentDone(en.getValue().isSelected());
-			if (en.getKey().getDateOfPayment() == null && en.getValue().isSelected()) {
-				en.getKey().setDateOfPayment(LocalDate.now());
-				if (logger.isDebugEnabled()) {
-					logger.debug("Date-of-Payment set to " + en.getKey().getDateOfPayment());
-				}
-			}
-			if (!en.getValue().isSelected()) {
-				en.getKey().setDateOfPayment(null);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Date-of-Payment cleared");
-				}
-			}
-		}
+
 		for (final Entry<Booking, CheckBox> en : booking2WelcomeMail.entrySet()) {
 			en.getKey().setWelcomeMailSend(en.getValue().isSelected());
+		}
+		// first date, then flag! Wont work otherwise
+		for (final Entry<Booking, DatePicker> en : booking2PaymentDate.entrySet()) {
+			en.getKey().setDateOfPayment(en.getValue().getValue());
+		}
+		for (final Entry<Booking, CheckBox> en : booking2Payment.entrySet()) {
+			en.getKey().setPaymentDone(en.getValue().isSelected());
 		}
 		// final Stage stage = (Stage) content.getScene().getWindow();
 		// stage.close();
@@ -416,6 +423,7 @@ public class BookingDetailsController implements Initializable {
 	}
 
 	private void addBookingEntry(final Booking be) {
+		// System.err.println("Adding entry for " + be);
 		final VBox box = new VBox(4);
 		// box.setPadding(new Insets(4));
 		addRow0(box, be);

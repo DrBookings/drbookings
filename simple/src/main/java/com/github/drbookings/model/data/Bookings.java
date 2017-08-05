@@ -11,7 +11,7 @@ import com.github.drbookings.ui.BookingEntry;
 public class Bookings {
 
 	public static long countNights(final Collection<? extends Booking> bookings) {
-		return bookings.stream().mapToLong(b -> b.getNumberOfNights()).sum();
+		return bookings.stream().filter(b -> !b.isSplitBooking()).mapToLong(b -> b.getNumberOfNights()).sum();
 	}
 
 	public static double getServiceFeePercentAmount(final Booking booking) {

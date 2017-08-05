@@ -58,7 +58,7 @@ public class DataStore {
 		result.checkOutNote = bb.getCheckOutNote();
 		result.calendarIds = bb.getCalendarIds();
 		result.dateOfPayment = bb.getDateOfPayment();
-
+		result.splitBooking = bb.isSplitBooking();
 		return result;
 	}
 
@@ -107,6 +107,7 @@ public class DataStore {
 				b.setCleaningFees(bb.cleaningFees);
 				b.setServiceFeesPercent(bb.serviceFeePercent);
 				b.setDateOfPayment(bb.dateOfPayment);
+				b.setSplitBooking(bb.splitBooking);
 				bookingsToAdd.add(b);
 			} catch (final Exception e) {
 				if (logger.isErrorEnabled()) {

@@ -44,11 +44,10 @@ import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
 import com.github.drbookings.ui.dialogs.CleaningPlanDialogFactory;
 import com.github.drbookings.ui.dialogs.EarningsChartFactory;
 import com.github.drbookings.ui.dialogs.GeneralSettingsDialogFactory;
+import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
 import com.github.drbookings.ui.dialogs.ProfitChartFactory;
 import com.github.drbookings.ui.dialogs.RoomDetailsDialogFactory;
 import com.github.drbookings.ui.dialogs.StatisticsFactory;
-import com.github.drbookings.ui.provider.MinimumPriceProvider;
-import com.github.drbookings.ui.provider.OccupancyRateProvider;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 import com.jcabi.manifests.Manifests;
 
@@ -206,33 +205,11 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private final static Logger logger = LoggerFactory.getLogger(MainController.class);
-
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
 
-	@FXML
-	private Node node;
+	private final static Logger logger = LoggerFactory.getLogger(MainController.class);
 
-	@FXML
-	private ProgressBar progressBar;
-
-	@FXML
-	private Label progressLabel;
-
-	@FXML
-	private Label filterBookingsLabel;
-
-	@FXML
-	private TableView<DateBean> tableView;
-
-	@FXML
-	private Label statusLabel;
-
-	@FXML
-	private MenuItem menuItemExit;
-
-	@FXML
-	private MenuItem menuItemOpen;
+	private BookingDetailsDialogFactory bookingDetailsDialogFactory;
 
 	@FXML
 	private Button buttonAddBooking;
@@ -244,33 +221,53 @@ public class MainController implements Initializable {
 	private Button buttonSelectCurrentMonth;
 
 	@FXML
-	private Button buttonSelectLastThreeMonth;
+	private Button buttonSelectLastMonth;
 
 	@FXML
-	private Button buttonSelectLastMonth;
+	private Button buttonSelectLastThreeMonth;
+
+	private EarningsChartFactory earningsChartFactory;
+
+	@FXML
+	private Label filterBookingsLabel;
+
+	private GeneralSettingsDialogFactory generalSettingsDialogFactory;
 
 	@FXML
 	private TextField guestNameFilterInput;
 
-	private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
-
 	private final MainManager manager;
 
-	private BookingDetailsDialogFactory bookingDetailsDialogFactory;
+	@FXML
+	private MenuItem menuItemExit;
 
-	private GeneralSettingsDialogFactory generalSettingsDialogFactory;
+	@FXML
+	private MenuItem menuItemOpen;
 
-	private EarningsChartFactory earningsChartFactory;
-
-	private RoomDetailsDialogFactory roomDetailsDialogFactory;
-
-	private final OccupancyRateProvider occupancyRateProvider = new OccupancyRateProvider();
-
-	private final MinimumPriceProvider minimumPriceProvider = new MinimumPriceProvider();
+	private ModifyBookingDialogFactory modifyBookingDialogFactory;
 
 	private StatisticsFactory monthlyMoneyFactory;
 
+	@FXML
+	private Node node;
+
 	private ProfitChartFactory profitChartFactory;
+
+	@FXML
+	private ProgressBar progressBar;
+
+	@FXML
+	private Label progressLabel;
+
+	private RoomDetailsDialogFactory roomDetailsDialogFactory;
+
+	private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
+
+	@FXML
+	private Label statusLabel;
+
+	@FXML
+	private TableView<DateBean> tableView;
 
 	public MainController() {
 		manager = new MainManager();
@@ -576,42 +573,6 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-	private void handleMenuItemShowEarningsChart(final ActionEvent event) {
-		Platform.runLater(() -> showEarningsChart());
-	}
-
-	@FXML
-	private void handleMenuItemShowProfitChart(final ActionEvent event) {
-		Platform.runLater(() -> showProfitChart());
-	}
-
-	@FXML
-	private void handleMenuItemShowMonthlyMoney(final ActionEvent event) {
-		Platform.runLater(() -> showMonthlyMoney());
-	}
-
-	private void showEarningsChart() {
-		// if (chartsViewFactory == null) {
-		earningsChartFactory = new EarningsChartFactory();
-		// }
-		earningsChartFactory.showDialog();
-	}
-
-	private void showProfitChart() {
-		// if (chartsViewFactory == null) {
-		profitChartFactory = new ProfitChartFactory();
-		// }
-		profitChartFactory.showDialog();
-	}
-
-	private void showMonthlyMoney() {
-		// if (chartsViewFactory == null) {
-		monthlyMoneyFactory = new StatisticsFactory(this.getManager());
-		// }
-		monthlyMoneyFactory.showDialog();
-	}
-
-	@FXML
 	private void handleMenuItemSettingsColors(final ActionEvent event) {
 
 	}
@@ -624,6 +585,21 @@ public class MainController implements Initializable {
 	@FXML
 	private void handleMenuItemSettingsICal(final ActionEvent event) {
 		Platform.runLater(() -> showSettingsICal());
+	}
+
+	@FXML
+	private void handleMenuItemShowEarningsChart(final ActionEvent event) {
+		Platform.runLater(() -> showEarningsChart());
+	}
+
+	@FXML
+	private void handleMenuItemShowMonthlyMoney(final ActionEvent event) {
+		Platform.runLater(() -> showMonthlyMoney());
+	}
+
+	@FXML
+	private void handleMenuItemShowProfitChart(final ActionEvent event) {
+		Platform.runLater(() -> showProfitChart());
 	}
 
 	@FXML
@@ -717,13 +693,17 @@ public class MainController implements Initializable {
 		final ContextMenu menu = new ContextMenu();
 		final MenuItem mi1 = new MenuItem("Delete");
 		final MenuItem mi2 = new MenuItem("Add");
+		final MenuItem mi3 = new MenuItem("Modify");
 		mi1.setOnAction(event -> {
 			Platform.runLater(() -> deleteSelected());
 		});
 		mi2.setOnAction(event -> {
 			Platform.runLater(() -> addBooking());
 		});
-		menu.getItems().addAll(mi2, mi1);
+		mi3.setOnAction(event -> {
+			Platform.runLater(() -> showModifyBookingDialog());
+		});
+		menu.getItems().addAll(mi2, mi1, mi3);
 
 		tableView.setContextMenu(menu);
 		tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
@@ -908,10 +888,10 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void showBookingDetails() {
-		// if (bookingDetailsDialogFactory == null) {
-		bookingDetailsDialogFactory = new BookingDetailsDialogFactory(getManager());
-		// }
+	void showBookingDetails() {
+		if (bookingDetailsDialogFactory == null) {
+			bookingDetailsDialogFactory = new BookingDetailsDialogFactory(getManager());
+		}
 		bookingDetailsDialogFactory.showDialog();
 	}
 
@@ -934,10 +914,39 @@ public class MainController implements Initializable {
 		new CleaningPlanDialogFactory(getManager()).showDialog();
 	}
 
+	private void showEarningsChart() {
+		if (earningsChartFactory == null) {
+			earningsChartFactory = new EarningsChartFactory();
+		}
+		earningsChartFactory.showDialog();
+	}
+
+	void showModifyBookingDialog() {
+
+		if (modifyBookingDialogFactory == null) {
+			modifyBookingDialogFactory = new ModifyBookingDialogFactory(getManager());
+		}
+		modifyBookingDialogFactory.showDialog();
+	}
+
+	private void showMonthlyMoney() {
+		if (monthlyMoneyFactory == null) {
+			monthlyMoneyFactory = new StatisticsFactory(this.getManager());
+		}
+		monthlyMoneyFactory.showDialog();
+	}
+
+	private void showProfitChart() {
+		if (profitChartFactory == null) {
+			profitChartFactory = new ProfitChartFactory();
+		}
+		profitChartFactory.showDialog();
+	}
+
 	private void showRoomDetailsDialog() {
-		// if (this.roomDetailsDialogFactory == null) {
-		this.roomDetailsDialogFactory = new RoomDetailsDialogFactory(getManager());
-		// }
+		if (this.roomDetailsDialogFactory == null) {
+			this.roomDetailsDialogFactory = new RoomDetailsDialogFactory(this);
+		}
 		roomDetailsDialogFactory.showDialog();
 
 	}
@@ -990,7 +999,6 @@ public class MainController implements Initializable {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Shutting down");
 		}
-
 	}
 
 	private void updateStatusLabel() {
@@ -1005,10 +1013,7 @@ public class MainController implements Initializable {
 				.filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
 		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(selectedBookings);
 		final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
-		sb.append("\tOccupancyRate:");
-		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(occupancyRateProvider.getOccupancyRate() * 100));
-		sb.append("%\tMinPriceAtRate:");
-		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(minimumPriceProvider.getMinimumPrice()));
+
 		// sb.append("\tPerformance total:" +
 		// StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfit()) + "
 		// \t"

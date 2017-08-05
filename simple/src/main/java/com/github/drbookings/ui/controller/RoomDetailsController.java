@@ -11,11 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.GuestNameAndBookingOriginView;
 import com.github.drbookings.ui.beans.RoomBean;
-import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.application.Platform;
@@ -71,7 +69,7 @@ public class RoomDetailsController implements Initializable {
 	@FXML
 	private Label guestNames;
 
-	private MainManager manager;
+	private MainController controller;
 
 	private RoomBean room;
 
@@ -99,8 +97,8 @@ public class RoomDetailsController implements Initializable {
 		return room.getFilteredBookingEntries();
 	}
 
-	public MainManager getManager() {
-		return manager;
+	public MainController getManager() {
+		return controller;
 	}
 
 	@FXML
@@ -119,12 +117,12 @@ public class RoomDetailsController implements Initializable {
 
 	}
 
-	public void setManager(final MainManager manager) {
-		this.manager = manager;
+	public void setManager(final MainController manager) {
+		this.controller = manager;
 	}
 
 	private void showBookingDetails() {
-		Platform.runLater(() -> new BookingDetailsDialogFactory(getManager()).showDialog());
+		Platform.runLater(() -> controller.showBookingDetails());
 	}
 
 	public void shutDown() {

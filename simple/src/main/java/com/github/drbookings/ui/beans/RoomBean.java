@@ -126,16 +126,17 @@ public class RoomBean extends WarnableBean {
 	public Callable<Boolean> calulateNeedsCleaning() {
 		return () -> {
 
-			if (getFilteredBookingEntries().stream().map(b -> b.getElement().getGuest().getName())
-					.anyMatch(n -> n.contains("Danijel"))) {
-				final int wait = 0;
-			}
-
 			if (getDate().isBefore(LocalDate.now())) {
 				// time out
 				return false;
 			}
-			if (getGuestNames().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
+			// if (getGuestNames().size() > 1) {
+			// System.err.println(getGuestNames());
+			// }
+			if (getFilteredBookingEntries().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
+				// if (getGuestNames().toString().contains("Agusti")) {
+				// final int wait = 0;
+				// }
 				return true;
 			}
 			return hasCheckOut() && getFilteredBookingEntries().stream().filter(be -> !be.isCheckIn())
@@ -225,13 +226,43 @@ public class RoomBean extends WarnableBean {
 	}
 
 	public boolean hasCheckIn() {
-		final boolean result = getFilteredBookingEntries().stream().anyMatch(b -> b.isCheckIn());
-		return result;
+		final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+		if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckIn()) {
+			return true;
+		}
+		boolean check = false;
+		boolean split = false;
+		for (final BookingEntry be : filteredBookingEntries) {
+			if (be.isCheckIn()) {
+				check = true;
+			}
+			if (be.getElement().isSplitBooking()) {
+				split = true;
+			}
+		}
+		// do not count, if prev. check-out is split booking
+		// any booking is check-in and any booking is split booking
+		return check && !split;
 	}
 
 	public boolean hasCheckOut() {
-		final boolean result = getFilteredBookingEntries().stream().anyMatch(b -> b.isCheckOut());
-		return result;
+		final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+		if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckOut()) {
+			return true;
+		}
+		boolean check = false;
+		boolean split = false;
+		for (final BookingEntry be : filteredBookingEntries) {
+			if (be.isCheckOut()) {
+				check = true;
+			}
+			if (be.getElement().isSplitBooking()) {
+				split = true;
+			}
+		}
+		// do not count, if next check-in is split booking
+		// any booking is check-out and any booking is split booking
+		return check && !split;
 	}
 
 	public boolean hasCleaning() {
