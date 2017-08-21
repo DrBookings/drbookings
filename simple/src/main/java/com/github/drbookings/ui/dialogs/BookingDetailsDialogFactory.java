@@ -8,20 +8,21 @@ import com.github.drbookings.ui.controller.BookingDetailsController;
 
 public class BookingDetailsDialogFactory extends AbstractViewFactory implements ViewFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(BookingDetailsDialogFactory.class);
-    private final MainManager manager;
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(BookingDetailsDialogFactory.class);
+	private final MainManager manager;
 
-    public BookingDetailsDialogFactory(final MainManager manager) {
-	this.manager = manager;
-	setFxml("/fxml/BookingDetailsView.fxml");
-	setTitle("Booking Details");
-	setHeight(600);
-	setWidth(500);
-    }
+	public BookingDetailsDialogFactory(final MainManager manager) {
+		this.manager = manager;
+		setFxml("/fxml/BookingDetailsView.fxml");
+		setTitle("Booking Details");
+		setHeight(600);
+		setWidth(520);
+	}
 
-    @Override
-    protected void visitController(final Object controller) {
-	final BookingDetailsController c = (BookingDetailsController) controller;
-	c.setManager(manager);
-    }
+	@Override
+	protected void visitController(final Object controller) {
+		final BookingDetailsController c = (BookingDetailsController) controller;
+		c.setManager(manager);
+	}
 }
