@@ -10,12 +10,12 @@ package com.github.drbookings.ui.controller;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
@@ -344,11 +344,10 @@ public class BookingDetailsController implements Initializable {
 		final TextFlow tf = new TextFlow();
 		tf.getChildren().addAll(t0, cb0, t1, cb1, dp);
 		box.getChildren().add(tf);
-		if (!be.isWelcomeMailSend()) {
+		if (!be.isWelcomeMailSend() || be.isPaymentOverdue()) {
 			box.getStyleClass().addAll("warning", "warning-bg");
-		}
-		if (!be.isPaymentDone()) {
-			box.getStyleClass().addAll("warning", "warning-bg");
+		} else {
+			box.getStyleClass().removeAll("warning", "warning-bg");
 		}
 		content.getChildren().add(box);
 
