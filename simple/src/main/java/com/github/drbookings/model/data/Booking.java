@@ -465,7 +465,7 @@ public class Booking extends IDed
 	public boolean isPaymentOverdue() {
 		final boolean lastMonth = getCheckIn().query(TemporalQueries::isPreviousMonthOrEarlier);
 
-		if (isPaymentDone() && lastMonth) {
+		if (!isPaymentDone() && lastMonth) {
 			return true;
 		}
 		return false;

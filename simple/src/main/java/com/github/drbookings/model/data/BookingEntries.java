@@ -130,10 +130,10 @@ public class BookingEntries {
 		for (final Entry<Booking, Collection<BookingEntry>> en : map.entrySet()) {
 			final LocalDate ci = en.getKey().getCheckIn();
 			final int daysCurrentMonth = YearMonth.from(ci).lengthOfMonth();
-			if (en.getValue().size() >= daysCurrentMonth) {
+			if (en.getKey().isSplitBooking()) {
 				final double earnings = getEarningsGeneral(en.getValue(), earningsProvider);
 				if (logger.isInfoEnabled()) {
-					logger.info("Split-payment (" + earnings + ") for " + en.getKey() + ", days of month "
+					logger.info("Split-payment (" + String.format("%5.2f",earnings) + ") for " + en.getKey() + ", days of month "
 							+ daysCurrentMonth);
 				}
 				result += earnings;

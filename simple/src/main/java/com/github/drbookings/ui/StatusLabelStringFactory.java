@@ -23,15 +23,20 @@ package com.github.drbookings.ui;
  */
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.OptionalDouble;
 
+import com.github.drbookings.LocalDates;
 import com.github.drbookings.model.BookingEntryToBooking;
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.provider.MinimumPriceProvider;
 import com.github.drbookings.ui.provider.OccupancyRateProvider;
+import com.github.drbookings.ui.selection.DateBeanSelectionManager;
+import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
+import com.google.common.collect.Range;
 
 public class StatusLabelStringFactory {
 
@@ -92,9 +97,6 @@ public class StatusLabelStringFactory {
 	}
 
 	public String build() {
-		if (bookings.isEmpty()) {
-			return "";
-		}
 		final boolean completePayment = SettingsManager.getInstance().isCompletePayment();
 		final boolean netEarnings = SettingsManager.getInstance().isShowNetEarnings();
 		return build(completePayment, netEarnings);
@@ -103,9 +105,19 @@ public class StatusLabelStringFactory {
 
 	private String build(final boolean completePayment, final boolean netEarnings) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(BookingEntries.getMinDate(bookings.getAllBookings()).get());
-		sb.append(" ▶ ");
-		sb.append(BookingEntries.getMaxDate(bookings.getAllBookings()).get());
+//		sb.append(BookingEntries.getMinDate(bookings.getAllBookings()).get());
+//		sb.append(" ▶ ");
+//		sb.append(BookingEntries.getMaxDate(bookings.getAllBookings()).get());
+//		sb.append("\t");
+		Range<LocalDate> selectedRange = DateBeanSelectionManager.getInstance().getSelectedDateRange();
+		if(selectedRange == null){
+			return sb.toString();
+		}
+        sb.append(selectedRange.lowerEndpoint());
+        sb.append("\n");
+        sb.append(selectedRange.upperEndpoint());
+        sb.append("\t#unique nights: ");
+        sb.append(LocalDates.getNumberOfNights(selectedRange.lowerEndpoint(), selectedRange.upperEndpoint()));
 		sb.append("\tEarnings:");
 		sb.append(DECIMAL_FORMAT.format(bookings.getAllBookings(false).stream().filter(b -> !b.isCheckOut())
 				.mapToDouble(b -> b.getEarnings(netEarnings)).sum()));

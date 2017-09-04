@@ -58,11 +58,6 @@ public class DateBeanSelectionManager {
 		return InstanceHolder.instance;
 	}
 
-	private static ObservableList<DateBean> transform(final Collection<? extends RoomBean> rooms) {
-		return rooms.stream().map(r -> r.getDateBean())
-				.collect(Collectors.toCollection(() -> FXCollections.observableArrayList(DateBean.extractor())));
-	}
-
 	private final ListProperty<DateBean> selection = new SimpleListProperty<>(
 			FXCollections.observableArrayList(DateBean.extractor()));
 
@@ -70,21 +65,6 @@ public class DateBeanSelectionManager {
 
 	private DateBeanSelectionManager() {
 		selectedDateRangeProperty().bind(Bindings.createObjectBinding(calculateDateRange(), selectionProperty()));
-		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(new ListChangeListener<RoomBean>() {
-
-			@Override
-			public void onChanged(final javafx.collections.ListChangeListener.Change<? extends RoomBean> c) {
-				while (c.next()) {
-					// selectionProperty().removeAll(transform(c.getRemoved()));
-					// selectionProperty().addAll(transform(c.getAddedSubList()));
-
-				}
-				selectionProperty().setAll(new LinkedHashSet<>(transform(c.getList())));
-				if (logger.isDebugEnabled()) {
-					logger.debug("Selection updated: " + selectionProperty().size());
-				}
-			}
-		});
 	}
 
 	private Callable<Range<LocalDate>> calculateDateRange() {
@@ -98,6 +78,11 @@ public class DateBeanSelectionManager {
 	public final ListProperty<DateBean> selectionProperty() {
 		return this.selection;
 	}
+
+	public final DateBeanSelectionManager setSelection(Collection<? extends DateBean> dates){
+		selectionProperty().setAll(dates);
+		return this;
+	};
 
 	public final ObjectProperty<Range<LocalDate>> selectedDateRangeProperty() {
 		return this.selectedDateRange;

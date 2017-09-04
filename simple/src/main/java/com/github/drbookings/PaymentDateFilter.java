@@ -35,14 +35,13 @@ public class PaymentDateFilter implements Predicate<BookingEntry> {
 
 	public PaymentDateFilter(final Range<LocalDate> dates) {
 		this.dates = dates;
-		System.err.println("Date range " + dates);
 	}
 
 	@Override
 	public boolean test(final BookingEntry be) {
 		final Booking t = be.getElement();
-		return t.getDateOfPayment() != null && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
-				&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1));
+		return t.isSplitBooking() || (t.getDateOfPayment() != null && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
+				&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1)));
 	}
 
 }

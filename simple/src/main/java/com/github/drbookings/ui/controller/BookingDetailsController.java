@@ -330,9 +330,9 @@ public class BookingDetailsController implements Initializable {
 		final CheckBox cb1 = new CheckBox();
 		cb1.setSelected(be.isPaymentDone());
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("DateOfPayment for " + be + "(" + be.hashCode() + ") is " + be.getDateOfPayment());
-		}
+		//if (logger.isDebugEnabled()) {
+		//	logger.debug("DateOfPayment for " + be + "(" + be.hashCode() + ") is " + be.getDateOfPayment());
+		//}
 
 		final DatePicker dp = new DatePicker();
 		dp.setValue(be.getDateOfPayment());
@@ -344,7 +344,7 @@ public class BookingDetailsController implements Initializable {
 		final TextFlow tf = new TextFlow();
 		tf.getChildren().addAll(t0, cb0, t1, cb1, dp);
 		box.getChildren().add(tf);
-		if (!be.isWelcomeMailSend() || be.isPaymentOverdue()) {
+		if (!be.isWelcomeMailSend() || !be.isPaymentDone()) {
 			box.getStyleClass().addAll("warning", "warning-bg");
 		} else {
 			box.getStyleClass().removeAll("warning", "warning-bg");

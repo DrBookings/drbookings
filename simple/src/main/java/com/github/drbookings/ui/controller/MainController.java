@@ -36,6 +36,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.github.drbookings.ui.selection.DateBeanSelectionManager;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -397,6 +398,7 @@ public class MainController implements Initializable {
 	private ListChangeListener<TablePosition> getCellSelectionListener() {
 		return change -> {
 			final List<RoomBean> cells = new ArrayList<>();
+            List<DateBean> dates = new ArrayList<>();
 			for (final TablePosition tp : change.getList()) {
 				final int r = tp.getRow();
 				final int c = tp.getColumn();
@@ -406,9 +408,11 @@ public class MainController implements Initializable {
 					if (room != null) {
 						cells.add(room);
 					}
+					dates.add((DateBean) cell);
 				}
 			}
 			RoomBeanSelectionManager.getInstance().setSelection(cells);
+            DateBeanSelectionManager.getInstance().setSelection(dates);
 		};
 	}
 

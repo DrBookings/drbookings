@@ -79,6 +79,12 @@
 						<PropertyValueFactory property="earnings" />
 					</cellValueFactory>
 				</TableColumn>
+				<TableColumn text="Cleaning Costs" fx:id="cCleaningCosts"
+							 prefWidth="90">
+					<cellValueFactory>
+						<PropertyValueFactory property="cleaningCosts" />
+					</cellValueFactory>
+				</TableColumn>
 				<TableColumn text="Net Earnings" fx:id="cNetEarnings"
 					prefWidth="90">
 					<cellValueFactory>
@@ -101,12 +107,6 @@
 					prefWidth="90">
 					<cellValueFactory>
 						<PropertyValueFactory property="cleaningFees" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="Cleaning Costs" fx:id="cCleaningCosts"
-					prefWidth="90">
-					<cellValueFactory>
-						<PropertyValueFactory property="cleaningCosts" />
 					</cellValueFactory>
 				</TableColumn>
 			</columns>

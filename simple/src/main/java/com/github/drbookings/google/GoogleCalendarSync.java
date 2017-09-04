@@ -88,9 +88,9 @@ public class GoogleCalendarSync {
 
     private static void addCheckInEvent(final Booking b) throws IOException {
 	final CalendarListEntry flats = getCalendar();
-	String note = "n/a";
+	String note = "Checkin: ";
 	if (b.getCheckInNote() != null) {
-	    note = b.getCheckInNote();
+	    note += b.getCheckInNote();
 	}
 	if (b.getSpecialRequestNote() != null) {
 	    note = note + "\n" + b.getSpecialRequestNote();
@@ -102,9 +102,9 @@ public class GoogleCalendarSync {
 
     private static void addCheckOutEvent(final Booking b) throws IOException {
 	final CalendarListEntry flats = getCalendar();
-	String note = "n/a";
+	String note = "Checkout: ";
 	if (b.getCheckOutNote() != null) {
-	    note = b.getCheckOutNote();
+	    note += b.getCheckOutNote();
 	}
 	final Event event = new EventFactory().newEvent(getCheckOutSummary(b), b.getCheckOut(),
 		b.getGuest().getName() + ": " + note);
