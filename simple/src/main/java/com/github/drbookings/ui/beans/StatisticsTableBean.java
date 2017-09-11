@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import com.github.drbookings.model.data.Booking;
 import org.apache.commons.lang3.StringUtils;
 
 import com.github.drbookings.model.data.BookingEntries;
@@ -129,14 +130,18 @@ public class StatisticsTableBean {
 		result.setOrigin(origin);
 		result.setNumberOfNights((int) BookingEntries.countNights(origin, bookings));
 		result.setBookingCount(bookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).size());
-		result.setCleaningCount((int) BookingEntries.countCleanings(bookings));
-		result.setCleaningCosts((float) BookingEntries.getCleaningCosts(bookings));
-		result.setCleaningFees((float) BookingEntries.getCleaningFees(bookings));
 		result.setGrossIncome((float) BookingEntries.getGrossEarnings(bookings));
 		result.setNetIncome((float) BookingEntries.getNetEarnings(bookings));
 		result.setServiceFees((float) BookingEntries.getServiceFees(bookings));
 		return result;
 
+	}
+
+	public static StatisticsTableBean applyCleaningStuff(StatisticsTableBean bean, Collection<? extends BookingEntry> allBookingsInRange){
+		bean.setCleaningCount((int) BookingEntries.countCleanings(allBookingsInRange));
+		bean.setCleaningCosts((float) BookingEntries.getCleaningCosts(allBookingsInRange));
+		bean.setCleaningFees((float) BookingEntries.getCleaningFees(allBookingsInRange));
+		return bean;
 	}
 
 	public static StatisticsTableBean buildSum(final Collection<StatisticsTableBean> data) {

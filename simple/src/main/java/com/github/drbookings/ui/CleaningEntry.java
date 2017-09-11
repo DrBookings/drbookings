@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.Cleaning;
@@ -61,7 +62,20 @@ public class CleaningEntry extends DateEntry<Cleaning> {
 		this.mainManager = mainManager;
 	}
 
-	public void addCalendarId(final String id) {
+    @Override
+    public String toString() {
+        return "CleaningEntry{" +
+                "cleaningCosts=" + cleaningCosts +
+                ", cleaningFees=" + booking.getCleaningFees() +
+                ", origin=" + booking.getBookingOrigin() +
+                ", guest=" + booking.getGuest() +
+                ", shortTime=" + isShortTime() +
+                ", date=" + getDate() +
+                ", element=" + getElement() +
+                '}';
+    }
+
+    public void addCalendarId(final String id) {
 		calendarIds.add(id);
 	}
 
@@ -88,7 +102,21 @@ public class CleaningEntry extends DateEntry<Cleaning> {
 		return this;
 	}
 
-	public final void setCleaningCosts(final float cleaningCosts) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CleaningEntry)) return false;
+        if (!super.equals(o)) return false;
+        CleaningEntry that = (CleaningEntry) o;
+        return Objects.equals(getBooking(), that.getBooking());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getBooking());
+    }
+
+    public final void setCleaningCosts(final float cleaningCosts) {
 		this.cleaningCostsProperty().set(cleaningCosts);
 	}
 

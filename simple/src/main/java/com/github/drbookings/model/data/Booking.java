@@ -375,8 +375,15 @@ public class Booking extends IDed
 
 	@Override
 	public String toString() {
-		return "room:" + getRoom() + ",guest:" + getGuest() + ",checkIn:" + getCheckIn() + ",checkOut:" + getCheckOut()
-				+ ",earnings:" + getGrossEarnings();
+		return "Booking{" +
+				"checkIn=" + checkIn +
+				",\tcheckOut=" + checkOut +
+				",\tguest=" + guest +
+				",\troom=" + room +
+				",\tbookingOrigin=" + bookingOrigin +
+				",\tcleaningFees=" + cleaningFees +
+				",\tcleaning=" + cleaning +
+				'}';
 	}
 
 	public BooleanProperty welcomeMailSendProperty() {

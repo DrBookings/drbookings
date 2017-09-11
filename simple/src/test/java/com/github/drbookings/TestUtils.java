@@ -47,8 +47,16 @@ public class TestUtils {
 		return new Booking(getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
 	}
 
+	public static Booking getTestBooking(String id, final LocalDate checkIn, final LocalDate checkOut) {
+		return new Booking(id, getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
+	}
+
 	public static Booking getTestBooking() {
 		return getTestBooking(LocalDate.now(), LocalDate.now().plusDays(1));
 	}
+
+    public static Booking getTestBooking(String id) {
+        return getTestBooking(id,LocalDate.now(), LocalDate.now().plusDays(1));
+    }
 
 }

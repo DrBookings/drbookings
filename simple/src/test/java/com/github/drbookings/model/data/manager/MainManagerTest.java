@@ -59,9 +59,9 @@ public class MainManagerTest {
 	@Test
 	public void testAddCleaning01() {
 		mm = new MainManager();
-		final CleaningEntry ce = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking(),
+		final CleaningEntry ce = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking("tt"),
 				new Cleaning("testCleaning"), null);
-		mm.addCleaning(LocalDate.now(), "testCleaning", TestUtils.getTestBooking());
+		mm.addCleaning(LocalDate.now(), "testCleaning", TestUtils.getTestBooking("tt"));
 		assertTrue(mm.getCleaningEntries().contains(ce));
 	}
 

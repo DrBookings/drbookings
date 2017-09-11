@@ -121,6 +121,8 @@ public class BookingEntry extends DateRoomEntry<Booking>
 		};
 	}
 
+
+
 	private Callable<Number> calculateNetEarnings() {
 
 		return () -> {
@@ -195,12 +197,15 @@ public class BookingEntry extends DateRoomEntry<Booking>
 		this.netEarningsProperty().set(netEarnings);
 	}
 
-	@Override
-	public String toString() {
-		return "date:" + getDate() + ",room:" + getRoom() + ",guest:" + getElement().getGuest();
-	}
+    @Override
+    public String toString() {
+        return "BookingEntry{" +
+                "date=" + getDate() +
+                ", element=" + getElement() +
+                '}';
+    }
 
-	@Override
+    @Override
 	public BookingOrigin getBookingOrigin() {
 		return getElement().getBookingOrigin();
 	}

@@ -26,11 +26,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.drbookings.DateRange;
 import com.github.drbookings.ui.BookingEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Bookings {
+
+    private static final Logger logger = LoggerFactory.getLogger(Bookings.class);
 
 	public static long countNights(final Collection<? extends Booking> bookings) {
 		return bookings.stream().filter(b -> !b.isSplitBooking()).mapToLong(b -> b.getNumberOfNights()).sum();
@@ -53,4 +59,19 @@ public class Bookings {
 	public static Collection<BookingEntry> toEntries(final Booking... bookings) {
 		return toEntries(Arrays.asList(bookings));
 	}
+
+    public static long countCleanings(Collection<? extends Booking> bookings) {
+		return bookings.stream().filter(b -> b.getCleaning() != null).count();
+    }
+
+    public static double getCleaningFees(Collection<Booking> bookings) {
+	    return bookings.stream().filter(b -> b.getCleaning() != null).mapToDouble(b -> b.getCleaningFees()).sum();
+    }
+
+    public static double getCleaningCosts(Collection<Booking> bookings) {
+	    if(logger.isDebugEnabled())
+	    logger.debug("Cleaning costs for\n"+bookings.stream().map(i -> i.toString())
+                .collect(Collectors.joining("\n")));
+        return bookings.stream().filter(b -> b.getCleaning() != null).map(b -> b.getCleaning()).mapToDouble(c -> c.getCleaningCosts()).sum();
+    }
 }

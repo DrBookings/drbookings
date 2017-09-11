@@ -31,14 +31,12 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.github.drbookings.*;
+import com.github.drbookings.model.data.Bookings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.FXUtils;
-import com.github.drbookings.LocalDates;
-import com.github.drbookings.PaymentDateFilter;
-import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.manager.MainManager;
@@ -205,6 +203,10 @@ public class StatsViewController implements Initializable {
 	}
 
 	private void updateUI(final BookingsByOrigin<BookingEntry> bookings) {
+	    if(logger.isDebugEnabled()){
+	        logger.debug("Statistics for\n" + BookingEntries.toBookings(bookings.getAllBookings()).stream().map(i -> i.toString())
+                    .collect(Collectors.joining("\n")));
+        }
 		final float allNights = BookingEntries.countNights(bookings, false);
 		final NavigableSet<LocalDate> allDates = bookings.getAllBookings(true).stream().map(b -> b.getDate())
 				.collect(Collectors.toCollection(TreeSet::new));
@@ -226,7 +228,11 @@ public class StatsViewController implements Initializable {
 			logger.debug("Fix costs total: " + totalAdditionalCosts);
 		}
 		for (final Entry<BookingOrigin, Collection<BookingEntry>> e : bookings.getMap().entrySet()) {
-			final float thisNights = BookingEntries.countNights(new BookingsByOrigin<>(e.getValue()), false);
+            final Collection<? extends BookingEntry> bookingsFilteredByPaymentDate = e.getValue().stream()
+                    .filter(new PaymentDateFilter(dateRange.get())).collect(Collectors.toList());
+            final Collection<? extends BookingEntry> bookingsFilteredByCleaningDate = e.getValue().stream()
+                    .filter(new CleaningDateFilter(dateRange.get())).collect(Collectors.toList());
+			final float thisNights = BookingEntries.countNights(new BookingsByOrigin<>(bookingsFilteredByPaymentDate), false);
 			final float percentage;
 			if (StringUtils.isBlank(e.getKey().getName())) {
 				percentage = 0;
@@ -240,7 +246,8 @@ public class StatsViewController implements Initializable {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e.getKey() + " relative fix costs " + relativeFixCosts);
 			}
-			final StatisticsTableBean b = StatisticsTableBean.build(e.getKey().getName(), e.getValue());
+			final StatisticsTableBean b = StatisticsTableBean.build(e.getKey().getName(), bookingsFilteredByPaymentDate);
+			StatisticsTableBean.applyCleaningStuff(b,bookingsFilteredByCleaningDate);
 			b.setFixCosts((float) relativeFixCosts);
 			b.setNightsPercent(percentage);
 			data.add(b);
@@ -260,9 +267,8 @@ public class StatsViewController implements Initializable {
 			return;
 		}
 		dateRange.set(LocalDates.getDateRange(bookings.stream().map(e -> e.getDate()).collect(Collectors.toList())));
-		final Collection<? extends BookingEntry> bookingsFiltered = bookings.stream()
-				.filter(new PaymentDateFilter(dateRange.get())).collect(Collectors.toList());
-		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookingsFiltered);
+
+		final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
 		updateUI(bo);
 		// updateTotals();
 	}

@@ -14,7 +14,7 @@ import static org.testfx.matcher.base.NodeMatchers.*;
 import static org.hamcrest.Matchers.*;
 
 
-public class TestTest extends ApplicationTest {
+public class DrBookingsApplicationUITest extends ApplicationTest {
 
     public static final File USER_HOME = new File("src/test/resources/tmp/user-home");
 

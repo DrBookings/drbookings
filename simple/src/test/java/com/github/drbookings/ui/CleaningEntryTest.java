@@ -56,9 +56,9 @@ public class CleaningEntryTest {
 
 	@Test
 	public void testEqualsHashCode01() {
-		final CleaningEntry ce1 = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking(),
+		final CleaningEntry ce1 = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking("tt"),
 				new Cleaning("testCleaning"), null);
-		final CleaningEntry ce2 = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking(),
+		final CleaningEntry ce2 = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking("tt"),
 				new Cleaning("testCleaning"), null);
 		assertEquals(ce1.hashCode(), ce2.hashCode());
 		assertEquals(ce1, ce2);
