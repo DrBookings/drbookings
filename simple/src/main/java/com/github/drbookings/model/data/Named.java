@@ -31,24 +31,24 @@ public class Named extends IDed {
 
     @Override
     public String toString() {
-	return getName();
+        return getName();
     }
 
     public Named(final String name) {
-	super();
-	setName(name);
+        super(name);
+        setName(name);
     }
 
     public StringProperty nameProperty() {
-	return this.name;
+        return name;
     }
 
     public String getName() {
-	return this.nameProperty().get();
+        return nameProperty().get();
     }
 
     public void setName(final String name) {
-	this.nameProperty().set(name);
+        nameProperty().set(name);
     }
 
 }

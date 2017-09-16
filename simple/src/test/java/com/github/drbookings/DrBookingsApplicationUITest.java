@@ -4,16 +4,18 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.File;
 import java.nio.file.Files;
 
+import static org.hamcrest.Matchers.not;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.*;
-import static org.hamcrest.Matchers.*;
+import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 
+@Category(UITests.class)
 public class DrBookingsApplicationUITest extends ApplicationTest {
 
     public static final File USER_HOME = new File("src/test/resources/tmp/user-home");
@@ -39,7 +41,7 @@ public class DrBookingsApplicationUITest extends ApplicationTest {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(final Stage stage) throws Exception {
         new DrBookingsApplication().start(stage);
     }
 

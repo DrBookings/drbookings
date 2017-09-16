@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.cell.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.ComboBox?>
-
+<?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.EarningsChartViewController">
+      fx:controller="com.github.drbookings.ui.controller.EarningsPerDayChartViewController">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 	</stylesheets>
@@ -23,15 +16,15 @@
 		<Insets bottom="4" left="4" right="4" top="4" />
 	</padding>
 	<children>
-		<StackedBarChart fx:id="chart" maxWidth="Infinity"
-			animated="false" VBox.vgrow="ALWAYS">
+        <AreaChart fx:id="chart" maxWidth="Infinity" maxHeight="Infinity"
+                   VBox.vgrow="ALWAYS">
 			<xAxis>
 				<CategoryAxis fx:id="xAxis" />
 			</xAxis>
 			<yAxis>
 				<NumberAxis fx:id="yAxis" />
 			</yAxis>
-		</StackedBarChart>
+        </AreaChart>
 		<HBox spacing="4" alignment="CENTER">
 			<children>
 				<ComboBox fx:id="toggle"></ComboBox>

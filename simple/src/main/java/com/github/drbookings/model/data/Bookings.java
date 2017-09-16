@@ -22,17 +22,17 @@ package com.github.drbookings.model.data;
  * #L%
  */
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.github.drbookings.DateRange;
 import com.github.drbookings.ui.BookingEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Bookings {
 
@@ -46,32 +46,33 @@ public class Bookings {
 		return (booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent() / 100.0;
 	}
 
-	public static Collection<BookingEntry> toEntries(final Collection<Booking> bookings) {
-		final Collection<BookingEntry> result = new ArrayList<>();
-		for (final Booking b : bookings) {
-			for (final LocalDate d : new DateRange(b.getCheckIn(), b.getCheckOut())) {
-				result.add(new BookingEntry(d, b));
-			}
-		}
-		return result;
-	}
-
-	public static Collection<BookingEntry> toEntries(final Booking... bookings) {
-		return toEntries(Arrays.asList(bookings));
-	}
-
-    public static long countCleanings(Collection<? extends Booking> bookings) {
-		return bookings.stream().filter(b -> b.getCleaning() != null).count();
+    public static List<BookingEntry> toEntries(final Collection<Booking> bookings) {
+        final List<BookingEntry> result = new ArrayList<>();
+        for (final Booking b : bookings) {
+            for (final LocalDate d : new DateRange(b.getCheckIn(), b.getCheckOut())) {
+                result.add(new BookingEntry(d, b));
+            }
+        }
+        return result;
     }
 
-    public static double getCleaningFees(Collection<Booking> bookings) {
-	    return bookings.stream().filter(b -> b.getCleaning() != null).mapToDouble(b -> b.getCleaningFees()).sum();
+    public static List<BookingEntry> toEntries(final Booking... bookings) {
+        return toEntries(Arrays.asList(bookings));
     }
 
-    public static double getCleaningCosts(Collection<Booking> bookings) {
-	    if(logger.isDebugEnabled())
-	    logger.debug("Cleaning costs for\n"+bookings.stream().map(i -> i.toString())
-                .collect(Collectors.joining("\n")));
+    public static long countCleanings(final Collection<? extends Booking> bookings) {
+        return bookings.stream().filter(b -> b.getCleaning() != null).count();
+    }
+
+    public static double getCleaningFees(final Collection<Booking> bookings) {
+        return bookings.stream().filter(b -> b.getCleaning() != null).mapToDouble(b -> b.getCleaningFees()).sum();
+    }
+
+    public static double getCleaningCosts(final Collection<Booking> bookings) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Cleaning costs for\n" + bookings.stream().map(i -> i.toString())
+                    .collect(Collectors.joining("\n")));
+        }
         return bookings.stream().filter(b -> b.getCleaning() != null).map(b -> b.getCleaning()).mapToDouble(c -> c.getCleaningCosts()).sum();
     }
 }

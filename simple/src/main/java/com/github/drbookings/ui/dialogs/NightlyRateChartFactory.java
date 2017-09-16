@@ -22,19 +22,19 @@ package com.github.drbookings.ui.dialogs;
  * #L%
  */
 
+import com.github.drbookings.ui.controller.EarningsPerDayChartViewController;
+import com.github.drbookings.ui.controller.NightlyRateChartViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.ui.controller.EarningsPerDayChartViewController;
-
-public class EarningsChartFactory extends AbstractViewFactory implements ViewFactory {
+public class NightlyRateChartFactory extends AbstractViewFactory implements ViewFactory {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(EarningsChartFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(NightlyRateChartFactory.class);
 
-	public EarningsChartFactory() {
-		setFxml("/fxml/EarningsPerDayChartView.fxml");
-		setTitle("Earnings per Day");
+	public NightlyRateChartFactory() {
+		setFxml("/fxml/NightlyRateChartView.fxml");
+		setTitle("Nightly Rate");
 		setHeight(400);
 		setWidth(400);
 
@@ -43,7 +43,7 @@ public class EarningsChartFactory extends AbstractViewFactory implements ViewFac
 	@Override
 	protected void visitController(final Object controller) {
 		super.visitController(controller);
-		final EarningsPerDayChartViewController c = (EarningsPerDayChartViewController) controller;
+		final NightlyRateChartViewController c = (NightlyRateChartViewController) controller;
 		// c.setMainManager(manager);
 	}
 }

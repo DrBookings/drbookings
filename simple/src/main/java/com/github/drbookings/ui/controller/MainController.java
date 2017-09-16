@@ -136,7 +136,7 @@ public class MainController implements Initializable {
         public OpenFileService(final File file) {
             super();
             this.file = file;
-            this.l = new UnmarshallListener();
+            l = new UnmarshallListener();
 
             setOnScheduled(e -> {
                 setWorking(true);
@@ -158,7 +158,7 @@ public class MainController implements Initializable {
                 setWorking(false);
             });
             setOnFailed(event -> {
-                Throwable e = getException();
+                final Throwable e = getException();
                 if (logger.isDebugEnabled()) {
                     logger.debug(e.toString());
                 }
@@ -179,7 +179,6 @@ public class MainController implements Initializable {
                     return ds;
                 }
 
-                ;
             };
         }
     }
@@ -227,6 +226,8 @@ public class MainController implements Initializable {
     private Button buttonSelectLastThreeMonth;
 
     private EarningsChartFactory earningsChartFactory;
+
+    private NightlyRateChartFactory nightlyRateChartFactory;
 
     @FXML
     private Label filterBookingsLabel;
@@ -280,7 +281,7 @@ public class MainController implements Initializable {
 
     private void addDateColumn() {
         final TableColumn<DateBean, LocalDate> col = new TableColumn<>("Date");
-        col.setCellValueFactory(new PropertyValueFactory<DateBean, LocalDate>("date"));
+        col.setCellValueFactory(new PropertyValueFactory<>("date"));
         col.setCellFactory(column -> {
             return new TableCell<DateBean, LocalDate>() {
                 @Override
@@ -302,7 +303,7 @@ public class MainController implements Initializable {
 
     private void addEarningsColumn() {
         final TableColumn<DateBean, Number> col = new TableColumn<>("TotalEarnings");
-        col.setCellValueFactory(new PropertyValueFactory<DateBean, Number>("totalEarnings"));
+        col.setCellValueFactory(new PropertyValueFactory<>("totalEarnings"));
         col.setCellFactory(column -> {
             return new TableCell<DateBean, Number>() {
 
@@ -338,7 +339,6 @@ public class MainController implements Initializable {
         getManager().clearData();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void deleteSelected() {
         final ObservableList<TablePosition> selectedItems = tableView.getSelectionModel().getSelectedCells();
         if (logger.isDebugEnabled()) {
@@ -364,18 +364,17 @@ public class MainController implements Initializable {
                     final Booking booking = rb.getFilteredBookingEntries().get(0).getElement();
                     if (logger.isDebugEnabled()) {
                         logger.debug("Deleting " + booking);
-                        manager.removeBooking(booking);
                     }
+                    manager.removeBooking(booking);
                 }
             }
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private ListChangeListener<TablePosition> getCellSelectionListener() {
         return change -> {
             final List<RoomBean> cells = new ArrayList<>();
-            List<DateBean> dates = new ArrayList<>();
+            final List<DateBean> dates = new ArrayList<>();
             for (final TablePosition tp : change.getList()) {
                 final int r = tp.getRow();
                 final int c = tp.getColumn();
@@ -596,6 +595,11 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void handleMenuItemShowNightlyRateChart(final ActionEvent event) {
+        Platform.runLater(() -> showNightlyRateChart());
+    }
+
+    @FXML
     private void handleMenuItemShowMonthlyMoney(final ActionEvent event) {
         Platform.runLater(() -> showMonthlyMoney());
     }
@@ -625,7 +629,8 @@ public class MainController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
-        guestNameFilterInput.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+        guestNameFilterInput.textProperty().addListener((ChangeListener<String>) (observable, oldValue,
+                                                                                  newValue) -> {
             tableView.getSelectionModel().clearSelection();
             manager.applyFilter(newValue);
         });
@@ -677,7 +682,7 @@ public class MainController implements Initializable {
         setTableColumns();
 
         tableView.getSelectionModel().getSelectedCells().addListener(
-                (@SuppressWarnings("rawtypes") final ListChangeListener.Change<? extends TablePosition> c) -> {
+                (final ListChangeListener.Change<? extends TablePosition> c) -> {
                     rowsWithSelectedCells.clear();
                     final Set<Integer> rows = tableView.getSelectionModel().getSelectedCells().stream()
                             .map(pos -> pos.getRow()).collect(Collectors.toSet());
@@ -790,7 +795,7 @@ public class MainController implements Initializable {
         final String prefix = SettingsManager.getInstance().getRoomNamePrefix();
         for (int i = 1; i <= numberRooms; i++) {
             final TableColumn<DateBean, DateBean> col1 = new TableColumn<>(prefix + i);
-            col1.setCellValueFactory(new PropertyValueFactory<DateBean, DateBean>("self"));
+            col1.setCellValueFactory(new PropertyValueFactory<>("self"));
             col1.setCellFactory(new StudioCellFactory("" + i));
             tableView.getColumns().add(col1);
         }
@@ -924,6 +929,11 @@ public class MainController implements Initializable {
         earningsChartFactory.showDialog();
     }
 
+    private void showNightlyRateChart() {
+        nightlyRateChartFactory = new NightlyRateChartFactory();
+        nightlyRateChartFactory.showDialog();
+    }
+
     void showModifyBookingDialog() {
 
         if (modifyBookingDialogFactory == null) {
@@ -934,7 +944,7 @@ public class MainController implements Initializable {
 
     private void showMonthlyMoney() {
         if (monthlyMoneyFactory == null) {
-            monthlyMoneyFactory = new StatisticsFactory(this.getManager());
+            monthlyMoneyFactory = new StatisticsFactory(getManager());
         }
         monthlyMoneyFactory.showDialog();
     }
@@ -947,8 +957,8 @@ public class MainController implements Initializable {
     }
 
     private void showRoomDetailsDialog() {
-        if (this.roomDetailsDialogFactory == null) {
-            this.roomDetailsDialogFactory = new RoomDetailsDialogFactory(this);
+        if (roomDetailsDialogFactory == null) {
+            roomDetailsDialogFactory = new RoomDetailsDialogFactory(this);
         }
         roomDetailsDialogFactory.showDialog();
 

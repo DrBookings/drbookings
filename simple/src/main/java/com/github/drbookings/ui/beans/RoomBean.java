@@ -207,7 +207,8 @@ public class RoomBean extends WarnableBean {
 	}
 
 	public CleaningEntry getCleaningEntry() {
-		return this.cleaningEntryProperty().get();
+		CleaningEntry result = this.cleaningEntryProperty().get();
+		return result;
 	}
 
 	public LocalDate getDate() {
@@ -322,6 +323,7 @@ public class RoomBean extends WarnableBean {
 	public void setCleaning(final String cleaningName) {
 		if (getCleaningEntry() != null) {
 			manager.removeCleaning(getCleaningEntry());
+			setCleaningEntry(null);
 		}
 		try {
 			manager.addCleaning(getDate(), cleaningName, getName());

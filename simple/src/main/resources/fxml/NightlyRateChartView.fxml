@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+      fx:controller="com.github.drbookings.ui.controller.NightlyRateChartViewController">
+    <stylesheets>
+        <URL value="@/css/root.css"/>
+    </stylesheets>
+    <padding>
+        <Insets bottom="4" left="4" right="4" top="4"/>
+    </padding>
+    <children>
+        <AreaChart fx:id="chart" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+            <xAxis>
+                <CategoryAxis fx:id="xAxis" label="Date"/>
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="yAxis" label="Nightly Rate"/>
+            </yAxis>
+        </AreaChart>
+        <HBox spacing="4" alignment="CENTER">
+            <children>
+                <ComboBox fx:id="toggle"></ComboBox>
+                <Label text=" over "></Label>
+                <Label fx:id="sliderValue"></Label>
+                <Label text=" Days"></Label>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="4" left="4" right="4" top="4"/>
+                    </padding>
+                    <children>
+                        <Slider fx:id="slider" min="1" max="31" value="1"
+                                blockIncrement="1" majorTickUnit="5" showTickLabels="true"
+                                showTickMarks="true"></Slider>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+
+</VBox>

@@ -440,6 +440,15 @@ public class MainManager {
 	public void removeCleaning(final CleaningEntry cleaningEntry) {
 		cleaningEntries.values().remove(cleaningEntry);
 		cleaningEntriesList.remove(cleaningEntry);
+		bookings.forEach(b -> {
+			if(cleaningEntry.equals(b.getCleaning())){
+                if(logger.isDebugEnabled()){
+                    logger.debug("Removing cleaning from booking " + b);
+                }
+				b.setCleaning(null);
+
+			}
+		});
 		removeUiDataCleaning(cleaningEntry);
 	}
 

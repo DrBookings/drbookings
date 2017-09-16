@@ -22,26 +22,11 @@ package com.github.drbookings.ui;
  * #L%
  */
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
 import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.DefaultNetEarningsCalculator;
-import com.github.drbookings.model.EarningsProvider;
-import com.github.drbookings.model.GrossEarningsProvider;
-import com.github.drbookings.model.IBooking;
-import com.github.drbookings.model.NetEarningsCalculator;
-import com.github.drbookings.model.NetEarningsProvider;
+import com.github.drbookings.model.*;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
-
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
@@ -49,6 +34,14 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class BookingEntry extends DateRoomEntry<Booking>
 		implements NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
@@ -64,11 +57,6 @@ public class BookingEntry extends DateRoomEntry<Booking>
 	public static Callback<BookingEntry, Observable[]> extractor() {
 		return param -> new Observable[] { param.netEarningsProperty(), param.getElement().paymentDoneProperty(),
 				param.getElement().welcomeMailSendProperty() };
-	}
-
-	public static List<Booking> getBookings(final Collection<? extends BookingEntry> bookings) {
-		return new ArrayList<>(
-				bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new)));
 	}
 
 	public static Set<String> guestNameView(final Collection<? extends BookingEntry> bookings) {
@@ -150,27 +138,27 @@ public class BookingEntry extends DateRoomEntry<Booking>
 
 	@Override
 	public float getGrossEarnings() {
-		return this.grossEarningsProperty().get();
-	}
+        return grossEarningsProperty().get();
+    }
 
 	public String getGrossEarningsString() {
-		return this.grossEarningsStringProperty().get();
-	}
+        return grossEarningsStringProperty().get();
+    }
 
 	@Override
 	public float getNetEarnings() {
-		return this.netEarningsProperty().get();
+        return netEarningsProperty().get();
 
 	}
 
 	@Override
 	public FloatProperty grossEarningsProperty() {
-		return this.grossEarnings;
-	}
+        return grossEarnings;
+    }
 
 	public StringProperty grossEarningsStringProperty() {
-		return this.grossEarningsString;
-	}
+        return grossEarningsString;
+    }
 
 	public boolean isCheckIn() {
 		return getDate().equals(getElement().getCheckIn());
@@ -182,20 +170,20 @@ public class BookingEntry extends DateRoomEntry<Booking>
 
 	@Override
 	public FloatProperty netEarningsProperty() {
-		return this.netEarnings;
-	}
+        return netEarnings;
+    }
 
 	public void setGrossEarnings(final float grossEarnings) {
-		this.grossEarningsProperty().set(grossEarnings);
-	}
+        grossEarningsProperty().set(grossEarnings);
+    }
 
 	public void setGrossEarningsString(final String grossEarningsString) {
-		this.grossEarningsStringProperty().set(grossEarningsString);
-	}
+        grossEarningsStringProperty().set(grossEarningsString);
+    }
 
 	public void setNetEarnings(final float netEarnings) {
-		this.netEarningsProperty().set(netEarnings);
-	}
+        netEarningsProperty().set(netEarnings);
+    }
 
     @Override
     public String toString() {

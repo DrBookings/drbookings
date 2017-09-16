@@ -186,6 +186,7 @@
         </plugins>
         <resources>
             <resource>
+                <filtering>true</filtering><!-- if it is neccessary -->
                 <directory>src/main/logging/develop</directory><!-- from -->
                 <targetPath>${project.build.outputDirectory}</targetPath><!-- to -->
                 <includes><!-- what -->
@@ -343,6 +344,26 @@
                         </includes>
                     </resource>
                 </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>headless</id>
+            <activation>
+                <property>
+                    <name>headless</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.20</version>
+                        <configuration>
+                            <excludedGroups>com.github.drbookings.UITests</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

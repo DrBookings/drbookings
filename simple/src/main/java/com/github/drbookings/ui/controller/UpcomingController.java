@@ -172,7 +172,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    final TextFlow tf = new TextFlow();
 	    final Text t0 = new Text("Room " + c.getRoom() + ": ");
 	    t0.getStyleClass().add("emphasis");
-	    final Text t1 = new Text(c.toString());
+	    final Text t1 = new Text(c.getName());
 	    tf.getChildren().addAll(t0, t1);
 	    box.getChildren().add(tf);
 	}

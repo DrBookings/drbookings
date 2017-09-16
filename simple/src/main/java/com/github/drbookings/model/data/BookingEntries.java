@@ -57,6 +57,11 @@ public class BookingEntries {
         return getCleanings(bookings).size();
     }
 
+    public static List<Booking> getBookings(final Collection<? extends BookingEntry> bookings) {
+        return new ArrayList<>(
+                bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new)));
+    }
+
     public static Collection<CleaningEntry> getCleanings(final Collection<? extends BookingEntry> bookings) {
 
         Collection<CleaningEntry> result = bookings.stream().filter(b -> b.getElement().getCleaning() != null).map(e -> e.getElement().getCleaning()).collect(Collectors.toSet());

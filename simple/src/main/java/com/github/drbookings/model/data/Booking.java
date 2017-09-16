@@ -22,42 +22,24 @@ package com.github.drbookings.model.data;
  * #L%
  */
 
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.drbookings.Scripting;
 import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.DefaultNetEarningsCalculator;
-import com.github.drbookings.model.EarningsProvider;
-import com.github.drbookings.model.GrossEarningsProvider;
-import com.github.drbookings.model.IBooking;
-import com.github.drbookings.model.NetEarningsCalculator;
-import com.github.drbookings.model.NetEarningsProvider;
+import com.github.drbookings.model.*;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.CleaningEntry;
-
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.Callable;
 
 public class Booking extends IDed
 		implements Comparable<Booking>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
@@ -71,7 +53,6 @@ public class Booking extends IDed
 
 	public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(Booking.class);
 
 	private final RoundingMode roundingMode = DEFAULT_ROUNDING_MODE;
@@ -114,6 +95,10 @@ public class Booking extends IDed
 
 	private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
 
+    public List<BookingEntry> getEntries() {
+        return Bookings.toEntries(this);
+    }
+
 	/**
 	 * Set by the cleaning entry.
 	 */
@@ -140,7 +125,7 @@ public class Booking extends IDed
 		this.checkOut = checkOut;
 		this.guest = guest;
 		this.room = room;
-		this.bookingOrigin = origin;
+        bookingOrigin = origin;
 
 		bindProperties();
 
@@ -148,8 +133,8 @@ public class Booking extends IDed
 
 	public void addCalendarId(final String id) {
 		if (id != null) {
-			calendarIds.add(id);
-		}
+            calendarIds.add(id);
+        }
 
 	}
 
@@ -188,12 +173,12 @@ public class Booking extends IDed
 	}
 
 	public StringProperty checkInNoteProperty() {
-		return this.checkInNote;
-	}
+        return checkInNote;
+    }
 
 	public StringProperty checkOutNoteProperty() {
-		return this.checkOutNote;
-	}
+        return checkOutNote;
+    }
 
 	@Override
 	public int compareTo(final Booking o) {
@@ -220,16 +205,16 @@ public class Booking extends IDed
 	}
 
 	public String getCheckInNote() {
-		return this.checkInNoteProperty().get();
-	}
+        return checkInNoteProperty().get();
+    }
 
 	public LocalDate getCheckOut() {
 		return checkOut;
 	}
 
 	public String getCheckOutNote() {
-		return this.checkOutNoteProperty().get();
-	}
+        return checkOutNoteProperty().get();
+    }
 
 	@Override
 	public float getEarnings(final boolean netEarnings) {
@@ -245,12 +230,12 @@ public class Booking extends IDed
 
 	@Override
 	public float getGrossEarnings() {
-		return this.grossEarningsProperty().get();
-	}
+        return grossEarningsProperty().get();
+    }
 
 	public String getGrossEarningsExpression() {
-		return this.grossEarningsExpressionProperty().get();
-	}
+        return grossEarningsExpressionProperty().get();
+    }
 
 	public Guest getGuest() {
 		return guest;
@@ -258,8 +243,8 @@ public class Booking extends IDed
 
 	@Override
 	public float getNetEarnings() {
-		return this.netEarningsProperty().get();
-	}
+        return netEarningsProperty().get();
+    }
 
 	public long getNumberOfDays() {
 		final long daysElapsed = ChronoUnit.DAYS.between(getCheckIn(), getCheckOut());
@@ -280,43 +265,43 @@ public class Booking extends IDed
 	}
 
 	public float getServiceFee() {
-		return this.serviceFeeProperty().get();
-	}
+        return serviceFeeProperty().get();
+    }
 
 	public String getSpecialRequestNote() {
-		return this.specialRequestNoteProperty().get();
-	}
+        return specialRequestNoteProperty().get();
+    }
 
 	public StringProperty grossEarningsExpressionProperty() {
-		return this.grossEarningsExpression;
-	}
+        return grossEarningsExpression;
+    }
 
 	@Override
 	public FloatProperty grossEarningsProperty() {
-		return this.grossEarnings;
-	}
+        return grossEarnings;
+    }
 
 	@Override
 	public boolean isPaymentDone() {
-		return this.paymentDoneProperty().get();
-	}
+        return paymentDoneProperty().get();
+    }
 
 	public boolean isWelcomeMailSend() {
-		return this.welcomeMailSendProperty().get();
-	}
+        return welcomeMailSendProperty().get();
+    }
 
 	@Override
 	public FloatProperty netEarningsProperty() {
-		return this.netEarnings;
-	}
+        return netEarnings;
+    }
 
 	public BooleanProperty paymentDoneProperty() {
-		return this.paymentDone;
-	}
+        return paymentDone;
+    }
 
 	public FloatProperty serviceFeeProperty() {
-		return this.serviceFees;
-	}
+        return serviceFees;
+    }
 
 	public void setCalendarIds(final Collection<? extends String> calendarIds) {
 		if (calendarIds != null) {
@@ -325,53 +310,53 @@ public class Booking extends IDed
 	}
 
 	public void setCheckInNote(final String checkInNote) {
-		this.checkInNoteProperty().set(checkInNote);
-	}
+        checkInNoteProperty().set(checkInNote);
+    }
 
 	public void setCheckOutNote(final String checkOutNote) {
-		this.checkOutNoteProperty().set(checkOutNote);
-	}
+        checkOutNoteProperty().set(checkOutNote);
+    }
 
 	public void setExternalId(final String externalId) {
 		this.externalId = externalId;
 	}
 
 	public void setGrossEarnings(final float grossEarnings) {
-		this.grossEarningsProperty().set(grossEarnings);
-		// if (logger.isDebugEnabled()) {
-		// logger.debug("Gross Earnings changed to " + getGrossEarnings());
-		// }
+        grossEarningsProperty().set(grossEarnings);
+        // if (logger.isDebugEnabled()) {
+        // logger.debug("Gross Earnings changed to " + getGrossEarnings());
+        // }
 
 	}
 
 	public void setGrossEarningsExpression(final String expression) {
 		// System.err.println("set " + expression);
-		this.grossEarningsExpressionProperty().set(expression);
-	}
+        grossEarningsExpressionProperty().set(expression);
+    }
 
 	public void setNetEarnings(final float netEarnings) {
-		this.netEarningsProperty().set(netEarnings);
-	}
+        netEarningsProperty().set(netEarnings);
+    }
 
 	public void setPaymentDone(final boolean paymentDone) {
-		this.paymentDoneProperty().set(paymentDone);
-	}
+        paymentDoneProperty().set(paymentDone);
+    }
 
 	public void setServiceFee(final float serviceFee) {
-		this.serviceFeeProperty().set(serviceFee);
-	}
+        serviceFeeProperty().set(serviceFee);
+    }
 
 	public void setSpecialRequestNote(final String specialRequestNote) {
-		this.specialRequestNoteProperty().set(specialRequestNote);
-	}
+        specialRequestNoteProperty().set(specialRequestNote);
+    }
 
 	public void setWelcomeMailSend(final boolean welcomeMailSend) {
-		this.welcomeMailSendProperty().set(welcomeMailSend);
-	}
+        welcomeMailSendProperty().set(welcomeMailSend);
+    }
 
 	public StringProperty specialRequestNoteProperty() {
-		return this.specialRequestNote;
-	}
+        return specialRequestNote;
+    }
 
 	@Override
 	public String toString() {
@@ -387,32 +372,32 @@ public class Booking extends IDed
 	}
 
 	public BooleanProperty welcomeMailSendProperty() {
-		return this.welcomeMailSend;
-	}
+        return welcomeMailSend;
+    }
 
 	public final FloatProperty cleaningFeesProperty() {
-		return this.cleaningFees;
-	}
+        return cleaningFees;
+    }
 
 	public final float getCleaningFees() {
-		return this.cleaningFeesProperty().get();
-	}
+        return cleaningFeesProperty().get();
+    }
 
 	public final void setCleaningFees(final float cleaningFees) {
-		this.cleaningFeesProperty().set(cleaningFees);
-	}
+        cleaningFeesProperty().set(cleaningFees);
+    }
 
 	public final FloatProperty serviceFeesPercentProperty() {
-		return this.serviceFeesPercent;
-	}
+        return serviceFeesPercent;
+    }
 
 	public final float getServiceFeesPercent() {
-		return this.serviceFeesPercentProperty().get();
-	}
+        return serviceFeesPercentProperty().get();
+    }
 
 	public final void setServiceFeesPercent(final float serviceFeesPercent) {
-		this.serviceFeesPercentProperty().set(serviceFeesPercent);
-	}
+        serviceFeesPercentProperty().set(serviceFeesPercent);
+    }
 
 	public BookingEntry getEntry(final LocalDate date) {
 		if (date.isBefore(getCheckIn()) && date.isAfter(getCheckOut())) {
@@ -428,12 +413,12 @@ public class Booking extends IDed
 	 * @return
 	 */
 	public final ObjectProperty<CleaningEntry> cleaningProperty() {
-		return this.cleaning;
-	}
+        return cleaning;
+    }
 
 	public final CleaningEntry getCleaning() {
-		return this.cleaningProperty().get();
-	}
+        return cleaningProperty().get();
+    }
 
 	/**
 	 * Set by the cleaning entry.
@@ -441,32 +426,32 @@ public class Booking extends IDed
 	 * @param cleaning
 	 */
 	public final void setCleaning(final CleaningEntry cleaning) {
-		this.cleaningProperty().set(cleaning);
-	}
+        cleaningProperty().set(cleaning);
+    }
 
 	public final ObjectProperty<LocalDate> dateOfPaymentProperty() {
-		return this.dateOfPayment;
-	}
+        return dateOfPayment;
+    }
 
 	public final LocalDate getDateOfPayment() {
-		return this.dateOfPaymentProperty().get();
-	}
+        return dateOfPaymentProperty().get();
+    }
 
 	public final void setDateOfPayment(final LocalDate dateOfPayment) {
-		this.dateOfPaymentProperty().set(dateOfPayment);
-	}
+        dateOfPaymentProperty().set(dateOfPayment);
+    }
 
 	public final BooleanProperty splitBookingProperty() {
-		return this.splitBooking;
-	}
+        return splitBooking;
+    }
 
 	public final boolean isSplitBooking() {
-		return this.splitBookingProperty().get();
-	}
+        return splitBookingProperty().get();
+    }
 
 	public final void setSplitBooking(final boolean splitBooking) {
-		this.splitBookingProperty().set(splitBooking);
-	}
+        splitBookingProperty().set(splitBooking);
+    }
 
 	@Override
 	public boolean isPaymentOverdue() {
