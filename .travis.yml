@@ -10,7 +10,7 @@ addons:
     packages:
       - oracle-java8-installer # Use JDK 8u45. The above line just causes the use of a minor version of Java 8.
 before_script: cd simple
-script: "mvn clean package"
+script: "mvn clean package -Dheadless"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 notifications:
