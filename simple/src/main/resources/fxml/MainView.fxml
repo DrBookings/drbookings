@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.cell.*?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.geometry.Insets?>
-
+<?import java.net.URL?>
 <VBox styleClass="root" fx:id="node" xmlns:fx="http://javafx.com/fxml/1"
-	xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.MainController">
+      xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.MainController">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 	</stylesheets>
@@ -21,6 +14,7 @@
 			<menus>
 				<Menu text="File">
 					<items>
+                        <MenuItem text="Save" onAction="#handleMenuItemSave" accelerator="Shortcut+S"></MenuItem>
 						<MenuItem text="Open DrBookings XML" onAction="#handleMenuItemOpen" />
 						<MenuItem text="Import Airbnb iCal" onAction="#handleMenuItemOpenAirbnbICal" />
 						<MenuItem text="Import Booking Excel" onAction="#handleMenuItemOpenBookingExcel" />
@@ -32,7 +26,8 @@
 				</Menu>
 				<Menu text="View">
 					<items>
-						<MenuItem text="What's Next" onAction="#handleMenuItemUpcomingEvents" />
+                        <MenuItem text="What's Next" accelerator="Shortcut+N"
+                                  onAction="#handleMenuItemUpcomingEvents"/>
 						<MenuItem text="Cleaning Plan" onAction="#handleMenuItemCleaningPlan" />
 						<MenuItem text="Booking Details" onAction="#handleMenuItemBookingDetails" />
 						<MenuItem text="Room Details" onAction="#handleMenuItemRoomDetails" />

@@ -165,7 +165,7 @@ public class NightlyRateChartViewController implements Initializable {
         view.setBinSize(getBinSize());
         view.setBinType(toggle.getSelectionModel().getSelectedItem());
 
-        for (final Map.Entry<BookingOrigin, Map<LocalDate, Number>> e : view.getData().entrySet()) {
+        for (final Map.Entry<BookingOrigin, Map<LocalDate, Collection<Number>>> e : view.getData().entrySet()) {
             XYChart.Series<String, Number> series = seriesMap.get(e.getKey());
             if (series == null) {
                 series = new XYChart.Series<>(e.getKey().getName(), FXCollections
@@ -177,8 +177,10 @@ public class NightlyRateChartViewController implements Initializable {
                 seriesMap.put(e.getKey(), series);
                 chartSeries.add(series);
             }
-            for (final Map.Entry<LocalDate, Number> e2 : e.getValue().entrySet()) {
-                series.getData().add(new XYChart.Data<>(e2.getKey().toString(), e2.getValue()));
+            for (final Map.Entry<LocalDate, Collection<Number>> e2 : e.getValue().entrySet()) {
+                series.getData().add(new XYChart.Data<>(e2.getKey().toString(), e2.getValue().stream()
+                        .mapToDouble
+                                (Number::doubleValue).average().getAsDouble()));
             }
             //checkNoData(series);
         }

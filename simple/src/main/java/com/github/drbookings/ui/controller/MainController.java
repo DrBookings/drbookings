@@ -83,6 +83,51 @@ import java.util.stream.Collectors;
 
 public class MainController implements Initializable {
 
+    class SaveTask extends Task<Void> {
+
+        private final File file;
+
+        SaveTask(final File file) {
+            this.file = file;
+        }
+
+        @Override
+        protected Void call() throws Exception {
+            new XMLStorage().save(getManager(), file);
+            return null;
+        }
+    }
+
+    class SaveService extends Service<Void> {
+
+        private final File file;
+
+        SaveService(final File file) {
+            this.file = file;
+            setOnFailed(e -> {
+                final Throwable t = getException();
+                if (logger.isErrorEnabled()) {
+                    logger.error(t.getLocalizedMessage(), t);
+                }
+            });
+            setOnSucceeded(e -> {
+                if (logger.isInfoEnabled()) {
+                    logger.info("Saved");
+                }
+            });
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+            return new SaveTask(file);
+        }
+    }
+
+    public void save(final File file) {
+        new SaveService(file).start();
+    }
+
+
     private class ClearGoogleCalendarService extends DrBookingService<Void> {
 
         public ClearGoogleCalendarService() {
@@ -467,6 +512,7 @@ public class MainController implements Initializable {
         };
     }
 
+
     @FXML
     private void handleButtonAddBooking(final ActionEvent event) {
         Platform.runLater(() -> showAddBookingDialog());
@@ -495,6 +541,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItemAbout(final ActionEvent event) {
         Platform.runLater(() -> showAbout());
+    }
+
+    @FXML
+    private void handleMenuItemSave(final ActionEvent event) {
+        save(SettingsManager.getInstance().getDataFile());
     }
 
     @FXML

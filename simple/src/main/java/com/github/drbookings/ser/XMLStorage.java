@@ -22,12 +22,16 @@ package com.github.drbookings.ser;
  * #L%
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.ui.CleaningEntry;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -36,18 +40,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.data.Booking;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.CleaningEntry;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class XMLStorage {
 
@@ -60,7 +58,7 @@ public class XMLStorage {
 		return this;
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(XMLStorage.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLStorage.class);
 
 	private UnmarshallListener listener;
 
@@ -133,8 +131,8 @@ public class XMLStorage {
 
 	public void save(final DataStore ds, final File file) throws Exception {
 		if (logger.isInfoEnabled()) {
-			logger.info("Saving " + ds + " to " + file);
-		}
+            logger.info("Saving to " + file);
+        }
 		final JAXBContext jc = JAXBContext.newInstance(DataStore.class);
 		final Marshaller jaxbMarshaller = jc.createMarshaller();
 		jaxbMarshaller.setListener(new MarshallListener());

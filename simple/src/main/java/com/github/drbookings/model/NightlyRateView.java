@@ -5,14 +5,11 @@ import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class NightlyRateView {
 
-    final Map<BookingOrigin, Map<LocalDate, Number>> data = new LinkedHashMap<>();
+    final Map<BookingOrigin, Map<LocalDate, Collection<Number>>> data = new LinkedHashMap<>();
     private double binSize = 1;
 
     public NightlyRateView(final Collection<? extends BookingEntry> bookingEntries) {
@@ -30,7 +27,7 @@ public class NightlyRateView {
                 '}';
     }
 
-    public Map<BookingOrigin, Map<LocalDate, Number>> getData() {
+    public Map<BookingOrigin, Map<LocalDate, Collection<Number>>> getData() {
         return Collections.unmodifiableMap(data);
     }
 
@@ -40,17 +37,17 @@ public class NightlyRateView {
     }
 
     public NightlyRateView add(final BookingEntry b) {
-        Map<LocalDate, Number> innerMap = data.get(b.getBookingOrigin());
+        Map<LocalDate, Collection<Number>> innerMap = data.get(b.getBookingOrigin());
         if (innerMap == null) {
             innerMap = new LinkedHashMap<>();
             data.put(b.getBookingOrigin(), innerMap);
         }
-        Number value = innerMap.get(b.getDate());
-        if (value == null) {
-            value = Double.valueOf(0);
+        Collection<Number> values = innerMap.get(b.getDate());
+        if (values == null) {
+            values = new ArrayList<>();
         }
-        value = (value.doubleValue() + b.getEarnings(SettingsManager.getInstance().isShowNetEarnings())) / 2;
-        innerMap.put(b.getDate(), value);
+        values.add(b.getEarnings(SettingsManager.getInstance().isShowNetEarnings()));
+        innerMap.put(b.getDate(), values);
         return this;
     }
 

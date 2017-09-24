@@ -128,13 +128,21 @@ public class BookingEntry extends DateRoomEntry<Booking>
 		};
 	}
 
-	@Override
-	public float getEarnings(final boolean netEarnings) {
-		if (netEarnings) {
-			return getNetEarnings();
-		}
-		return getGrossEarnings();
-	}
+    /**
+     * Returns the earnings for this booking entry. That is, the booking earnings per night. All earnings from all
+     * booking entries from the same booking are always the same.
+     *
+     * @param netEarnings if {@code true}, net earnings will be returned; gross earnings otherwise
+     * @return the earnings for this booking entry
+     * @see NetEarningsCalculator
+     */
+    @Override
+    public float getEarnings(final boolean netEarnings) {
+        if (netEarnings) {
+            return getNetEarnings();
+        }
+        return getGrossEarnings();
+    }
 
 	@Override
 	public float getGrossEarnings() {

@@ -23,7 +23,6 @@ package com.github.drbookings;
  */
 
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -81,7 +80,7 @@ public class DrBookingsApplication extends Application {
                     final File file2 = fileChooser.showSaveDialog(((Stage) event.getSource()));
                     if (file2 != null) {
                         SettingsManager.getInstance().setDataFile(file2);
-                        new XMLStorage().save(mainController.getManager(), file2);
+                        mainController.save(file);
                     }
                 } catch (final Exception e) {
                     logger.error(e.getLocalizedMessage(), e);

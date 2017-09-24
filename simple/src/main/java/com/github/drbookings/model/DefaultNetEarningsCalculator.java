@@ -42,15 +42,22 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 		return result;
 	}
 
-	@Override
-	public Number apply(final BookingEntry booking) {
-		final double numberOfNights = booking.getElement().getNumberOfNights();
-		// if (booking.getElement().getGuest().getName().contains("Peter")) {
-		// System.err.println(apply(booking.getElement()) + " " + numberOfNights
-		// + " "
-		// + apply(booking.getElement()).doubleValue() / numberOfNights);
-		// }
-		return apply(booking.getElement()).doubleValue() / numberOfNights;
-	}
+    /**
+     * Returns the earnings for this booking entry. That is, the booking earnings per night. All earnings from all
+     * booking entries from the same booking are always the same.
+     *
+     * @param booking the {@link BookingEntry} to calculate net earnings for
+     * @return net earnings for given booking entry
+     */
+    @Override
+    public Number apply(final BookingEntry booking) {
+        final double numberOfNights = booking.getElement().getNumberOfNights();
+        // if (booking.getElement().getGuest().getName().contains("Peter")) {
+        // System.err.println(apply(booking.getElement()) + " " + numberOfNights
+        // + " "
+        // + apply(booking.getElement()).doubleValue() / numberOfNights);
+        // }
+        return apply(booking.getElement()).doubleValue() / numberOfNights;
+    }
 
 }
