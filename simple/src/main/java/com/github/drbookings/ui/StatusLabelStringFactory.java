@@ -113,10 +113,7 @@ public class StatusLabelStringFactory {
 		if(selectedRange == null){
 			return sb.toString();
 		}
-        sb.append(selectedRange.lowerEndpoint());
-        sb.append("\n");
-        sb.append(selectedRange.upperEndpoint());
-        sb.append("\t#unique nights: ");
+        sb.append("#unique nights: ");
         sb.append(LocalDates.getNumberOfNights(selectedRange.lowerEndpoint(), selectedRange.upperEndpoint()));
 		sb.append("\tEarnings:");
 		sb.append(DECIMAL_FORMAT.format(bookings.getAllBookings(false).stream().filter(b -> !b.isCheckOut())
@@ -131,8 +128,8 @@ public class StatusLabelStringFactory {
 		}
 		sb.append("\tOccupancyRate:");
 		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(new OccupancyRateProvider().getOccupancyRate() * 100));
-		sb.append("\tMinPriceAtRate:");
-		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(new MinimumPriceProvider().getMinimumPrice()));
+//		sb.append("\tMinPriceAtRate:");
+//		sb.append(StatusLabelStringFactory.DECIMAL_FORMAT.format(new MinimumPriceProvider().getMinimumPrice()));
 		return sb.toString();
 	}
 

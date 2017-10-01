@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.cell.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
-
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-	fx:controller="com.github.drbookings.ui.controller.StatsViewController">
+      fx:controller="com.github.drbookings.ui.controller.StatsViewController">
 	<stylesheets>
 		<URL value="@/css/root.css" />
 		<URL value="@/css/statistics.css" />
@@ -31,18 +24,30 @@
 						<PropertyValueFactory property="origin" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Number of Bookings" fx:id="cNumberOfBookings"
+				<TableColumn text="Number of All Bookings" fx:id="cNumberOfAllBookings"
 					prefWidth="90">
 					<cellValueFactory>
-						<PropertyValueFactory property="bookingCount" />
+						<PropertyValueFactory property="numberOfAllBookings" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="Number of Nights" fx:id="cNumberOfNights"
+                <TableColumn text="Number of Payed Bookings" fx:id="cNumberOfPayedBookings"
+                             prefWidth="90">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="numberOfPayedBookings" />
+                    </cellValueFactory>
+                </TableColumn>
+				<TableColumn text="Number of All Nights" fx:id="cNumberOfAllNights"
 					prefWidth="90">
 					<cellValueFactory>
-						<PropertyValueFactory property="numberOfNights" />
+                        <PropertyValueFactory property="numberOfAllNights"/>
 					</cellValueFactory>
 				</TableColumn>
+                <TableColumn text="Number of Payed Nights" fx:id="cNumberOfPayedNights"
+                             prefWidth="90">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="numberOfPayedNights"/>
+                    </cellValueFactory>
+                </TableColumn>
 				<TableColumn text="Nights %" fx:id="cNightsPercent"
 					prefWidth="90">
 					<cellValueFactory>

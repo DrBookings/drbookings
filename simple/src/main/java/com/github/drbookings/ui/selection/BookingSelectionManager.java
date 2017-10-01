@@ -69,19 +69,12 @@ public class BookingSelectionManager {
 		// internally update bookings (of type Booking)
 		bookings.bind(Bindings.createObjectBinding(collectBookings(), selectionProperty()));
 		// register selection listener to update selection
-		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(new ListChangeListener<RoomBean>() {
+		RoomBeanSelectionManager.getInstance().selectionProperty().addListener((ListChangeListener<RoomBean>) c -> {
+            while (c.next()) {
 
-			@Override
-			public void onChanged(final javafx.collections.ListChangeListener.Change<? extends RoomBean> c) {
-				while (c.next()) {
-					selectionProperty().removeAll(transform(c.getRemoved()));
-					selectionProperty().addAll(transform(c.getAddedSubList()));
-					if (logger.isDebugEnabled()) {
-						logger.debug("Selection updated: " + selectionProperty().size());
-					}
-				}
-			}
-		});
+            }
+            selectionProperty().setAll(transform(c.getList()));
+        });
 		// initially set selection
 		selectionProperty().setAll(transform(RoomBeanSelectionManager.getInstance().selectionProperty()));
 	}

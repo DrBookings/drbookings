@@ -100,10 +100,7 @@ public class BookingEntry extends DateRoomEntry<Booking>
 			}
 
 			final double result = getElement().getGrossEarnings() / getElement().getNumberOfNights();
-			// if (getElement().getGuest().getName().contains("Jennifer")
-			// || getElement().getGuest().getName().contains("Andres")) {
-			// System.err.println(result);
-			// }
+
 
 			return result;
 		};

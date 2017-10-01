@@ -184,22 +184,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <filtering>true</filtering><!-- if it is neccessary -->
-                <directory>src/main/logging/develop</directory><!-- from -->
-                <targetPath>${project.build.outputDirectory}</targetPath><!-- to -->
-                <includes><!-- what -->
-                    <include>logback.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
     <dependencies>
         <dependency>
@@ -297,6 +281,7 @@
         <profile>
             <id>production</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>prod</name>
                 </property>
@@ -323,6 +308,7 @@
         <profile>
             <id>development</id>
             <activation>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>dev</name>
                 </property>

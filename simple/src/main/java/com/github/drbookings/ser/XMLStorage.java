@@ -23,10 +23,10 @@ package com.github.drbookings.ser;
  */
 
 import com.github.drbookings.OverbookingException;
+import com.github.drbookings.io.Backup;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.CleaningEntry;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -62,24 +62,9 @@ public class XMLStorage {
 
 	private UnmarshallListener listener;
 
-	public void makeBackup(final File file) {
-		if (file.exists() && file.length() != 0) {
-			try {
-				final File backupFile = new File(file.getParentFile(), file.getName() + ".bak");
-				FileUtils.copyFile(file, backupFile);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Backup created as " + backupFile);
-				}
-			} catch (final IOException e) {
-				if (logger.isErrorEnabled()) {
-					logger.error(e.getLocalizedMessage(), e);
-				}
-			}
-		}
-	}
 
-	public void save(final MainManager manager, final File file) throws InterruptedException, ExecutionException {
-		doSave(manager, file);
+    public void save(final MainManager manager, final File file) throws InterruptedException, ExecutionException {
+        doSave(manager, file);
 
 	}
 
@@ -117,8 +102,8 @@ public class XMLStorage {
 	}
 
 	protected void doSave(final MainManager manager, final File file) {
-		makeBackup(file);
-		try {
+        Backup.make(file);
+        try {
 			save(buildDataStore(manager), file);
 		} catch (final Exception e1) {
 			logger.error(e1.getLocalizedMessage(), e1);

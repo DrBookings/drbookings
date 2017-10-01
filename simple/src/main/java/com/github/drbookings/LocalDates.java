@@ -22,21 +22,20 @@ package com.github.drbookings;
  * #L%
  */
 
+import com.google.common.collect.Range;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
 import java.util.TreeSet;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Range;
-
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 public class LocalDates {
 
@@ -45,12 +44,25 @@ public class LocalDates {
 	}
 
 	public static Range<LocalDate> getDateRange(final Collection<? extends LocalDate> dates) {
-		final TreeSet<LocalDate> set = new TreeSet<>(dates);
-		if (set.isEmpty()) {
-			return null;
-		}
-		return Range.closed(set.first(), set.last());
-	}
+        return getDateRange(dates, false);
+    }
+
+    public static Range<LocalDate> getDateRange(final Collection<? extends LocalDate> dates, final boolean
+            oneMoreAtTheBeginning) {
+        final TreeSet<LocalDate> set = new TreeSet<>(dates);
+        if (set.isEmpty()) {
+            return null;
+        }
+        final LocalDate d1;
+        final LocalDate d2;
+        d2 = set.last();
+        if (oneMoreAtTheBeginning) {
+            d1 = set.first().minusDays(1);
+        } else {
+            d1 = set.first();
+        }
+        return Range.closed(d1, d2);
+    }
 
 	public static TextFlow getDateText(final LocalDate date) {
 		final TextFlow tf = new TextFlow();
@@ -120,4 +132,11 @@ public class LocalDates {
 		return false;
 	}
 
+    public static boolean isNextMonth(YearMonth selectedMonth, LocalDate date) {
+	    return YearMonth.from(date).equals(selectedMonth.plusMonths(1));
+    }
+
+    public static boolean isPrevMonth(YearMonth selectedMonth, LocalDate date) {
+        return YearMonth.from(date).equals(selectedMonth.minusMonths(1));
+    }
 }

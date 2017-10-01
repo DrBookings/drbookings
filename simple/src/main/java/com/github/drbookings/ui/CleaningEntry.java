@@ -61,7 +61,7 @@ public class CleaningEntry extends DateEntry<Cleaning> {
     @Override
     public String toString() {
         return "CleaningEntry{" +
-                "cleaningCosts=" + cleaningCosts +
+                "cleaningCosts=" + getCleaningCosts() +
                 ", cleaningFees=" + booking.getCleaningFees() +
                 ", origin=" + booking.getBookingOrigin() +
                 ", guest=" + booking.getGuest() +

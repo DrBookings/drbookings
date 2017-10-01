@@ -57,9 +57,9 @@ public class BookingEntries {
         return getCleanings(bookings).size();
     }
 
-    public static List<Booking> getBookings(final Collection<? extends BookingEntry> bookings) {
-        return new ArrayList<>(
-                bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new)));
+    public static Set<Booking> getBookings(final Collection<? extends BookingEntry> bookings) {
+        return
+                bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static Collection<CleaningEntry> getCleanings(final Collection<? extends BookingEntry> bookings) {
@@ -214,4 +214,9 @@ public class BookingEntries {
         return countNights(bookings);
     }
 
+    public static int countBookings(Collection<? extends BookingEntry> bookings) {
+        Set<Booking> distinctBookings = getBookings(bookings);
+        int countSplitBookings = (int) distinctBookings.stream().filter(b -> b.isSplitBooking()).count();
+        return distinctBookings.size() - (countSplitBookings / 2);
+    }
 }

@@ -22,9 +22,10 @@ package com.github.drbookings.ui;
  * #L%
  */
 
-import java.time.LocalDate;
-
 import com.github.drbookings.model.data.Room;
+
+import java.time.LocalDate;
+import java.util.Objects;
 
 public class DateRoomEntry<E> extends DateEntry<E> {
 
@@ -39,4 +40,23 @@ public class DateRoomEntry<E> extends DateEntry<E> {
 	return room;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DateRoomEntry)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final DateRoomEntry<?> that = (DateRoomEntry<?>) o;
+        return Objects.equals(getRoom(), that.getRoom());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getRoom());
+    }
 }

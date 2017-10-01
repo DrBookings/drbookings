@@ -22,34 +22,31 @@ package com.github.drbookings.ui.beans;
  * #L%
  */
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
-import com.github.drbookings.model.data.Booking;
-import org.apache.commons.lang3.StringUtils;
-
 import com.github.drbookings.model.data.BookingEntries;
+import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Range;
-
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class StatisticsTableBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsTableBean.class);
+
 	private final StringProperty origin = new SimpleStringProperty();
 
-	private final IntegerProperty numberOfNights = new SimpleIntegerProperty();
+    private final IntegerProperty numberOfPayedNights = new SimpleIntegerProperty();
+
+    private final IntegerProperty numberOfAllNights = new SimpleIntegerProperty();
 
 	private final FloatProperty cleaningFees = new SimpleFloatProperty();
 
@@ -73,7 +70,9 @@ public class StatisticsTableBean {
 
 	private final IntegerProperty cleaningCount = new SimpleIntegerProperty();
 
-	private final IntegerProperty bookingCount = new SimpleIntegerProperty();
+	private final IntegerProperty numberOfPayedBookings = new SimpleIntegerProperty();
+
+    private final IntegerProperty numberOfAllBookings = new SimpleIntegerProperty();
 
 	private final ObjectProperty<Range<LocalDate>> dateRange = new SimpleObjectProperty<>();
 
@@ -128,218 +127,241 @@ public class StatisticsTableBean {
 	public static StatisticsTableBean build(final String origin, final Collection<? extends BookingEntry> bookings) {
 		final StatisticsTableBean result = new StatisticsTableBean();
 		result.setOrigin(origin);
-		result.setNumberOfNights((int) BookingEntries.countNights(origin, bookings));
-		result.setBookingCount(bookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).size());
-		result.setGrossIncome((float) BookingEntries.getGrossEarnings(bookings));
-		result.setNetIncome((float) BookingEntries.getNetEarnings(bookings));
-		result.setServiceFees((float) BookingEntries.getServiceFees(bookings));
-		return result;
+        result.setGrossIncome((float) BookingEntries.getGrossEarnings(bookings));
+        result.setNetIncome((float) BookingEntries.getNetEarnings(bookings));
+        result.setServiceFees((float) BookingEntries.getServiceFees(bookings));
+        return result;
 
 	}
 
-	public static StatisticsTableBean applyCleaningStuff(StatisticsTableBean bean, Collection<? extends BookingEntry> allBookingsInRange){
-		bean.setCleaningCount((int) BookingEntries.countCleanings(allBookingsInRange));
-		bean.setCleaningCosts((float) BookingEntries.getCleaningCosts(allBookingsInRange));
-		bean.setCleaningFees((float) BookingEntries.getCleaningFees(allBookingsInRange));
-		return bean;
-	}
+    public static StatisticsTableBean applyCleaningStuff(final StatisticsTableBean bean, final Collection<? extends
+            BookingEntry> allBookingsInRange) {
+        bean.setCleaningCount((int) BookingEntries.countCleanings(allBookingsInRange));
+        bean.setCleaningCosts((float) BookingEntries.getCleaningCosts(allBookingsInRange));
+        bean.setCleaningFees((float) BookingEntries.getCleaningFees(allBookingsInRange));
+        return bean;
+    }
 
 	public static StatisticsTableBean buildSum(final Collection<StatisticsTableBean> data) {
 		final StatisticsTableBean result = new StatisticsTableBean(false);
 		result.setOrigin("sum");
-		result.setNumberOfNights(data.stream().mapToInt(b -> b.getNumberOfNights()).sum());
-		result.setBookingCount(data.stream().mapToInt(b -> b.getBookingCount()).sum());
-		result.setCleaningCount(data.stream().mapToInt(b -> b.getCleaningCount()).sum());
-		result.setCleaningCosts((float) data.stream().mapToDouble(b -> b.getCleaningCosts()).sum());
-		result.setCleaningFees((float) data.stream().mapToDouble(b -> b.getCleaningFees()).sum());
-		result.setGrossIncome((float) data.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
-		result.setNetIncome((float) data.stream().mapToDouble(b -> b.getNetIncome()).sum());
-		result.setServiceFees((float) data.stream().mapToDouble(b -> b.getServiceFees()).sum());
-		result.setEarnings((float) data.stream().mapToDouble(b -> b.getEarnings()).sum());
-		result.setEarningsPayout((float) data.stream().mapToDouble(b -> b.getEarningsPayout()).sum());
-		result.setNetEarnings((float) data.stream().mapToDouble(b -> b.getNetEarnings()).sum());
-		return result;
+        result.setNumberOfPayedNights(data.stream().mapToInt(b -> b.getNumberOfPayedNights()).sum());
+        result.setNumberOfPayedBookings(data.stream().mapToInt(b -> b.getNumberOfPayedBookings()).sum());
+        result.setCleaningCount(data.stream().mapToInt(b -> b.getCleaningCount()).sum());
+        result.setCleaningCosts((float) data.stream().mapToDouble(b -> b.getCleaningCosts()).sum());
+        result.setCleaningFees((float) data.stream().mapToDouble(b -> b.getCleaningFees()).sum());
+        result.setGrossIncome((float) data.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
+        result.setNetIncome((float) data.stream().mapToDouble(b -> b.getNetIncome()).sum());
+        result.setServiceFees((float) data.stream().mapToDouble(b -> b.getServiceFees()).sum());
+        result.setEarnings((float) data.stream().mapToDouble(b -> b.getEarnings()).sum());
+        result.setEarningsPayout((float) data.stream().mapToDouble(b -> b.getEarningsPayout()).sum());
+        result.setNetEarnings((float) data.stream().mapToDouble(b -> b.getNetEarnings()).sum());
+        return result;
 
 	}
 
 	public final StringProperty originProperty() {
-		return this.origin;
-	}
+        return origin;
+    }
 
 	public final String getOrigin() {
-		return this.originProperty().get();
-	}
+        return originProperty().get();
+    }
 
 	public final void setOrigin(final String origin) {
-		this.originProperty().set(origin);
-	}
+        originProperty().set(origin);
+    }
 
-	public final IntegerProperty numberOfNightsProperty() {
-		return this.numberOfNights;
-	}
+    public final IntegerProperty numberOfPayedNightsProperty() {
+        return numberOfPayedNights;
+    }
 
-	public final int getNumberOfNights() {
-		return this.numberOfNightsProperty().get();
-	}
+    public final IntegerProperty numberOfAllNightsProperty() {
+        return numberOfAllNights;
+    }
 
-	public final void setNumberOfNights(final int numberOfNights) {
-		this.numberOfNightsProperty().set(numberOfNights);
-	}
+    public final int getNumberOfPayedNights() {
+        return numberOfPayedNightsProperty().get();
+    }
+
+    public final int getNumberOfAllNights() {
+        return numberOfAllNightsProperty().get();
+    }
+
+    public final void setNumberOfPayedNights(final int numberOfPayedNights) {
+        numberOfPayedNightsProperty().set(numberOfPayedNights);
+    }
+
+    public final void setNumberOfAllNights(final int numberOfAllNights) {
+        numberOfAllNightsProperty().set(numberOfAllNights);
+    }
 
 	public final FloatProperty cleaningFeesProperty() {
-		return this.cleaningFees;
-	}
+        return cleaningFees;
+    }
 
 	public final float getCleaningFees() {
-		return this.cleaningFeesProperty().get();
-	}
+        return cleaningFeesProperty().get();
+    }
 
 	public final void setCleaningFees(final float cleaningFees) {
-		this.cleaningFeesProperty().set(cleaningFees);
-	}
+        cleaningFeesProperty().set(cleaningFees);
+    }
 
 	public final FloatProperty cleaningCostsProperty() {
-		return this.cleaningCosts;
-	}
+        return cleaningCosts;
+    }
 
 	public final float getCleaningCosts() {
-		return this.cleaningCostsProperty().get();
-	}
+        return cleaningCostsProperty().get();
+    }
 
 	public final void setCleaningCosts(final float cleaningCosts) {
-		this.cleaningCostsProperty().set(cleaningCosts);
-	}
+        cleaningCostsProperty().set(cleaningCosts);
+    }
 
 	public final IntegerProperty cleaningCountProperty() {
-		return this.cleaningCount;
-	}
+        return cleaningCount;
+    }
 
 	public final int getCleaningCount() {
-		return this.cleaningCountProperty().get();
-	}
+        return cleaningCountProperty().get();
+    }
 
 	public final void setCleaningCount(final int cleaningCount) {
-		this.cleaningCountProperty().set(cleaningCount);
-	}
+        cleaningCountProperty().set(cleaningCount);
+    }
 
 	public final ObjectProperty<Range<LocalDate>> dateRangeProperty() {
-		return this.dateRange;
-	}
+        return dateRange;
+    }
 
 	public final Range<LocalDate> getDateRange() {
-		return this.dateRangeProperty().get();
-	}
+        return dateRangeProperty().get();
+    }
 
 	public final void setDateRange(final Range<LocalDate> dateRange) {
-		this.dateRangeProperty().set(dateRange);
-	}
+        dateRangeProperty().set(dateRange);
+    }
 
-	public final IntegerProperty bookingCountProperty() {
-		return this.bookingCount;
-	}
+	public final IntegerProperty numberOfPayedBookingsProperty() {
+        return numberOfPayedBookings;
+    }
 
-	public final int getBookingCount() {
-		return this.bookingCountProperty().get();
-	}
+    public final IntegerProperty numberOfAllBookingsProperty() {
+        return numberOfAllBookings;
+    }
 
-	public final void setBookingCount(final int bookingCount) {
-		this.bookingCountProperty().set(bookingCount);
-	}
+	public final int getNumberOfPayedBookings() {
+        return numberOfPayedBookingsProperty().get();
+    }
+
+    public final int getNumberOfAllBookings() {
+        return numberOfAllBookingsProperty().get();
+    }
+
+	public final void setNumberOfPayedBookings(final int numberOfPayedBookings) {
+        numberOfPayedBookingsProperty().set(numberOfPayedBookings);
+    }
+
+    public final void setNumberOfAllBookings(final int numberOfAllBookings) {
+        numberOfAllBookingsProperty().set(numberOfAllBookings);
+    }
 
 	public final FloatProperty nightsPercentProperty() {
-		return this.nightsPercent;
-	}
+        return nightsPercent;
+    }
 
 	public final float getNightsPercent() {
-		return this.nightsPercentProperty().get();
-	}
+        return nightsPercentProperty().get();
+    }
 
 	public final void setNightsPercent(final float nightsPercent) {
-		this.nightsPercentProperty().set(nightsPercent);
-	}
+        nightsPercentProperty().set(nightsPercent);
+    }
 
 	public final FloatProperty fixCostsProperty() {
-		return this.fixCosts;
-	}
+        return fixCosts;
+    }
 
 	public final float getFixCosts() {
-		return this.fixCostsProperty().get();
-	}
+        return fixCostsProperty().get();
+    }
 
 	public final void setFixCosts(final float fixCosts) {
-		this.fixCostsProperty().set(fixCosts);
-	}
+        fixCostsProperty().set(fixCosts);
+    }
 
 	public final FloatProperty earningsProperty() {
-		return this.earnings;
-	}
+        return earnings;
+    }
 
 	public final float getEarnings() {
-		return this.earningsProperty().get();
-	}
+        return earningsProperty().get();
+    }
 
 	public final void setEarnings(final float earnings) {
-		this.earningsProperty().set(earnings);
-	}
+        earningsProperty().set(earnings);
+    }
 
 	public final FloatProperty earningsPayoutProperty() {
-		return this.earningsPayout;
-	}
+        return earningsPayout;
+    }
 
 	public final float getEarningsPayout() {
-		return this.earningsPayoutProperty().get();
-	}
+        return earningsPayoutProperty().get();
+    }
 
 	public final void setEarningsPayout(final float earningsPayout) {
-		this.earningsPayoutProperty().set(earningsPayout);
-	}
+        earningsPayoutProperty().set(earningsPayout);
+    }
 
 	public final FloatProperty grossIncomeProperty() {
-		return this.grossIncome;
-	}
+        return grossIncome;
+    }
 
 	public final float getGrossEarnings() {
-		return this.grossIncomeProperty().get();
-	}
+        return grossIncomeProperty().get();
+    }
 
 	public final void setGrossIncome(final float grossIncome) {
-		this.grossIncomeProperty().set(grossIncome);
-	}
+        grossIncomeProperty().set(grossIncome);
+    }
 
 	public final FloatProperty netIncomeProperty() {
-		return this.netIncome;
-	}
+        return netIncome;
+    }
 
 	public final float getNetIncome() {
-		return this.netIncomeProperty().get();
-	}
+        return netIncomeProperty().get();
+    }
 
 	public final void setNetIncome(final float netEarnings) {
-		this.netIncomeProperty().set(netEarnings);
-	}
+        netIncomeProperty().set(netEarnings);
+    }
 
 	public final FloatProperty serviceFeesProperty() {
-		return this.serviceFees;
-	}
+        return serviceFees;
+    }
 
 	public final float getServiceFees() {
-		return this.serviceFeesProperty().get();
-	}
+        return serviceFeesProperty().get();
+    }
 
 	public final void setServiceFees(final float serviceFees) {
-		this.serviceFeesProperty().set(serviceFees);
-	}
+        serviceFeesProperty().set(serviceFees);
+    }
 
 	public final FloatProperty netEarningsProperty() {
-		return this.netEarnings;
-	}
+        return netEarnings;
+    }
 
 	public final float getNetEarnings() {
-		return this.netEarningsProperty().get();
-	}
+        return netEarningsProperty().get();
+    }
 
 	public final void setNetEarnings(final float netEarnings) {
-		this.netEarningsProperty().set(netEarnings);
-	}
+        netEarningsProperty().set(netEarnings);
+    }
 
 }

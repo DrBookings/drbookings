@@ -40,6 +40,7 @@ import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.*;
 import com.github.drbookings.ui.selection.DateBeanSelectionManager;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
+import com.google.common.collect.Range;
 import com.jcabi.manifests.Manifests;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -48,8 +49,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -76,247 +77,72 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MainController implements Initializable {
 
-    class SaveTask extends Task<Void> {
+    public static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final short DEFAULT_THREAD_WAIT_SECONDS = 30;
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
+    private final static Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final MainManager manager;
+    private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
+    private BookingDetailsDialogFactory bookingDetailsDialogFactory;
+    @FXML
+    private Button buttonAddBooking;
+    @FXML
+    private Button buttonGoHome;
+    @FXML
+    private Button buttonSelectCurrentMonth;
+    @FXML
+    private Button buttonSelectLastMonth;
+    @FXML
+    private Button buttonSelectLastThreeMonth;
+    @FXML
+    private Button buttonSelectPrevMonth;
+    @FXML
+    private Button buttonSelectNextMonth;
+    private EarningsChartFactory earningsChartFactory;
+    private NightlyRateChartFactory nightlyRateChartFactory;
+    @FXML
+    private Label filterBookingsLabel;
+    private GeneralSettingsDialogFactory generalSettingsDialogFactory;
+    @FXML
+    private TextField guestNameFilterInput;
+    @FXML
+    private MenuItem menuItemExit;
+    @FXML
+    private MenuItem menuItemOpen;
+    private ModifyBookingDialogFactory modifyBookingDialogFactory;
+    private StatisticsFactory monthlyMoneyFactory;
+    @FXML
+    private Node node;
+    private ProfitChartFactory profitChartFactory;
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private Label progressLabel;
+    private RoomDetailsDialogFactory roomDetailsDialogFactory;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private TableView<DateBean> tableView;
+    @FXML
+    private Label selectedDatesLabel;
 
-        private final File file;
-
-        SaveTask(final File file) {
-            this.file = file;
-        }
-
-        @Override
-        protected Void call() throws Exception {
-            new XMLStorage().save(getManager(), file);
-            return null;
-        }
-    }
-
-    class SaveService extends Service<Void> {
-
-        private final File file;
-
-        SaveService(final File file) {
-            this.file = file;
-            setOnFailed(e -> {
-                final Throwable t = getException();
-                if (logger.isErrorEnabled()) {
-                    logger.error(t.getLocalizedMessage(), t);
-                }
-            });
-            setOnSucceeded(e -> {
-                if (logger.isInfoEnabled()) {
-                    logger.info("Saved");
-                }
-            });
-        }
-
-        @Override
-        protected Task<Void> createTask() {
-            return new SaveTask(file);
-        }
+    public MainController() {
+        manager = new MainManager();
     }
 
     public void save(final File file) {
         new SaveService(file).start();
-    }
-
-
-    private class ClearGoogleCalendarService extends DrBookingService<Void> {
-
-        public ClearGoogleCalendarService() {
-
-        }
-
-        @Override
-        protected Task<Void> createTask() {
-
-            return new Task<Void>() {
-
-                @Override
-                protected Void call() throws Exception {
-                    new GoogleCalendarSync(getManager()).init().clearAll();
-                    return null;
-                }
-            };
-        }
-    }
-
-    private abstract class DrBookingService<T> extends Service<T> {
-        public DrBookingService() {
-            setOnScheduled(e -> {
-                setWorking(true);
-                progressLabel.setText(null);
-            });
-            setOnRunning(e -> {
-                progressLabel.setText("Working..");
-            });
-            setOnFailed(e -> {
-                setWorking(false, false);
-                final Throwable t = getException();
-                if (logger.isErrorEnabled()) {
-                    logger.error(t.getLocalizedMessage(), t);
-                }
-                progressLabel.setText("Error: " + t);
-            });
-            setOnSucceeded(e -> {
-                setWorking(false);
-                progressLabel.setText(null);
-            });
-        }
-    }
-
-    private class OpenFileService extends DrBookingService<DataStore> {
-
-        private final File file;
-
-        private final UnmarshallListener l;
-
-        public OpenFileService(final File file) {
-            super();
-            this.file = file;
-            l = new UnmarshallListener();
-
-            setOnScheduled(e -> {
-                setWorking(true);
-                progressLabel.textProperty()
-                        .bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
-            });
-
-            setOnSucceeded(e -> {
-                progressLabel.textProperty().unbind();
-                progressLabel.setText("Rendering..");
-                try {
-                    getValue().load(getManager());
-                    scrollToToday();
-                } catch (final Exception e1) {
-                    logger.error(e1.getLocalizedMessage(), e1);
-                    progressLabel.setText("Error: " + e1);
-                }
-                progressLabel.setText(null);
-                setWorking(false);
-            });
-            setOnFailed(event -> {
-                final Throwable e = getException();
-                if (logger.isDebugEnabled()) {
-                    logger.debug(e.toString());
-                }
-                progressLabel.setText(null);
-                setWorking(false);
-            });
-
-        }
-
-        @Override
-        protected Task<DataStore> createTask() {
-            return new Task<DataStore>() {
-
-                @Override
-                protected DataStore call() throws Exception {
-                    SettingsManager.getInstance().setDataFile(file);
-                    final DataStore ds = new XMLStorage().setListener(l).load(file);
-                    return ds;
-                }
-
-            };
-        }
-    }
-
-    private class WriteToGoogleCalendarService extends DrBookingService<Void> {
-
-        public WriteToGoogleCalendarService() {
-
-        }
-
-        @Override
-        protected Task<Void> createTask() {
-
-            return new Task<Void>() {
-
-                @Override
-                protected Void call() throws Exception {
-
-                    new GoogleCalendarSync(getManager()).init().clear().write();
-                    return null;
-                }
-            };
-        }
-    }
-
-    private static final DecimalFormat decimalFormat = new DecimalFormat("#,###,###,##0.00");
-
-    private final static Logger logger = LoggerFactory.getLogger(MainController.class);
-
-    private BookingDetailsDialogFactory bookingDetailsDialogFactory;
-
-    @FXML
-    private Button buttonAddBooking;
-
-    @FXML
-    private Button buttonGoHome;
-
-    @FXML
-    private Button buttonSelectCurrentMonth;
-
-    @FXML
-    private Button buttonSelectLastMonth;
-
-    @FXML
-    private Button buttonSelectLastThreeMonth;
-
-    private EarningsChartFactory earningsChartFactory;
-
-    private NightlyRateChartFactory nightlyRateChartFactory;
-
-    @FXML
-    private Label filterBookingsLabel;
-
-    private GeneralSettingsDialogFactory generalSettingsDialogFactory;
-
-    @FXML
-    private TextField guestNameFilterInput;
-
-    private final MainManager manager;
-
-    @FXML
-    private MenuItem menuItemExit;
-
-    @FXML
-    private MenuItem menuItemOpen;
-
-    private ModifyBookingDialogFactory modifyBookingDialogFactory;
-
-    private StatisticsFactory monthlyMoneyFactory;
-
-    @FXML
-    private Node node;
-
-    private ProfitChartFactory profitChartFactory;
-
-    @FXML
-    private ProgressBar progressBar;
-
-    @FXML
-    private Label progressLabel;
-
-    private RoomDetailsDialogFactory roomDetailsDialogFactory;
-
-    private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private TableView<DateBean> tableView;
-
-    public MainController() {
-        manager = new MainManager();
     }
 
     private void addBooking() {
@@ -471,6 +297,16 @@ public class MainController implements Initializable {
 
     }
 
+    private int[] getNextMonthIndicies(YearMonth selectedMonth) {
+        return getIndicies(date -> LocalDates.isNextMonth(selectedMonth, date));
+
+    }
+
+    private int[] getPrevMonthIndicies(YearMonth selectedMonth) {
+        return getIndicies(date -> LocalDates.isPrevMonth(selectedMonth, date));
+
+    }
+
     public MainManager getManager() {
         return manager;
     }
@@ -512,7 +348,6 @@ public class MainController implements Initializable {
         };
     }
 
-
     @FXML
     private void handleButtonAddBooking(final ActionEvent event) {
         Platform.runLater(() -> showAddBookingDialog());
@@ -526,6 +361,21 @@ public class MainController implements Initializable {
     @FXML
     private void handleButtonSelectCurrentMonth(final ActionEvent event) {
         Platform.runLater(() -> selectCurrentMonthFX());
+    }
+
+    @FXML
+    private void handleButtonSelectPrevMonth(final ActionEvent event) {
+        Platform.runLater(() -> selectPrevMonthFX());
+    }
+
+    @FXML
+    private void handleButtonSelectNextMonth(final ActionEvent event) {
+        Platform.runLater(() -> selectNextMonthFX());
+    }
+
+    @FXML
+    private void handleButtonClearFilter(final ActionEvent event) {
+        Platform.runLater(() -> guestNameFilterInput.clear());
     }
 
     @FXML
@@ -796,9 +646,9 @@ public class MainController implements Initializable {
     }
 
     void scrollToToday() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Trying to scroll to today");
-        }
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("Trying to scroll to today");
+//        }
         final int index = getManager().getUIData().indexOf(new DateBean(LocalDate.now(), getManager()));
         if (index >= 0) {
             if (logger.isDebugEnabled()) {
@@ -819,6 +669,41 @@ public class MainController implements Initializable {
         tableView.sort();
         final int[] currentMonthIndices = getCurrentMonthIndicies();
         tableView.getSelectionModel().selectIndices(currentMonthIndices[0], currentMonthIndices);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Selected dates: " + tableView.getSelectionModel().getSelectedItems().size());
+        }
+        setWorking(false);
+    }
+
+    private LocalDate getSelectedDate() {
+        ObservableList<DateBean> selectedDate = tableView.getSelectionModel().getSelectedItems();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Selected date: " + selectedDate);
+        }
+        LocalDate selectedDate2;
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate2 = LocalDate.now();
+        } else {
+            selectedDate2 = selectedDate.get(0).getDate();
+        }
+        return selectedDate2;
+    }
+
+    private void selectPrevMonthFX() {
+
+        setWorking(true);
+        final int[] monthIndices = getPrevMonthIndicies(YearMonth.from(getSelectedDate()));
+        tableView.sort();
+        tableView.getSelectionModel().selectIndices(monthIndices[0], monthIndices);
+        setWorking(false);
+    }
+
+    private void selectNextMonthFX() {
+
+        setWorking(true);
+        final int[] monthIndices = getNextMonthIndicies(YearMonth.from(getSelectedDate()));
+        tableView.sort();
+        tableView.getSelectionModel().selectIndices(monthIndices[0], monthIndices);
         setWorking(false);
     }
 
@@ -862,6 +747,8 @@ public class MainController implements Initializable {
         Platform.runLater(() -> setWorkingFX(working, success));
     }
 
+    @FXML private Button clearFilterButton;
+
     private void setWorkingFX(final boolean working, final boolean success) {
         // if (!working) {
         // return;
@@ -879,6 +766,12 @@ public class MainController implements Initializable {
         buttonSelectCurrentMonth.setDisable(working);
         buttonSelectLastMonth.setDisable(working);
         buttonSelectLastThreeMonth.setDisable(working);
+        buttonSelectPrevMonth.setDisable(working);
+        buttonSelectNextMonth.setDisable(working);
+        clearFilterButton.setDisable(working);
+
+
+
         filterBookingsLabel.setDisable(working);
         guestNameFilterInput.setDisable(working);
         tableView.setDisable(working);
@@ -1060,8 +953,16 @@ public class MainController implements Initializable {
     }
 
     public void shutDown() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Shutting down");
+        if (logger.isInfoEnabled()) {
+            logger.info("Shutting down");
+        }
+        EXECUTOR.shutdown();
+        try {
+            EXECUTOR.awaitTermination(DEFAULT_THREAD_WAIT_SECONDS, TimeUnit.SECONDS);
+        } catch (final InterruptedException e) {
+            if (logger.isErrorEnabled()) {
+                logger.error(e.getLocalizedMessage(), e);
+            }
         }
     }
 
@@ -1075,6 +976,17 @@ public class MainController implements Initializable {
         final ObservableList<RoomBean> selectedRooms = RoomBeanSelectionManager.getInstance().selectionProperty();
         final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
                 .filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
+        Range<LocalDate> selectedRange = DateBeanSelectionManager.getInstance().getSelectedDateRange();
+        if(selectedRange == null){
+
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(selectedRange.lowerEndpoint());
+            sb.append(" ➜ ");
+            sb.append(selectedRange.upperEndpoint());
+            selectedDatesLabel.setText(sb.toString());
+        }
+
         final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(selectedBookings);
         final StringBuilder sb = new StringBuilder(new StatusLabelStringFactory(bo).build());
 
@@ -1084,6 +996,150 @@ public class MainController implements Initializable {
         // + "Performance/hour:" +
         // StatusLabelStringFactory.DECIMAL_FORMAT.format(pc.getProfitPerHour()));
         statusLabel.textProperty().set(sb.toString());
+    }
+
+    class SaveTask extends Task<Void> {
+
+        private final File file;
+
+        SaveTask(final File file) {
+            this.file = file;
+        }
+
+        @Override
+        protected Void call() throws Exception {
+            new XMLStorage().save(getManager(), file);
+            return null;
+        }
+    }
+
+    class SaveService extends DrBookingService<Void> {
+
+        private final File file;
+
+        SaveService(final File file) {
+            this.file = file;
+            setOnSucceeded(e -> {
+                if (logger.isInfoEnabled()) {
+                    logger.info("Saved");
+                }
+            });
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+            return new SaveTask(file);
+        }
+    }
+
+    private class ClearGoogleCalendarService extends DrBookingService<Void> {
+
+        public ClearGoogleCalendarService() {
+
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+
+            return new Task<Void>() {
+
+                @Override
+                protected Void call() throws Exception {
+                    new GoogleCalendarSync(getManager()).init().clearAll();
+                    return null;
+                }
+            };
+        }
+    }
+
+    private abstract class DrBookingService<T> extends AbstractDrBookingsService<T> {
+        public DrBookingService() {
+            super(progressLabel);
+
+            addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
+                setWorking(false, false);
+            });
+
+            addEventHandler(WorkerStateEvent.WORKER_STATE_SCHEDULED, event -> {
+                setWorking(true);
+            });
+
+            addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
+                setWorking(false);
+
+            });
+        }
+    }
+
+    private class OpenFileService extends DrBookingService<DataStore> {
+
+        private final File file;
+
+        private final UnmarshallListener l;
+
+        public OpenFileService(final File file) {
+            super();
+            this.file = file;
+            l = new UnmarshallListener();
+
+            setOnScheduled(e -> {
+                setWorking(true);
+                progressLabel.textProperty()
+                        .bind(Bindings.createObjectBinding(buildProgressString(l), l.bookingCountProperty()));
+            });
+
+            setOnSucceeded(e -> {
+                progressLabel.setText("Rendering..");
+                try {
+                    getValue().load(getManager());
+                    scrollToToday();
+                } catch (final Exception e1) {
+                    logger.error(e1.getLocalizedMessage(), e1);
+                    progressLabel.setText("Error: " + e1);
+                }
+                progressLabel.setText(null);
+                setWorking(false);
+            });
+            setOnFailed(event -> {
+                setWorking(false);
+            });
+
+        }
+
+        @Override
+        protected Task<DataStore> createTask() {
+            return new Task<DataStore>() {
+
+                @Override
+                protected DataStore call() throws Exception {
+                    SettingsManager.getInstance().setDataFile(file);
+                    final DataStore ds = new XMLStorage().setListener(l).load(file);
+                    return ds;
+                }
+
+            };
+        }
+    }
+
+    private class WriteToGoogleCalendarService extends DrBookingService<Void> {
+
+        public WriteToGoogleCalendarService() {
+
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+
+            return new Task<Void>() {
+
+                @Override
+                protected Void call() throws Exception {
+
+                    new GoogleCalendarSync(getManager()).init().clear().write();
+                    return null;
+                }
+            };
+        }
     }
 
 }

@@ -42,7 +42,7 @@
     -fx-background-insets: 0px ;
 }
 
-#status-label {
+.status-label {
 	  -fx-font-weight: bold;
 	  -fx-alignment: center;
 }
