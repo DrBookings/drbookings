@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.drbookings</groupId>
     <artifactId>drbookings</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.4-SNAPSHOT</version>
     <name>DrBookings</name>
     <inceptionYear>2016</inceptionYear>
     <organization>
@@ -183,22 +183,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <filtering>true</filtering><!-- if it is neccessary -->
-                <directory>src/main/logging/develop</directory><!-- from -->
-                <targetPath>${project.build.outputDirectory}</targetPath><!-- to -->
-                <includes><!-- what -->
-                    <include>logback.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
+       
     </build>
     <dependencies>
         <dependency>
@@ -323,7 +308,7 @@
         <profile>
             <id>development</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>dev</name>
                 </property>
