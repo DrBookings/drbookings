@@ -1,26 +1,39 @@
-package com.github.drbookings.ui.beans;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.ui.beans;
+
+import com.github.drbookings.TemporalQueries;
+import com.github.drbookings.model.data.MatchException;
+import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.ui.BookingFilter;
+import com.github.drbookings.ui.CleaningEntry;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -31,326 +44,288 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.data.MatchException;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.BookingEntry;
-import com.github.drbookings.ui.BookingFilter;
-import com.github.drbookings.ui.CleaningEntry;
-
-import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.util.Callback;
-
 public class RoomBean extends WarnableBean {
 
-	private static final Logger logger = LoggerFactory.getLogger(RoomBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(RoomBean.class);
+    private final ObjectProperty<CleaningEntry> cleaningEntries = new SimpleObjectProperty<>();
+    private final ListProperty<BookingEntry> bookingEntries = new SimpleListProperty<>(
+            FXCollections.observableArrayList(BookingEntry.extractor()));
+    private final ListProperty<BookingEntry> filteredBookingEntries = new SimpleListProperty<>(
+            FXCollections.observableArrayList(BookingEntry.extractor()));
+    private final String name;
+    private final MainManager manager;
+    private final DateBean dateBean;
+    private final StringProperty bookingFilterString = new SimpleStringProperty();
+    private final BooleanProperty needsCleaning = new SimpleBooleanProperty();
 
-	public static Callback<RoomBean, Observable[]> extractor() {
-		return param -> new Observable[] { param.bookingFilterStringProperty(), param.bookingEntriesProperty(),
-				param.filteredBookingEntriesProperty(), param.cleaningEntryProperty() };
-	}
+    public RoomBean(final String name, final DateBean date, final MainManager manager) {
+        this.name = name;
+        this.manager = manager;
+        this.dateBean = date;
+        bindProperties();
+    }
 
-	private final ObjectProperty<CleaningEntry> cleaningEntries = new SimpleObjectProperty<>();
+    public static Callback<RoomBean, Observable[]> extractor() {
+        return param -> new Observable[]{param.bookingFilterStringProperty(), param.bookingEntriesProperty(),
+                param.filteredBookingEntriesProperty(), param.cleaningEntryProperty()};
+    }
 
-	private final ListProperty<BookingEntry> bookingEntries = new SimpleListProperty<>(
-			FXCollections.observableArrayList(BookingEntry.extractor()));
+    public void addBookingEntry(final BookingEntry e) {
+        Objects.requireNonNull(e);
+        bookingEntriesProperty().add(e);
+        // if (logger.isDebugEnabled()) {
+        // logger.debug(this + " booking entries now " + getBookingEntries());
+        // }
+        // if (logger.isDebugEnabled()) {
+        // logger.debug("filtered booking entries now " +
+        // getFilteredBookingEntries());
+        // }
+    }
 
-	private final ListProperty<BookingEntry> filteredBookingEntries = new SimpleListProperty<>(
-			FXCollections.observableArrayList(BookingEntry.extractor()));
+    @Override
+    protected void bindProperties() {
+        filteredBookingEntriesProperty().bind(Bindings.createObjectBinding(filterBookings(),
+                bookingFilterStringProperty(), bookingEntriesProperty()));
+        needsCleaningProperty().bind(Bindings.createObjectBinding(calulateNeedsCleaning(), manager.getUIData()));
+        super.bindProperties();
 
-	private final String name;
+    }
 
-	private final MainManager manager;
+    public ListProperty<BookingEntry> bookingEntriesProperty() {
+        return this.bookingEntries;
+    }
 
-	private final DateBean dateBean;
+    public StringProperty bookingFilterStringProperty() {
+        return this.bookingFilterString;
+    }
 
-	private final StringProperty bookingFilterString = new SimpleStringProperty();
+    @Override
+    protected Callable<Boolean> calculateWarningProperty() {
 
-	private final BooleanProperty needsCleaning = new SimpleBooleanProperty();
+        return () -> {
 
-	public RoomBean(final String name, final DateBean date, final MainManager manager) {
-		this.name = name;
-		this.manager = manager;
-		this.dateBean = date;
-		bindProperties();
-	}
+            final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
 
-	public void addBookingEntry(final BookingEntry e) {
-		Objects.requireNonNull(e);
-		bookingEntriesProperty().add(e);
-		// if (logger.isDebugEnabled()) {
-		// logger.debug(this + " booking entries now " + getBookingEntries());
-		// }
-		// if (logger.isDebugEnabled()) {
-		// logger.debug("filtered booking entries now " +
-		// getFilteredBookingEntries());
-		// }
-	}
+            // if (getDate().isAfter(LocalDate.now()) && needsCleaning()) {
+            // return true;
+            // }
 
-	@Override
-	protected void bindProperties() {
-		filteredBookingEntriesProperty().bind(Bindings.createObjectBinding(filterBookings(),
-				bookingFilterStringProperty(), bookingEntriesProperty()));
-		needsCleaningProperty().bind(Bindings.createObjectBinding(calulateNeedsCleaning(), manager.getUIData()));
-		super.bindProperties();
+            final boolean payment = filteredBookingEntriesProperty().stream()
+                    .filter(b -> b.getElement().isPaymentDone()).count() == filteredBookingEntriesProperty().size();
 
-	}
+            if (!payment && lastMonth) {
+                return true;
+            }
+            final boolean welcomeMail = filteredBookingEntriesProperty().stream()
+                    .filter(b -> b.getElement().isWelcomeMailSend()).count() == filteredBookingEntriesProperty().size();
+            return !lastMonth && !welcomeMail;
 
-	public ListProperty<BookingEntry> bookingEntriesProperty() {
-		return this.bookingEntries;
-	}
+        };
+    }
 
-	public StringProperty bookingFilterStringProperty() {
-		return this.bookingFilterString;
-	}
+    public Callable<Boolean> calulateNeedsCleaning() {
+        return () -> {
 
-	@Override
-	protected Callable<Boolean> calculateWarningProperty() {
+            if (getDate().isBefore(LocalDate.now())) {
+                // time out
+                return false;
+            }
+            // if (getGuestNames().size() > 1) {
+            // System.err.println(getGuestNames());
+            // }
+            if (getFilteredBookingEntries().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
+                return getGuestNames().size() >= 2;
+            }
+            return hasCheckOut() && getFilteredBookingEntries().stream().filter(be -> !be.isCheckIn())
+                    .anyMatch(b -> b.getElement().getCleaning() == null);
+        };
+    }
 
-		return () -> {
+    public ObjectProperty<CleaningEntry> cleaningEntryProperty() {
+        return this.cleaningEntries;
+    }
 
-			final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
+    private Callable<ObservableList<BookingEntry>> filterBookings() {
 
-			// if (getDate().isAfter(LocalDate.now()) && needsCleaning()) {
-			// return true;
-			// }
+        return () -> {
+            // if (logger.isDebugEnabled()) {
+            // logger.debug(this + " Filtering on " + getBookingEntries());
+            // }
+            final ObservableList<BookingEntry> result = FXCollections.observableArrayList();
+            result.addAll(bookingEntriesProperty().stream().filter(new BookingFilter(getBookingFilterString()))
+                    .collect(Collectors.toList()));
+            // if (logger.isDebugEnabled()) {
+            // logger.debug("filtered booking entries now " + result);
+            // }
+            return result;
+        };
+    }
 
-			final boolean payment = filteredBookingEntriesProperty().stream()
-					.filter(b -> b.getElement().isPaymentDone()).count() == filteredBookingEntriesProperty().size();
+    public ListProperty<BookingEntry> filteredBookingEntriesProperty() {
+        return this.filteredBookingEntries;
+    }
 
-			if (!payment && lastMonth) {
-				return true;
-			}
-			final boolean welcomeMail = filteredBookingEntriesProperty().stream()
-					.filter(b -> b.getElement().isWelcomeMailSend()).count() == filteredBookingEntriesProperty().size();
-			if (!lastMonth && !welcomeMail) {
-				return true;
-			}
+    public List<BookingEntry> getBookingEntries() {
+        return this.bookingEntriesProperty().get();
+    }
 
-			return false;
-		};
-	}
+    public void setBookingEntries(final Collection<? extends BookingEntry> bookingEntries) {
+        this.bookingEntriesProperty().setAll(bookingEntries);
+    }
 
-	public Callable<Boolean> calulateNeedsCleaning() {
-		return () -> {
+    public BookingEntry getBookingEntryCheckIn() {
+        return getSingleBooking(e -> e.isCheckIn());
+    }
 
-			if (getDate().isBefore(LocalDate.now())) {
-				// time out
-				return false;
-			}
-			// if (getGuestNames().size() > 1) {
-			// System.err.println(getGuestNames());
-			// }
-			if (getFilteredBookingEntries().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
-				// if (getGuestNames().toString().contains("Agusti")) {
-				// final int wait = 0;
-				// }
-				return true;
-			}
-			return hasCheckOut() && getFilteredBookingEntries().stream().filter(be -> !be.isCheckIn())
-					.anyMatch(b -> b.getElement().getCleaning() == null);
-		};
-	}
+    public BookingEntry getBookingEntryCheckOut() {
+        return getSingleBooking(e -> e.isCheckOut());
+    }
 
-	public ObjectProperty<CleaningEntry> cleaningEntryProperty() {
-		return this.cleaningEntries;
-	}
+    public String getBookingFilterString() {
+        return this.bookingFilterStringProperty().get();
+    }
 
-	private Callable<ObservableList<BookingEntry>> filterBookings() {
+    public void setBookingFilterString(final String bookingFilterString) {
+        this.bookingFilterStringProperty().set(bookingFilterString);
+    }
 
-		return () -> {
-			// if (logger.isDebugEnabled()) {
-			// logger.debug(this + " Filtering on " + getBookingEntries());
-			// }
-			final ObservableList<BookingEntry> result = FXCollections.observableArrayList();
-			result.addAll(bookingEntriesProperty().stream().filter(new BookingFilter(getBookingFilterString()))
-					.collect(Collectors.toList()));
-			// if (logger.isDebugEnabled()) {
-			// logger.debug("filtered booking entries now " + result);
-			// }
-			return result;
-		};
-	}
+    public CleaningEntry getCleaningEntry() {
+        CleaningEntry result = this.cleaningEntryProperty().get();
+        return result;
+    }
 
-	public ListProperty<BookingEntry> filteredBookingEntriesProperty() {
-		return this.filteredBookingEntries;
-	}
+    public void setCleaningEntry(final CleaningEntry cleaningEntry) {
+        this.cleaningEntryProperty().set(cleaningEntry);
+    }
 
-	public List<BookingEntry> getBookingEntries() {
-		return this.bookingEntriesProperty().get();
-	}
+    public LocalDate getDate() {
+        return dateBean.getDate();
+    }
 
-	public BookingEntry getBookingEntryCheckIn() {
-		return getSingleBooking(e -> e.isCheckIn());
-	}
+    public DateBean getDateBean() {
+        return dateBean;
+    }
 
-	public BookingEntry getBookingEntryCheckOut() {
-		return getSingleBooking(e -> e.isCheckOut());
-	}
+    public List<BookingEntry> getFilteredBookingEntries() {
+        return this.filteredBookingEntriesProperty().get();
+    }
 
-	public String getBookingFilterString() {
-		return this.bookingFilterStringProperty().get();
-	}
+    public void setFilteredBookingEntries(final Collection<? extends BookingEntry> filteredBookingEntries) {
+        this.filteredBookingEntriesProperty().setAll(filteredBookingEntries);
+    }
 
-	public CleaningEntry getCleaningEntry() {
-		CleaningEntry result = this.cleaningEntryProperty().get();
-		return result;
-	}
+    public Set<String> getGuestNames() {
+        return BookingEntry.guestNameView(getFilteredBookingEntries());
+    }
 
-	public LocalDate getDate() {
-		return dateBean.getDate();
-	}
+    public String getName() {
+        return name;
+    }
 
-	public DateBean getDateBean() {
-		return dateBean;
-	}
+    protected BookingEntry getSingleBooking(final Predicate<BookingEntry> filter) {
+        final List<BookingEntry> bookings = getBookingEntries().stream().filter(filter).collect(Collectors.toList());
+        if (bookings.isEmpty()) {
+            return null;
+        } else if (bookings.size() > 1) {
+            if (logger.isWarnEnabled()) {
+                logger.warn("Too many bookings" + bookings);
+            }
+        }
+        return bookings.get(0);
+    }
 
-	public List<BookingEntry> getFilteredBookingEntries() {
-		return this.filteredBookingEntriesProperty().get();
-	}
+    @Override
+    protected Observable[] getWarnableObservables() {
+        return new Observable[]{filteredBookingEntriesProperty(), needsCleaningProperty()};
+    }
 
-	public Set<String> getGuestNames() {
-		return BookingEntry.guestNameView(getFilteredBookingEntries());
-	}
+    public boolean hasCheckIn() {
+        final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+        if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckIn()) {
+            return true;
+        }
+        boolean check = false;
+        boolean split = false;
+        for (final BookingEntry be : filteredBookingEntries) {
+            if (be.isCheckIn()) {
+                check = true;
+            }
+            if (be.getElement().isSplitBooking()) {
+                split = true;
+            }
+        }
+        // do not count, if prev. check-out is split booking
+        // any booking is check-in and any booking is split booking
+        return check && !split;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public boolean hasCheckOut() {
+        final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+        if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckOut()) {
+            return true;
+        }
+        boolean check = false;
+        boolean split = false;
+        for (final BookingEntry be : filteredBookingEntries) {
+            if (be.isCheckOut()) {
+                check = true;
+            }
+            if (be.getElement().isSplitBooking()) {
+                split = true;
+            }
+        }
+        // do not count, if next check-in is split booking
+        // any booking is check-out and any booking is split booking
+        return check && !split;
+    }
 
-	protected BookingEntry getSingleBooking(final Predicate<BookingEntry> filter) {
-		final List<BookingEntry> bookings = getBookingEntries().stream().filter(filter).collect(Collectors.toList());
-		if (bookings.isEmpty()) {
-			return null;
-		} else if (bookings.size() > 1) {
-			if (logger.isWarnEnabled()) {
-				logger.warn("Too many bookings" + bookings);
-			}
-		}
-		return bookings.get(0);
-	}
+    public boolean hasCleaning() {
+        return getCleaningEntry() != null;
+    }
 
-	@Override
-	protected Observable[] getWarnableObservables() {
-		return new Observable[] { filteredBookingEntriesProperty(), needsCleaningProperty() };
-	}
+    public boolean isEmpty() {
+        return getFilteredBookingEntries().isEmpty();
+    }
 
-	public boolean hasCheckIn() {
-		final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
-		if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckIn()) {
-			return true;
-		}
-		boolean check = false;
-		boolean split = false;
-		for (final BookingEntry be : filteredBookingEntries) {
-			if (be.isCheckIn()) {
-				check = true;
-			}
-			if (be.getElement().isSplitBooking()) {
-				split = true;
-			}
-		}
-		// do not count, if prev. check-out is split booking
-		// any booking is check-in and any booking is split booking
-		return check && !split;
-	}
+    public boolean needsCleaning() {
+        return this.needsCleaningProperty().get();
+    }
 
-	public boolean hasCheckOut() {
-		final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
-		if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckOut()) {
-			return true;
-		}
-		boolean check = false;
-		boolean split = false;
-		for (final BookingEntry be : filteredBookingEntries) {
-			if (be.isCheckOut()) {
-				check = true;
-			}
-			if (be.getElement().isSplitBooking()) {
-				split = true;
-			}
-		}
-		// do not count, if next check-in is split booking
-		// any booking is check-out and any booking is split booking
-		return check && !split;
-	}
+    public BooleanProperty needsCleaningProperty() {
+        return this.needsCleaning;
+    }
 
-	public boolean hasCleaning() {
-		return getCleaningEntry() != null;
-	}
+    public void removeCleaningEntry() {
+        if (getCleaningEntry() != null) {
+            manager.removeCleaning(getCleaningEntry());
+            // setCleaningEntry(null);
+        }
 
-	public boolean isEmpty() {
-		return getFilteredBookingEntries().isEmpty();
-	}
+    }
 
-	public boolean needsCleaning() {
-		return this.needsCleaningProperty().get();
-	}
+    public void setCleaning(final String cleaningName) {
+        if (getCleaningEntry() != null) {
+            manager.removeCleaning(getCleaningEntry());
+            setCleaningEntry(null);
+        }
+        try {
+            manager.addCleaning(getDate(), cleaningName, getName());
+        } catch (final MatchException e) {
+            if (logger.isErrorEnabled()) {
+                logger.error("Failed to add cleaning " + cleaningName + ", " + e.getLocalizedMessage(), e);
+            }
+        }
 
-	public BooleanProperty needsCleaningProperty() {
-		return this.needsCleaning;
-	}
+    }
 
-	public void removeCleaningEntry() {
-		if (getCleaningEntry() != null) {
-			manager.removeCleaning(getCleaningEntry());
-			// setCleaningEntry(null);
-		}
+    public void setNeedsCleaning(final boolean needsCleaning) {
+        this.needsCleaningProperty().set(needsCleaning);
+    }
 
-	}
-
-	public void setBookingEntries(final Collection<? extends BookingEntry> bookingEntries) {
-		this.bookingEntriesProperty().setAll(bookingEntries);
-	}
-
-	public void setBookingFilterString(final String bookingFilterString) {
-		this.bookingFilterStringProperty().set(bookingFilterString);
-	}
-
-	public void setCleaning(final String cleaningName) {
-		if (getCleaningEntry() != null) {
-			manager.removeCleaning(getCleaningEntry());
-			setCleaningEntry(null);
-		}
-		try {
-			manager.addCleaning(getDate(), cleaningName, getName());
-		} catch (final MatchException e) {
-			if (logger.isErrorEnabled()) {
-				logger.error("Failed to add cleaning " + cleaningName + ", " + e.getLocalizedMessage(), e);
-			}
-		}
-
-	}
-
-	public void setCleaningEntry(final CleaningEntry cleaningEntry) {
-		this.cleaningEntryProperty().set(cleaningEntry);
-	}
-
-	public void setFilteredBookingEntries(final Collection<? extends BookingEntry> filteredBookingEntries) {
-		this.filteredBookingEntriesProperty().setAll(filteredBookingEntries);
-	}
-
-	public void setNeedsCleaning(final boolean needsCleaning) {
-		this.needsCleaningProperty().set(needsCleaning);
-	}
-
-	@Override
-	public String toString() {
-		return "roomBean:" + getDate() + ",name:" + getName() + ",filteredBookings:"
-				+ getFilteredBookingEntries().size() + " " + getBookingEntries().size();
-	}
+    @Override
+    public String toString() {
+        return "roomBean:" + getDate() + ",name:" + getName() + ",filteredBookings:"
+                + getFilteredBookingEntries().size() + " " + getBookingEntries().size();
+    }
 
 }

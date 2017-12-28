@@ -1,26 +1,24 @@
-package com.github.drbookings.model.data;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.model.data;
 
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.model.GrossEarningsProvider;
@@ -84,6 +82,23 @@ public class BookingEntries {
         }
         return result;
 
+    }
+
+    public static long countBookings(final BookingsByOrigin<? extends BookingEntry> bo, final boolean all) {
+        long result = 0;
+        result += countBookings(bo.getAirbnbBookings());
+        result += countBookings(bo.getBookingBookings());
+        if (all) {
+            result += countNights(bo.getOtherBookings());
+        }
+        return result;
+
+    }
+
+    public static int countBookings(Collection<? extends BookingEntry> bookings) {
+        Set<Booking> distinctBookings = getBookings(bookings);
+        int countSplitBookings = (int) distinctBookings.stream().filter(b -> b.isSplitBooking()).count();
+        return distinctBookings.size() - (countSplitBookings / 2);
     }
 
     private static long countNightsBookings(final Collection<? extends BookingEntry> bookingBookings) {
@@ -214,9 +229,5 @@ public class BookingEntries {
         return countNights(bookings);
     }
 
-    public static int countBookings(Collection<? extends BookingEntry> bookings) {
-        Set<Booking> distinctBookings = getBookings(bookings);
-        int countSplitBookings = (int) distinctBookings.stream().filter(b -> b.isSplitBooking()).count();
-        return distinctBookings.size() - (countSplitBookings / 2);
-    }
+
 }
