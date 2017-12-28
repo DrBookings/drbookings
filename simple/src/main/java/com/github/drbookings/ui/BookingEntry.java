@@ -1,11 +1,8 @@
-package com.github.drbookings.ui;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
@@ -19,8 +16,9 @@ package com.github.drbookings.ui;
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.ui;
 
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.*;
@@ -212,10 +210,8 @@ public class BookingEntry extends DateRoomEntry<Booking>
 	public boolean isPaymentOverdue() {
 		final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
 
-		if (isPaymentDone() && lastMonth) {
-			return true;
-		}
-		return false;
+		return isPaymentDone() && lastMonth;
 	}
+
 
 }

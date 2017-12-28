@@ -1,26 +1,24 @@
-package com.github.drbookings.ui.controller;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.*;
 import com.github.drbookings.model.data.BookingEntries;
@@ -231,12 +229,12 @@ public class StatsViewController implements Initializable {
             final Collection<? extends BookingEntry> bookingsFilteredByCleaningDate = e.getValue().stream()
                     .filter(new CleaningDateFilter(dateRange)).collect(Collectors.toList());
 
-            final int numberOfAllBookings = BookingEntries.countBookings(e.getValue());
+            final int numberOfAllBookings = (int) BookingEntries.countBookings(new BookingsByOrigin<>
+                    (e.getValue()), false);
 
-            Set payedBookingsSet = bookingsFilteredByPaymentDate.stream().map(b -> b.getElement()).collect
-                    (Collectors.toSet());
 
-            final int numberOfPayedBookings = BookingEntries.countBookings(bookingsFilteredByPaymentDate);
+            final int numberOfPayedBookings = (int) BookingEntries.countBookings(new BookingsByOrigin<>
+                    (e.getValue()), false);
 
             final int numberOfAllNights = (int) BookingEntries.countNights(new BookingsByOrigin<>
                             (e.getValue())
