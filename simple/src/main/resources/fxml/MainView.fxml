@@ -4,6 +4,26 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
+<!--
+  ~ DrBookings
+  ~
+  ~ Copyright (C) 2016 - 2017 Alexander Kerner
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as
+  ~ published by the Free Software Foundation, either version 2 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public
+  ~ License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses/gpl-2.0.html>.
+  -->
+
 <VBox styleClass="root" fx:id="node" xmlns:fx="http://javafx.com/fxml/1"
       xmlns="http://javafx.com/javafx/8" fx:controller="com.github.drbookings.ui.controller.MainController">
     <stylesheets>
@@ -18,10 +38,9 @@
                         <MenuItem text="Open DrBookings XML" onAction="#handleMenuItemOpen"/>
                         <MenuItem text="Import Airbnb iCal" onAction="#handleMenuItemOpenAirbnbICal"/>
                         <MenuItem text="Import Booking Excel" onAction="#handleMenuItemOpenBookingExcel"/>
-                        <MenuItem text="Export to Google Calendar" onAction="#handleMenuItemWriteToGoogleCalendar"/>
                         <MenuItem text="Clear Google Calendar" onAction="#handleMenuItemClearGoogleCalendar"/>
                         <MenuItem text="Clear Data" onAction="#handleMenuItemClearData"/>
-
+                        <MenuItem text="Sync to Google Calendar" onAction="#handleMenuItemWriteToGoogleCalendar"/>
                     </items>
                 </Menu>
                 <Menu text="View">
@@ -31,8 +50,9 @@
                         <MenuItem text="Cleaning Plan" onAction="#handleMenuItemCleaningPlan"/>
                         <MenuItem text="Booking Details" onAction="#handleMenuItemBookingDetails"/>
                         <MenuItem text="Room Details" onAction="#handleMenuItemRoomDetails"/>
-                        <MenuItem text="Earnings per Day Chart" onAction="#handleMenuItemShowEarningsChart"/>
-                        <MenuItem text="Nightly Rate Chart" onAction="#handleMenuItemShowNightlyRateChart"/>
+                        <MenuItem text="Earnings" onAction="#handleMenuItemEarnings"/>
+                        <!--<MenuItem text="Earnings per Day Chart" onAction="#handleMenuItemShowEarningsChart"/>-->
+                        <!--<MenuItem text="Nightly Rate Chart" onAction="#handleMenuItemShowNightlyRateChart"/>-->
                         <!-- <MenuItem text="Performance Chart" onAction="#handleMenuItemShowProfitChart"
                             /> -->
                         <MenuItem text="Statistics" onAction="#handleMenuItemShowMonthlyMoney"/>

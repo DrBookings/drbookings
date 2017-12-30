@@ -92,6 +92,7 @@ public class MainController implements Initializable {
     private final MainManager manager;
     private final ObservableSet<Integer> rowsWithSelectedCells = FXCollections.observableSet();
     private BookingDetailsDialogFactory bookingDetailsDialogFactory;
+    private EarningsViewFactory earningsViewFactory;
     @FXML
     private Button buttonAddBooking;
     @FXML
@@ -403,7 +404,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItemCleaningPlan(final ActionEvent event) {
         Platform.runLater(() -> showCleaningPlan());
+    }
 
+    @FXML
+    private void handleMenuItemEarnings(final ActionEvent event) {
+        Platform.runLater(() -> showEarningsView());
     }
 
     @FXML
@@ -842,6 +847,13 @@ public class MainController implements Initializable {
             bookingDetailsDialogFactory = new BookingDetailsDialogFactory(getManager());
         }
         bookingDetailsDialogFactory.showDialog();
+    }
+
+    private void showEarningsView() {
+        if (earningsViewFactory == null) {
+            earningsViewFactory = new EarningsViewFactory(getManager());
+        }
+        earningsViewFactory.showDialog();
     }
 
     private void showCleaningPlan() {

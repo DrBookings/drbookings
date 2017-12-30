@@ -18,10 +18,29 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings;
 
-public interface EarningsProvider {
+import com.github.drbookings.ui.BookingEntry;
 
-	float getEarnings(boolean netEarnings);
+import java.util.Collection;
+import java.util.Objects;
 
+public class BookingEntryBin<T> {
+
+    private final T label;
+
+    private final Collection<? extends BookingEntry> entries;
+
+    public BookingEntryBin(T label, Collection<? extends BookingEntry> entries) {
+        this.label = Objects.requireNonNull(label);
+        this.entries = Objects.requireNonNull(entries);
+    }
+
+    public Collection<? extends BookingEntry> getEntries() {
+        return entries;
+    }
+
+    public T getLabel() {
+        return label;
+    }
 }

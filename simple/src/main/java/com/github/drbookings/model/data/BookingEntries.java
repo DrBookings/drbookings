@@ -21,10 +21,10 @@
 package com.github.drbookings.model.data;
 
 import com.github.drbookings.model.EarningsProvider;
-import com.github.drbookings.model.GrossEarningsProvider;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CleaningEntry;
+import com.github.drbookings.ui.DateEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,13 +97,13 @@ public class BookingEntries {
 
     public static int countBookings(Collection<? extends BookingEntry> bookings) {
         Set<Booking> distinctBookings = getBookings(bookings);
-        int countSplitBookings = (int) distinctBookings.stream().filter(b -> b.isSplitBooking()).count();
+        int countSplitBookings = (int) distinctBookings.stream().filter(Booking::isSplitBooking).count();
         return distinctBookings.size() - (countSplitBookings / 2);
     }
 
     private static long countNightsBookings(final Collection<? extends BookingEntry> bookingBookings) {
-        return bookingBookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).stream()
-                .mapToLong(b -> b.getNumberOfNights()).sum();
+        return bookingBookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
+                .mapToLong(Booking::getNumberOfNights).sum();
     }
 
     private static long countNightsAirbnb(final Collection<? extends BookingEntry> airbnbBookings) {
@@ -116,7 +116,7 @@ public class BookingEntries {
     }
 
     public static double getCleaningCosts(final Collection<? extends BookingEntry> bookings) {
-        return getCleanings(bookings).stream().mapToDouble(value -> value.getCleaningCosts()).sum();
+        return getCleanings(bookings).stream().mapToDouble(CleaningEntry::getCleaningCosts).sum();
     }
 
     public static double getCleaningFees(final Collection<? extends BookingEntry> bookings) {
@@ -129,13 +129,13 @@ public class BookingEntries {
 
     public static double getEarningsBooking(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
-        return bookings.stream().map(b -> b.getElement()).collect(Collectors.toSet()).stream()
-                .filter(b -> b.isPaymentDone()).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
+        return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
+                .filter(Booking::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 
-    public static double getEarningsGeneral(final Collection<? extends EarningsProvider> bookings,
+    public static double getEarningsGeneral(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
-        return bookings.stream().filter(b -> b.isPaymentDone())
+        return bookings.stream().filter(BookingEntry::isPaymentDone)
                 .mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 
@@ -182,7 +182,7 @@ public class BookingEntries {
         return getEarningsBooking(bookingBookings, b -> b.getEarnings(false));
     }
 
-    public static double getGrossEarningsSingleEntries(final Collection<? extends GrossEarningsProvider> bookings) {
+    public static double getGrossEarningsSingleEntries(final Collection<? extends BookingEntry> bookings) {
         return getEarningsGeneral(bookings, b -> b.getEarnings(false));
     }
 
