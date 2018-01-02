@@ -50,7 +50,7 @@
                         <MenuItem text="Cleaning Plan" onAction="#handleMenuItemCleaningPlan"/>
                         <MenuItem text="Booking Details" onAction="#handleMenuItemBookingDetails"/>
                         <MenuItem text="Room Details" onAction="#handleMenuItemRoomDetails"/>
-                        <MenuItem text="Earnings" onAction="#handleMenuItemEarnings"/>
+                        <MenuItem text="Earnings" onAction="#handleMenuItemEarnings"  accelerator="Alt+E"/>
                         <!--<MenuItem text="Earnings per Day Chart" onAction="#handleMenuItemShowEarningsChart"/>-->
                         <!--<MenuItem text="Nightly Rate Chart" onAction="#handleMenuItemShowNightlyRateChart"/>-->
                         <!-- <MenuItem text="Performance Chart" onAction="#handleMenuItemShowProfitChart"
