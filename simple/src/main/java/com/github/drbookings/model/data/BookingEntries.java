@@ -129,14 +129,14 @@ public class BookingEntries {
 
     public static double getEarningsBooking(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
-        return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
-                .filter(Booking::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
+        final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
+        return getEarningsGeneral(bo.getBookingBookings(), earningsProvider);
     }
 
     public static double getEarningsGeneral(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
-        return bookings.stream().filter(BookingEntry::isPaymentDone)
-                .mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
+        return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
+                .filter(Booking::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 
     public static double getGrossEarnings(final Collection<? extends BookingEntry> bookings) {
@@ -148,13 +148,15 @@ public class BookingEntries {
         return result;
     }
 
-    public static double getEarningsAirbnb(final Collection<? extends BookingEntry> airbnbBookings,
+    public static double getEarningsAirbnb(final Collection<? extends BookingEntry> bookings,
                                            final Function<EarningsProvider, Number> earningsProvider) {
 
         double result = 0;
 
+        final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
+
         final Map<Booking, Collection<BookingEntry>> map = new LinkedHashMap<>();
-        for (final BookingEntry be : airbnbBookings) {
+        for (final BookingEntry be : bo.getAirbnbBookings()) {
             final Collection<BookingEntry> value = map.getOrDefault(be.getElement(), new ArrayList<>());
             value.add(be);
             map.put(be.getElement(), value);
@@ -171,7 +173,7 @@ public class BookingEntries {
                 }
                 result += earnings;
             } else {
-                result += getEarningsBooking(en.getValue(), earningsProvider);
+                result += getEarningsGeneral(en.getValue(), earningsProvider);
             }
         }
 

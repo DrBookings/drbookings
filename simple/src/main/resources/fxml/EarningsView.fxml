@@ -24,17 +24,39 @@
 <?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
       fx:controller="com.github.drbookings.ui.controller.EarningsViewController">
     <stylesheets>
         <URL value="@/css/root.css"/>
+        <URL value="@/css/earnings.css"/>
     </stylesheets>
     <padding>
         <Insets bottom="4" left="4" right="4" top="4"/>
     </padding>
     <children>
+        <VBox spacing="4" alignment="CENTER">
+            <HBox>
+                <children>
+                    <Label text="Net Profit"></Label>
+                </children>
+            </HBox>
+            <HBox spacing="4" alignment="CENTER" maxWidth="Infinity">
+                <children>
+                    <Label text="# Months: "></Label>
+                    <Label fx:id="monthCount"></Label>
+                    <Label text="Average: "></Label>
+                    <Label fx:id="labelAverage"></Label>
+                    <Label text="Max: "></Label>
+                    <Label fx:id="labelMax"></Label>
+                    <Label text="Min: "></Label>
+                    <Label fx:id="labelMin"></Label>
+                </children>
+            </HBox>
+        </VBox>
+
         <AreaChart fx:id="chart" maxWidth="Infinity" maxHeight="Infinity"
                    VBox.vgrow="ALWAYS">
             <xAxis>
@@ -44,5 +66,9 @@
                 <NumberAxis fx:id="yAxis"/>
             </yAxis>
         </AreaChart>
+        <Slider fx:id="slider" min="1" max="36" value="6"
+                blockIncrement="1" showTickLabels="true"
+                showTickMarks="true" majorTickUnit="5"></Slider>
+
     </children>
 </VBox>

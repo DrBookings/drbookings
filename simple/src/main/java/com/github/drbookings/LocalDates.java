@@ -1,26 +1,24 @@
-package com.github.drbookings;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings;
 
 import com.google.common.collect.Range;
 import javafx.scene.text.Text;
@@ -115,22 +113,19 @@ public class LocalDates {
 
 	public static boolean isLastMonth(final LocalDate date) {
 		final Month month = LocalDate.now().getMonth().minus(1);
-		return date.getMonth().equals(month) && date.getYear() == LocalDate.now().getYear();
+        return date.getMonth().equals(month) && (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1);
 	}
 
 	public static boolean isLastThreeMonths(final LocalDate date) {
 		final Month month = LocalDate.now().getMonth().minus(1);
-		if (date.getMonth().equals(month) && date.getYear() == LocalDate.now().getYear()) {
+        if (date.getMonth().equals(month) && (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1)) {
 			return true;
 		}
-		if (date.getMonth().equals(month.minus(1)) && date.getYear() == LocalDate.now().getYear()) {
+        if (date.getMonth().equals(month.minus(1)) && (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1)) {
 			return true;
 		}
-		if (date.getMonth().equals(month.minus(2)) && date.getYear() == LocalDate.now().getYear()) {
-			return true;
-		}
-		return false;
-	}
+        return date.getMonth().equals(month.minus(2)) && (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1);
+    }
 
     public static boolean isNextMonth(YearMonth selectedMonth, LocalDate date) {
 	    return YearMonth.from(date).equals(selectedMonth.plusMonths(1));
