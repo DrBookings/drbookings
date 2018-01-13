@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/logging/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/logging/develop" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/logging/production" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
