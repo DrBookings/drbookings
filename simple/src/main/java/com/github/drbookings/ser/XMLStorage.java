@@ -26,6 +26,7 @@ import com.github.drbookings.OverbookingException;
 import com.github.drbookings.io.Backup;
 import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.ui.CleaningEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -114,7 +116,24 @@ public class XMLStorage {
 		}
 	}
 
-	public void save(final DataStore ds, final File file) throws Exception {
+    public static void doSave(final Collection<? extends Booking> bookings, final File file) {
+        Backup.make(file);
+        try {
+            save(buildDataStore(bookings), file);
+        } catch (final Exception e1) {
+            logger.error(e1.getLocalizedMessage(), e1);
+            return;
+        }
+    }
+
+	public static void save(Booking booking, File file) throws JAXBException {
+        final JAXBContext jc = JAXBContext.newInstance(BookingBeanSer.class);
+        final Marshaller jaxbMarshaller = jc.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.marshal(DataStore.transform(booking), file);
+    }
+
+	public static void save(final DataStore ds, final File file) throws Exception {
 		if (logger.isInfoEnabled()) {
             logger.info("Saving to " + file);
         }
@@ -125,6 +144,14 @@ public class XMLStorage {
 		jaxbMarshaller.marshal(ds, file);
 
 	}
+
+    public static DataStore buildDataStore(final Collection<? extends Booking> bookings) {
+        final DataStore ds = new DataStore();
+        for (final Booking b : bookings) {
+            ds.getBookingsSer().add(DataStore.transform(b));
+        }
+        return ds;
+    }
 
 	public static DataStore buildDataStore(final MainManager manager) {
 		final DataStore ds = new DataStore();

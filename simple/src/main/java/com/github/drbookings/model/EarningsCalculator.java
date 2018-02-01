@@ -43,7 +43,7 @@ public class EarningsCalculator {
         return netEarnings;
     }
 
-    public EarningsCalculator setNetEarnings(boolean netEarnigns) {
+    public EarningsCalculator filterForNetEarnings(boolean netEarnigns) {
         this.netEarnings = netEarnigns;
         return this;
     }

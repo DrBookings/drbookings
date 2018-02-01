@@ -27,6 +27,7 @@ import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
 import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ser.DataStore;
@@ -35,7 +36,9 @@ import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.*;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.ui.concurrent.BookingExportService;
 import com.github.drbookings.ui.dialogs.*;
+import com.github.drbookings.ui.selection.BookingSelectionManager;
 import com.github.drbookings.ui.selection.DateBeanSelectionManager;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 import com.google.common.collect.Range;
@@ -134,6 +137,12 @@ public class MainController implements Initializable {
     private TableView<DateBean> tableView;
     @FXML
     private Label selectedDatesLabel;
+
+    @FXML
+    public void exportBookings(){
+        List<BookingEntry> bookingsSelected = BookingSelectionManager.getInstance().getSelection();
+        new BookingExportService(BookingEntries.toBookings(bookingsSelected)).start();
+    }
 
     public MainController() {
         manager = MainManager.getInstance();
@@ -398,22 +407,22 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMenuItemBookingDetails(final ActionEvent event) {
-        Platform.runLater(() -> showBookingDetails());
+        Platform.runLater(this::showBookingDetails);
     }
 
     @FXML
     private void handleMenuItemCleaningPlan(final ActionEvent event) {
-        Platform.runLater(() -> showCleaningPlan());
+        Platform.runLater(this::showCleaningPlan);
     }
 
     @FXML
     private void handleMenuItemEarnings(final ActionEvent event) {
-        Platform.runLater(() -> showEarningsView());
+        Platform.runLater(this::showEarningsView);
     }
 
     @FXML
     private void handleMenuItemClearData(final ActionEvent event) {
-        Platform.runLater(() -> clearData());
+        Platform.runLater(this::clearData);
     }
 
     @FXML

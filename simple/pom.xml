@@ -18,7 +18,8 @@
   ~ <http://www.gnu.org/licenses/gpl-2.0.html>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.drbookings</groupId>
     <artifactId>drbookings</artifactId>
@@ -295,7 +296,7 @@
                 </configuration>
             </plugin>
         </plugins>
-       
+
     </build>
 
 
@@ -303,7 +304,7 @@
         <profile>
             <id>production</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>prod</name>
                 </property>
@@ -330,7 +331,7 @@
         <profile>
             <id>development</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>dev</name>
                 </property>

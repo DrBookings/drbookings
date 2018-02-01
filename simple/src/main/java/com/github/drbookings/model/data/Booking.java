@@ -246,13 +246,13 @@ public class Booking extends IDed
         return netEarningsProperty().get();
     }
 
-	public long getNumberOfDays() {
-		final long daysElapsed = ChronoUnit.DAYS.between(getCheckIn(), getCheckOut());
+	public int getNumberOfDays() {
+		final int daysElapsed = (int) ChronoUnit.DAYS.between(getCheckIn(), getCheckOut());
 		return daysElapsed + 1;
 	}
 
-	public long getNumberOfNights() {
-		final long daysElapsed = getNumberOfDays();
+	public int getNumberOfNights() {
+		final int daysElapsed = (int) getNumberOfDays();
 		return daysElapsed - 1;
 	}
 

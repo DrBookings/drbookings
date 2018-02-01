@@ -24,19 +24,23 @@ import com.github.drbookings.model.data.Booking;
 import com.github.drbookings.model.data.BookingMapFactory;
 import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Multimap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
 
 public class AirbnbEarningsCalculator extends EarningsCalculator {
 
+    private static final Logger logger = LoggerFactory.getLogger(AirbnbEarningsCalculator.class);
+
     public AirbnbEarningsCalculator filterForPaymentDone(boolean paymentDone) {
         super.filterForPaymentDone(paymentDone);
         return this;
     }
 
-    public AirbnbEarningsCalculator setNetEarnings(boolean netEarnigns) {
-        super.setNetEarnings(netEarnigns);
+    public AirbnbEarningsCalculator filterForNetEarnings(boolean netEarnigns) {
+        super.filterForNetEarnings(netEarnigns);
         return this;
     }
 
@@ -52,7 +56,11 @@ public class AirbnbEarningsCalculator extends EarningsCalculator {
             long nightsBooked = e.getKey().getNumberOfNights();
             if (nightsBooked > nightsToPay) {
                 double nightly = getNightly(e.getKey());
-                result += nightly * nightsToPay;
+                double localResult = nightly * nightsToPay;
+                result += localResult;
+                if(logger.isDebugEnabled()){
+                    logger.debug("Partial payment for " + e.getKey() + " of " + localResult + "/" + e.getKey().getEarnings(isNetEarnings()));
+                }
             } else {
                 result += super.calculateEarnings(e.getValue());
             }

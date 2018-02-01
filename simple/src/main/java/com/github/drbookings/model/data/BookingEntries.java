@@ -20,6 +20,7 @@
 
 package com.github.drbookings.model.data;
 
+import com.github.drbookings.model.AirbnbEarningsCalculator;
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.ui.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
@@ -124,7 +125,11 @@ public class BookingEntries {
     }
 
     public static double getGrossEarningsAirbnb(final Collection<? extends BookingEntry> bookings) {
-        return getEarningsAirbnb(bookings, b -> b.getEarnings(false));
+        return getEarningsAirbnb(bookings, false, true);
+    }
+
+    public static double getGrossEarningsAirbnb(final Collection<? extends BookingEntry> bookings, boolean paymentDone) {
+        return getEarningsAirbnb(bookings, false, paymentDone);
     }
 
     public static double getEarningsBooking(final Collection<? extends BookingEntry> bookings,
@@ -148,6 +153,25 @@ public class BookingEntries {
         return result;
     }
 
+
+    public static float getEarningsAirbnb(final Collection<? extends BookingEntry> bookings,boolean netEarnings, boolean paymentDone) {
+
+
+
+
+
+        final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
+
+
+
+        AirbnbEarningsCalculator aec = new AirbnbEarningsCalculator().filterForNetEarnings(netEarnings).filterForPaymentDone(paymentDone);
+
+        return aec.calculateEarnings(bo.getAirbnbBookings());
+
+
+    }
+
+    @Deprecated
     public static double getEarningsAirbnb(final Collection<? extends BookingEntry> bookings,
                                            final Function<EarningsProvider, Number> earningsProvider) {
 
@@ -199,7 +223,7 @@ public class BookingEntries {
     }
 
     public static double getNetEarningsAirbnb(final Collection<? extends BookingEntry> bookings) {
-        return getEarningsAirbnb(bookings, b -> b.getEarnings(true));
+        return getEarningsAirbnb(bookings, true, true);
     }
 
     public static double getNetEarningsBooking(final Collection<? extends BookingEntry> bookings) {

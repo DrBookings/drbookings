@@ -52,16 +52,25 @@ public class AirbnbEarningsCalculatorTest {
 
     @Test
     public void test01() {
-        Booking b = BookingTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 02, 05));
+        Booking b = BookingTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
         float result = c.calculateEarnings(b.getEntries());
         assertThat(result, is(0f));
     }
 
     @Test
     public void test02() {
-        Booking b = BookingTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 02, 05));
+        Booking b = BookingTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
         b.setGrossEarningsExpression("30");
         float result = c.calculateEarnings(b.getEntries());
         assertThat(result, is(30f));
+    }
+
+    @Test
+    public void test03() {
+        Booking b = BookingTest.newInstance(LocalDate.of(2018, 01, 27), LocalDate.of(2018, 8, 5));
+        b.setGrossEarningsExpression("8252.86");
+        assertThat(b.getNumberOfNights(), is(190));
+        float result = c.calculateEarnings(b.getEntries());
+        assertThat(result, is(8252.86f / 190 * 31));
     }
 }

@@ -67,6 +67,11 @@
                         <MenuItem text="About" onAction="#handleMenuItemAbout"/>
                     </items>
                 </Menu>
+                <Menu text="DevTools">
+                    <items>
+                        <MenuItem text="Export Bookings" onAction="#exportBookings"/>
+                    </items>
+                </Menu>
             </menus>
         </MenuBar>
 
