@@ -64,8 +64,8 @@ public class BookingEntries {
 
         Collection<CleaningEntry> result = bookings.stream().filter(b -> b.getElement().getCleaning() != null).map(e -> e.getElement().getCleaning()).collect(Collectors.toSet());
 
-        if(logger.isDebugEnabled()){
-            logger.debug("Got cleanings for bookings:\n"+ result.stream()
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got cleanings for bookings:\n" + result.stream()
                     .map(i -> i.toString())
                     .collect(Collectors.joining("\n")));
         }
@@ -164,8 +164,9 @@ public class BookingEntries {
 
         for (final Entry<Booking, Collection<BookingEntry>> en : map.entrySet()) {
             final LocalDate ci = en.getKey().getCheckIn();
-            final int daysCurrentMonth = YearMonth.from(ci).lengthOfMonth();
+
             if (en.getKey().isSplitBooking()) {
+                final int daysCurrentMonth = YearMonth.from(ci).lengthOfMonth();
                 final double earnings = getEarningsGeneral(en.getValue(), earningsProvider);
                 if (logger.isInfoEnabled()) {
                     logger.info("Split-payment (" + String.format("%5.2f", earnings) + ") for " + en.getKey() + ", days of month "
