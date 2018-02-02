@@ -29,9 +29,9 @@ import java.time.LocalDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class AirbnbEarningsCalculatorTest {
+public class BookingEarningsCalculatorTest {
 
-    private AirbnbEarningsCalculator c;
+    private BookingEarningsCalculator c;
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -43,7 +43,7 @@ public class AirbnbEarningsCalculatorTest {
 
     @Before
     public void setUp() {
-        c = new AirbnbEarningsCalculator().filterForPaymentDone(false);
+
     }
 
     @After
@@ -53,6 +53,7 @@ public class AirbnbEarningsCalculatorTest {
 
     @Test
     public void test01() {
+        c = new BookingEarningsCalculator();
         BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
         b.setPaymentDone(true);
         float result = c.calculateEarnings(b);
@@ -61,6 +62,7 @@ public class AirbnbEarningsCalculatorTest {
 
     @Test
     public void test02() {
+        c = new BookingEarningsCalculator();
         BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
         b.setPaymentDone(true);
         b.setGrossEarningsExpression("30");
@@ -70,12 +72,13 @@ public class AirbnbEarningsCalculatorTest {
 
     @Test
     public void test03() {
+        c = new BookingEarningsCalculator();
         BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2018, 01, 27), LocalDate.of(2018, 8, 5));
         b.setPaymentDone(true);
         b.setGrossEarningsExpression("8252.86");
-        b.getPayments().add(new Payment(LocalDate.of(2018, 01, 29), 1300));
         assertThat(b.getNumberOfNights(), is(190));
         float result = c.calculateEarnings(b);
-        assertThat(result, is(1300f));
+        assertThat(result, is(8252.86f));
     }
+
 }

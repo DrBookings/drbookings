@@ -45,10 +45,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.Optional;
 import java.util.Properties;
 
 public class DrBookingsApplication extends Application {
+
+    public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
 
     private class CloseRequestEventHandler implements EventHandler<WindowEvent> {
 

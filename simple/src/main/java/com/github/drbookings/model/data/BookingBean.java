@@ -29,6 +29,7 @@ import com.github.drbookings.ui.CleaningEntry;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +62,11 @@ public class BookingBean extends IDed
     private final StringProperty specialRequestNote = new SimpleStringProperty();
     private final BooleanProperty welcomeMailSend = new SimpleBooleanProperty(false);
     private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
+    private final DoubleProperty paymentSoFar = new SimpleDoubleProperty();
+    @Deprecated
     private final BooleanProperty splitBooking = new SimpleBooleanProperty(false);
     private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
+    private final ListProperty<Payment> payments = new SimpleListProperty<>(FXCollections.observableArrayList());
     /**
      * Set by the cleaning entry.
      */
@@ -102,6 +106,30 @@ public class BookingBean extends IDed
                 param.paymentDoneProperty(), param.welcomeMailSendProperty(), param.dateOfPaymentProperty()};
     }
 
+    public ReadOnlyDoubleProperty paymentSoFarProperty() {
+        return paymentSoFar;
+    }
+
+    public final double getPaymentSoFar() {
+        return paymentSoFar.get();
+    }
+
+    public Callable<Number> calculatePaymentSoFar() {
+        return () -> payments.stream().mapToDouble(p -> p.getAmount().getNumber().doubleValue()).sum();
+    }
+
+    public ListProperty<Payment> paymentsProperty() {
+        return payments;
+    }
+
+    public final List<Payment> getPayments() {
+        return payments.get();
+    }
+
+    public final void setPayments(Collection<? extends Payment> payments) {
+        this.payments.setAll(payments);
+    }
+
     public List<BookingEntry> getEntries() {
         return Bookings.toEntries(this);
     }
@@ -136,6 +164,7 @@ public class BookingBean extends IDed
                 setPaymentDone(false);
             }
         });
+        paymentSoFar.bind(Bindings.createObjectBinding(calculatePaymentSoFar(), payments));
     }
 
     private Callable<Number> calculateNetEarnings() {

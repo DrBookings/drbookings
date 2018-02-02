@@ -58,7 +58,7 @@ public class BookingEntries {
 
     public static Set<BookingBean> getBookings(final Collection<? extends BookingEntry> bookings) {
         return
-                bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new));
+            bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static Collection<CleaningEntry> getCleanings(final Collection<? extends BookingEntry> bookings) {
@@ -67,8 +67,8 @@ public class BookingEntries {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Got cleanings for bookings:\n" + result.stream()
-                    .map(i -> i.toString())
-                    .collect(Collectors.joining("\n")));
+                .map(i -> i.toString())
+                .collect(Collectors.joining("\n")));
         }
 
         return result;
@@ -104,7 +104,7 @@ public class BookingEntries {
 
     private static long countNightsBookings(final Collection<? extends BookingEntry> bookingBookings) {
         return bookingBookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
-                .mapToLong(BookingBean::getNumberOfNights).sum();
+            .mapToLong(BookingBean::getNumberOfNights).sum();
     }
 
     private static long countNightsAirbnb(final Collection<? extends BookingEntry> airbnbBookings) {
@@ -132,6 +132,7 @@ public class BookingEntries {
         return getEarningsAirbnb(bookings, false, paymentDone);
     }
 
+    @Deprecated
     public static double getEarningsBooking(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
         final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
@@ -141,7 +142,7 @@ public class BookingEntries {
     public static double getEarningsGeneral(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
         return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
-                .filter(BookingBean::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
+            .filter(BookingBean::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 
     public static double getGrossEarnings(final Collection<? extends BookingEntry> bookings) {
@@ -154,19 +155,15 @@ public class BookingEntries {
     }
 
 
-    public static float getEarningsAirbnb(final Collection<? extends BookingEntry> bookings,boolean netEarnings, boolean paymentDone) {
-
-
-
+    public static float getEarningsAirbnb(final Collection<? extends BookingEntry> bookings, boolean netEarnings, boolean paymentDone) {
 
 
         final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
 
 
-
         AirbnbEarningsCalculator aec = new AirbnbEarningsCalculator().filterForNetEarnings(netEarnings).filterForPaymentDone(paymentDone);
 
-        return aec.calculateEarnings(bo.getAirbnbBookings());
+        return aec.calculateEarnings(BookingEntries.toBookings(bo.getAirbnbBookings()));
 
 
     }
@@ -194,7 +191,7 @@ public class BookingEntries {
                 final double earnings = getEarningsGeneral(en.getValue(), earningsProvider);
                 if (logger.isInfoEnabled()) {
                     logger.info("Split-payment (" + String.format("%5.2f", earnings) + ") for " + en.getKey() + ", days of month "
-                            + daysCurrentMonth);
+                        + daysCurrentMonth);
                 }
                 result += earnings;
             } else {
@@ -205,6 +202,7 @@ public class BookingEntries {
         return result;
     }
 
+    @Deprecated
     public static double getGrossEarningsCompleteBookings(final Collection<? extends BookingEntry> bookingBookings) {
         return getEarningsBooking(bookingBookings, b -> b.getEarnings(false));
     }
@@ -236,7 +234,7 @@ public class BookingEntries {
 
     public static double getServiceFees(final Collection<? extends BookingEntry> bookings) {
         return bookings.stream().filter(PAYMENT_DONE).map(b -> b.getElement()).collect(Collectors.toSet()).stream()
-                .mapToDouble(b -> b.getServiceFee() + Bookings.getServiceFeePercentAmount(b)).sum();
+            .mapToDouble(b -> b.getServiceFee() + Bookings.getServiceFeePercentAmount(b)).sum();
     }
 
     public static Optional<LocalDate> getMaxDate(final Collection<? extends BookingEntry> bookings) {

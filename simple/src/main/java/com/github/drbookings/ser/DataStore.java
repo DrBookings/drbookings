@@ -25,6 +25,7 @@ import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
+import com.github.drbookings.model.ser.PaymentSer;
 import com.github.drbookings.ui.CleaningEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,7 @@ public class DataStore {
 		result.calendarIds = bb.getCalendarIds();
 		result.dateOfPayment = bb.getDateOfPayment();
 		result.splitBooking = bb.isSplitBooking();
+        result.paymentsSoFar = PaymentSer.transform(bb.getPayments());
 		return result;
 	}
 

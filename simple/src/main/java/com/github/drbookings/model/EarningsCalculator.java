@@ -20,20 +20,38 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.data.BookingBean;
+import com.google.common.collect.Range;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 public class EarningsCalculator {
 
-    public static final boolean DEFAULT_PAYMENT_DONE = true;
+    private Range<LocalDate> dateRange;
 
+    public float calculateEarnings(BookingBean... bookings) {
+        return calculateEarnings(Arrays.asList(bookings));
+    }
+
+    public static final boolean DEFAULT_PAYMENT_DONE = true;
     public static final boolean DEFAULT_NET_EARNINGS = true;
 
+    public float calculateEarnings(Collection<? extends BookingBean> bookings) {
+        return 0;
+    }
     private boolean paymentDone = DEFAULT_PAYMENT_DONE;
-
     private boolean netEarnings = DEFAULT_NET_EARNINGS;
+
+    public EarningsCalculator filterToDateRange(Range<LocalDate> dateRange) {
+        this.dateRange = dateRange;
+        return this;
+    }
+
+    public Range<LocalDate> getDateRange() {
+        return dateRange;
+    }
 
     public boolean isPaymentDone() {
         return paymentDone;
@@ -53,11 +71,5 @@ public class EarningsCalculator {
         return this;
     }
 
-    public float calculateEarnings(Collection<? extends BookingEntry> bookings) {
-        Stream<? extends BookingEntry> bookingStream = bookings.stream();
-        if (paymentDone) {
-            bookingStream = bookings.stream().filter(b -> b.isPaymentDone());
-        }
-        return (float) bookingStream.mapToDouble(b -> b.getEarnings(isNetEarnings())).sum();
-    }
+
 }

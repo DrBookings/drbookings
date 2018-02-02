@@ -56,5 +56,8 @@
     <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testfx:testfx-core:4.0.1-alpha" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testfx:testfx-junit:4.0.1-alpha" level="project" />
+    <orderEntry type="library" name="Maven: org.javamoney:moneta:1.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.money:money-api:1.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.annotation:javax.annotation-api:1.2" level="project" />
   </component>
 </module>

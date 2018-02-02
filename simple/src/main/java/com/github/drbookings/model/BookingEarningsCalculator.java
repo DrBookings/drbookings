@@ -34,30 +34,26 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-public class AirbnbEarningsCalculator extends EarningsCalculator {
+public class BookingEarningsCalculator extends EarningsCalculator {
 
-    private static final Logger logger = LoggerFactory.getLogger(AirbnbEarningsCalculator.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookingEarningsCalculator.class);
 
-    private Range<LocalDate> dateRange;
 
-    public AirbnbEarningsCalculator filterToDateRange(Range<LocalDate> dateRange) {
-        this.dateRange = dateRange;
+    public BookingEarningsCalculator filterToDateRange(Range<LocalDate> dateRange) {
+        super.filterToDateRange(dateRange);
         return this;
     }
 
-    public AirbnbEarningsCalculator filterForPaymentDone(boolean paymentDone) {
+    public BookingEarningsCalculator filterForPaymentDone(boolean paymentDone) {
         super.filterForPaymentDone(paymentDone);
         return this;
     }
 
-    public AirbnbEarningsCalculator filterForNetEarnings(boolean netEarnigns) {
+    public BookingEarningsCalculator filterForNetEarnings(boolean netEarnigns) {
         super.filterForNetEarnings(netEarnigns);
         return this;
     }
 
-    public Range<LocalDate> getDateRange() {
-        return dateRange;
-    }
 
     public float calculateEarnings(Collection<? extends BookingBean> bookings) {
         if (isPaymentDone()) {
@@ -69,13 +65,7 @@ public class AirbnbEarningsCalculator extends EarningsCalculator {
         MonetaryAmountFactory<?> moneyFactory = Monetary.getDefaultAmountFactory().setCurrency(DrBookingsApplication.DEFAULT_CURRENCY.getCurrencyCode());
         MonetaryAmount result = moneyFactory.setNumber(0).create();
         for (BookingBean b : bookings) {
-            if (b.getNumberOfNights() > LocalDate.now().getMonth().minLength()) {
-                if (logger.isInfoEnabled()) {
-                    logger.info("Airbnb long term booking, looking at manual registered payments");
-                }
-                result = result.add(moneyFactory.setNumber(b.getPaymentSoFar()).create());
-            } else
-                result = result.add(moneyFactory.setNumber(b.getEarnings(isNetEarnings())).create());
+            result = result.add(moneyFactory.setNumber(b.getEarnings(isNetEarnings())).create());
         }
 
         return result.getNumber().floatValue();
