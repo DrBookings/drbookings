@@ -20,7 +20,7 @@
 
 package com.github.drbookings.concurrent;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.ser.XMLStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,9 @@ public class BookingExportCallable implements Callable<Void>{
 
     private static final Logger logger = LoggerFactory.getLogger(BookingExportCallable.class);
 
-    private final Collection<? extends Booking> bookings;
+    private final Collection<? extends BookingBean> bookings;
 
-    public BookingExportCallable(Collection<? extends Booking> bookings) {
+    public BookingExportCallable(Collection<? extends BookingBean> bookings) {
         this.bookings = bookings;
     }
 

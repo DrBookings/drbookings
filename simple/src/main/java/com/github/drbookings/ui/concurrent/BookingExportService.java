@@ -20,7 +20,7 @@
 
 package com.github.drbookings.ui.concurrent;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -28,9 +28,9 @@ import java.util.Collection;
 
 public class BookingExportService extends Service<Void> {
 
-    private final Collection<? extends Booking> bookings;
+    private final Collection<? extends BookingBean> bookings;
 
-    public BookingExportService(Collection<? extends Booking> bookings) {
+    public BookingExportService(Collection<? extends BookingBean> bookings) {
         this.bookings = bookings;
     }
 

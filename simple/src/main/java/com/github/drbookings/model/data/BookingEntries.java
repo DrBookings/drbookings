@@ -44,11 +44,11 @@ public class BookingEntries {
 
     public static Predicate<BookingEntry> PAYMENT_DONE = b -> b.getElement().isPaymentDone();
 
-    public static Collection<Booking> toBookings(Stream<? extends BookingEntry> bookingEntries) {
+    public static Collection<BookingBean> toBookings(Stream<? extends BookingEntry> bookingEntries) {
         return bookingEntries.map(b -> b.getElement()).collect(Collectors.toSet());
     }
 
-    public static Collection<Booking> toBookings(Collection<? extends BookingEntry> bookingEntries) {
+    public static Collection<BookingBean> toBookings(Collection<? extends BookingEntry> bookingEntries) {
         return toBookings(bookingEntries.stream());
     }
 
@@ -56,7 +56,7 @@ public class BookingEntries {
         return getCleanings(bookings).size();
     }
 
-    public static Set<Booking> getBookings(final Collection<? extends BookingEntry> bookings) {
+    public static Set<BookingBean> getBookings(final Collection<? extends BookingEntry> bookings) {
         return
                 bookings.stream().map(b -> b.getElement()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -97,14 +97,14 @@ public class BookingEntries {
     }
 
     public static int countBookings(Collection<? extends BookingEntry> bookings) {
-        Set<Booking> distinctBookings = getBookings(bookings);
-        int countSplitBookings = (int) distinctBookings.stream().filter(Booking::isSplitBooking).count();
+        Set<BookingBean> distinctBookings = getBookings(bookings);
+        int countSplitBookings = (int) distinctBookings.stream().filter(BookingBean::isSplitBooking).count();
         return distinctBookings.size() - (countSplitBookings / 2);
     }
 
     private static long countNightsBookings(final Collection<? extends BookingEntry> bookingBookings) {
         return bookingBookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
-                .mapToLong(Booking::getNumberOfNights).sum();
+                .mapToLong(BookingBean::getNumberOfNights).sum();
     }
 
     private static long countNightsAirbnb(final Collection<? extends BookingEntry> airbnbBookings) {
@@ -141,7 +141,7 @@ public class BookingEntries {
     public static double getEarningsGeneral(final Collection<? extends BookingEntry> bookings,
                                             final Function<EarningsProvider, Number> earningsProvider) {
         return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
-                .filter(Booking::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
+                .filter(BookingBean::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 
     public static double getGrossEarnings(final Collection<? extends BookingEntry> bookings) {
@@ -179,14 +179,14 @@ public class BookingEntries {
 
         final BookingsByOrigin<BookingEntry> bo = new BookingsByOrigin<>(bookings);
 
-        final Map<Booking, Collection<BookingEntry>> map = new LinkedHashMap<>();
+        final Map<BookingBean, Collection<BookingEntry>> map = new LinkedHashMap<>();
         for (final BookingEntry be : bo.getAirbnbBookings()) {
             final Collection<BookingEntry> value = map.getOrDefault(be.getElement(), new ArrayList<>());
             value.add(be);
             map.put(be.getElement(), value);
         }
 
-        for (final Entry<Booking, Collection<BookingEntry>> en : map.entrySet()) {
+        for (final Entry<BookingBean, Collection<BookingEntry>> en : map.entrySet()) {
             final LocalDate ci = en.getKey().getCheckIn();
 
             if (en.getKey().isSplitBooking()) {

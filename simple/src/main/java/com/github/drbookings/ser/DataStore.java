@@ -1,45 +1,41 @@
-package com.github.drbookings.ser;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.github.drbookings.ser;
 
 import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
 import com.github.drbookings.ui.CleaningEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @XmlRootElement
 public class DataStore {
@@ -59,7 +55,7 @@ public class DataStore {
 		return b;
 	}
 
-	public static BookingBeanSer transform(final Booking bb) {
+    public static BookingBeanSer transform(final BookingBean bb) {
 
 		final BookingBeanSer result = new BookingBeanSer();
 		result.checkInDate = bb.getCheckIn();
@@ -110,12 +106,12 @@ public class DataStore {
 
 	private final List<CleaningBeanSer> cleanings = new ArrayList<>();
 
-	public void load(final MainManager manager) throws OverbookingException {
-		final List<Booking> bookingsToAdd = new ArrayList<>();
+    public void load(final MainManager manager) {
+        final List<BookingBean> bookingsToAdd = new ArrayList<>();
 		for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
 				.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
 			try {
-				final Booking b = manager.createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+                final BookingBean b = manager.createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
 						bb.roomName, bb.source);
 				// b.setGrossEarnings(bb.grossEarnings);
 				b.setGrossEarningsExpression(bb.grossEarningsExpression);
@@ -153,7 +149,7 @@ public class DataStore {
 
 		for (final CleaningBeanSer cb : getCleaningsSer()) {
 
-			final Optional<Booking> b = manager.getBooking(cb.bookingId);
+            final Optional<BookingBean> b = manager.getBooking(cb.bookingId);
 			if (b.isPresent()) {
 				manager.addCleaning(cb.date, cb.name, b.get()).setCalendarIds(cb.calendarIds)
 						.setCleaningCosts(cb.cleaningCosts);

@@ -29,9 +29,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class BookingTest {
+public class BookingBeanTest {
 
-    private Booking b1, b2;
+    private BookingBean b1, b2;
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -41,13 +41,13 @@ public class BookingTest {
     public static void tearDownAfterClass() {
     }
 
-    public static Booking newInstance() {
+    public static BookingBean newInstance() {
         return newInstance(
                 LocalDate.of(2017, 06, 01), LocalDate.of(2017, 06, 04));
     }
 
-    public static Booking newInstance(LocalDate checkin, LocalDate checkout) {
-        return new Booking
+    public static BookingBean newInstance(LocalDate checkin, LocalDate checkout) {
+        return new BookingBean
                 (new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"),
                         checkin, checkout);
     }
@@ -64,7 +64,7 @@ public class BookingTest {
 
     @Test
     public void testNumberOfDaysAndNights01() {
-        final Booking b = new Booking(new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"),
+        final BookingBean b = new BookingBean(new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"),
                 LocalDate.of(2017, 06, 01), LocalDate.of(2017, 07, 01));
         assertEquals(31, b.getNumberOfDays());
         assertEquals(30, b.getNumberOfNights());
@@ -73,7 +73,7 @@ public class BookingTest {
 
     @Test
     public void testDateOfPayment01() {
-        final Booking b = newInstance();
+        final BookingBean b = newInstance();
         assertThat(b.isPaymentDone(), is(false));
         b.setPaymentDone(true);
         assertThat(b.isPaymentDone(), is(true));
@@ -81,7 +81,7 @@ public class BookingTest {
 
     @Test
     public void testDateOfPayment02() {
-        final Booking b = newInstance();
+        final BookingBean b = newInstance();
         assertThat(b.isPaymentDone(), is(false));
         assertThat(b.getDateOfPayment(), is(nullValue()));
         b.setPaymentDone(true);
@@ -90,7 +90,7 @@ public class BookingTest {
 
     @Test
     public void testDateOfPayment03() {
-        final Booking b = newInstance();
+        final BookingBean b = newInstance();
         assertThat(b.getDateOfPayment(), is(nullValue()));
         b.setDateOfPayment(LocalDate.of(2017, 12, 12));
         assertThat(b.getDateOfPayment(), is(LocalDate.of(2017, 12, 12)));
@@ -99,14 +99,14 @@ public class BookingTest {
 
     @Test
     public void testGrossEarnings01() {
-        final Booking b = newInstance();
+        final BookingBean b = newInstance();
         b.setGrossEarningsExpression("30");
         assertThat(b.getGrossEarnings(), is(30f));
     }
 
     @Test
     public void testNetEarnings01() {
-        final Booking b = newInstance();
+        final BookingBean b = newInstance();
         b.setGrossEarningsExpression("30");
         assertThat(b.getNetEarnings(), is(30f));
     }

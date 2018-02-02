@@ -71,7 +71,7 @@ public class DrBookingsApplication extends Application {
                     final File file = SettingsManager.getInstance().getDataFile();
                     fileChooser.setInitialDirectory(file.getParentFile());
                     fileChooser.getExtensionFilters().addAll(
-                            new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml")),
+                            new FileChooser.ExtensionFilter("Dr.BookingBean BookingBean Data", Arrays.asList("*.xml")),
                             new FileChooser.ExtensionFilter("All Files", "*"));
                     fileChooser.setTitle("Select File");
                     fileChooser.setInitialFileName(file.getName());

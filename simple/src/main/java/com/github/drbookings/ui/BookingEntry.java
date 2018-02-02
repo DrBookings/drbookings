@@ -22,7 +22,7 @@ package com.github.drbookings.ui;
 
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.*;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
 import javafx.beans.Observable;
@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-public class BookingEntry extends DateRoomEntry<Booking>
+public class BookingEntry extends DateRoomEntry<BookingBean>
 		implements NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
 	public static List<BookingEntry> checkInView(final Collection<? extends BookingEntry> bookings) {
@@ -82,7 +82,7 @@ public class BookingEntry extends DateRoomEntry<Booking>
 	 */
 	private final FloatProperty netEarnings = new SimpleFloatProperty();
 
-	public BookingEntry(final LocalDate date, final Booking booking) {
+    public BookingEntry(final LocalDate date, final BookingBean booking) {
 		super(date, booking.getRoom(), booking);
 		grossEarningsProperty().bind(Bindings.createObjectBinding(calculateGrossEarnings(),
 				getElement().grossEarningsProperty(), SettingsManager.getInstance().showNetEarningsProperty()));

@@ -1,34 +1,28 @@
-package com.github.drbookings.ical;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+package com.github.drbookings.ical;
 
+import com.github.drbookings.BookingFactory;
+import com.github.drbookings.excel.FileFormatBookingXLS;
+import com.github.drbookings.model.ser.BookingBeanSer;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -37,9 +31,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.BookingFactory;
-import com.github.drbookings.excel.FileFormatBookingXLS;
-import com.github.drbookings.model.ser.BookingBeanSer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class XlsxBookingFactory implements BookingFactory {
 
@@ -53,7 +50,7 @@ public class XlsxBookingFactory implements BookingFactory {
     }
 
     @Override
-    public Collection<BookingBeanSer> build() throws Exception {
+    public Collection<BookingBeanSer> build() {
 	final List<BookingBeanSer> bookings = new ArrayList<>();
 	FileInputStream stream = null;
 	Workbook workbook = null;
@@ -86,7 +83,7 @@ public class XlsxBookingFactory implements BookingFactory {
 		stati.add(FileFormatBookingXLS.getString(r.getCell(indexStatus)));
 	    }
 	    if (logger.isDebugEnabled()) {
-		logger.debug("Booking numbers: " + bookingNumbers);
+            logger.debug("BookingBean numbers: " + bookingNumbers);
 		logger.debug("Guest names: " + guestNames);
 		logger.debug("Check-in dates: " + bookingCheckIn);
 		logger.debug("Check-out dates: " + bookingCheckOut);

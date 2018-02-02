@@ -128,7 +128,7 @@ public class EarningsViewController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         netEarningsTotal.setName("Net Earnings");
         netProfitTotal.setName("Net Profit Total");
-//        netEarningsBooking.setName("Net Earnings Booking");
+//        netEarningsBooking.setName("Net Earnings BookingBean");
 //        netEarningsAirbnb.setName("Net Earnings Airbnb");
         longTermEarnings.setName("Net Earnings Long-term (>7d)");
         cleaningCosts.setName("Cleaning Costs");

@@ -28,9 +28,9 @@ import java.util.Collection;
 
 public class BookingMapFactory {
 
-    public static Multimap<Booking, BookingEntry> buildMap(Collection<? extends BookingEntry> entries) {
+    public static Multimap<BookingBean, BookingEntry> buildMap(Collection<? extends BookingEntry> entries) {
 
-        Multimap<Booking, BookingEntry> result = ArrayListMultimap.create();
+        Multimap<BookingBean, BookingEntry> result = ArrayListMultimap.create();
 
         for (BookingEntry be : entries) {
             result.put(be.getElement(), be);

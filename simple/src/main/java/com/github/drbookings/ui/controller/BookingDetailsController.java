@@ -1,11 +1,8 @@
-package com.github.drbookings.ui.controller;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
@@ -19,27 +16,12 @@ package com.github.drbookings.ui.controller;
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
 
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CleaningEntry;
@@ -47,25 +29,15 @@ import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -73,6 +45,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.converter.NumberStringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class BookingDetailsController implements Initializable {
 
@@ -84,7 +64,20 @@ public class BookingDetailsController implements Initializable {
 		this.manager = manager;
 	}
 
-	private static void addDates(final HBox content, final Booking be) {
+    private final Map<BookingBean, TextInputControl> booking2CheckInNote = new HashMap<>();
+    private final Map<BookingBean, TextInputControl> booking2CheckOutNote = new HashMap<>();
+    private final Map<BookingBean, TextInputControl> booking2SpecialRequestNote = new HashMap<>();
+
+    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
+
+    @FXML
+    private VBox content;
+    private final Map<BookingBean, TextInputControl> booking2GrossEarnings = new HashMap<>();
+    private final Map<BookingBean, CheckBox> booking2WelcomeMail = new HashMap<>();
+    private final Map<BookingBean, CheckBox> booking2Payment = new HashMap<>();
+    private final Map<BookingBean, DatePicker> booking2PaymentDate = new HashMap<>();
+
+    private static void addDates(final HBox content, final BookingBean be) {
 		final TextFlow checkIn = LocalDates.getDateText(be.getCheckIn());
 		final TextFlow checkOut = LocalDates.getDateText(be.getCheckOut());
 		final TextFlow year = LocalDates.getYearText(be.getCheckOut());
@@ -96,7 +89,7 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private static void addName(final HBox content, final Booking be) {
+    private static void addName(final HBox content, final BookingBean be) {
 		final Label label = new Label(be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
 		label.setWrapText(true);
 		content.getChildren().add(label);
@@ -104,58 +97,15 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private static void addNights(final HBox content, final Booking be) {
+    private static void addNights(final HBox content, final BookingBean be) {
 		final Text label = new Text(be.getNumberOfNights() + " nights");
 		content.getChildren().add(label);
 		// HBox.setHgrow(label, Priority.SOMETIMES);
 	}
 
-	private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
-
-	@FXML
-	private VBox content;
-
-	private final Map<Booking, TextInputControl> booking2CheckInNote = new HashMap<>();
-
-	private final Map<Booking, TextInputControl> booking2CheckOutNote = new HashMap<>();
-
-	private final Map<Booking, TextInputControl> booking2SpecialRequestNote = new HashMap<>();
-
-	private final Map<Booking, TextInputControl> booking2GrossEarnings = new HashMap<>();
-
-	private final Map<Booking, CheckBox> booking2WelcomeMail = new HashMap<>();
-
-	private final Map<Booking, CheckBox> booking2Payment = new HashMap<>();
-
-	private final Map<Booking, DatePicker> booking2PaymentDate = new HashMap<>();
-
 	private MainManager manager;
 
-	private void addCheckInNote(final Pane content, final Booking be) {
-		final VBox b = new VBox();
-		b.getChildren().add(new Text("Check-in Note"));
-		final TextArea ta0 = new TextArea(be.getCheckInNote());
-		ta0.setWrapText(true);
-		ta0.setPrefHeight(80);
-		b.getChildren().add(ta0);
-		booking2CheckInNote.put(be, ta0);
-		content.getChildren().add(b);
-
-	}
-
-	private void addCheckOutNote(final Pane content, final Booking be) {
-		final VBox b = new VBox();
-		b.getChildren().add(new Text("Check-out Note"));
-		final TextArea ta0 = new TextArea(be.getCheckOutNote());
-		ta0.setWrapText(true);
-		ta0.setPrefHeight(80);
-		b.getChildren().add(ta0);
-		booking2CheckOutNote.put(be, ta0);
-		content.getChildren().add(b);
-
-	}
-
-	private static void addRow0(final Pane content, final Booking be) {
+    private static void addRow0(final Pane content, final BookingBean be) {
 		final HBox box = new HBox();
 		final HBox boxName = new HBox();
 		final HBox boxDates = new HBox();
@@ -184,7 +134,55 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private void addRow1(final Pane content, final Booking be) {
+    private static void addRow2(final Pane content, final BookingBean be) {
+
+    }
+
+    private static void addRow4(final Pane content, final BookingBean be) {
+        final HBox box = new HBox();
+        box.setPadding(new Insets(4));
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setFillHeight(true);
+        final TextFlow tf = new TextFlow();
+        final Text t0 = new Text("Net Earnings: \t");
+        final Text netEarnings = new Text(String.format("%3.2f", be.getNetEarnings()));
+        final Text t1 = new Text("€ total \t");
+        final Text netEarningsDay = new Text(String.format("%3.2f", be.getNetEarnings() / be.getNumberOfNights()));
+        final Text t2 = new Text("€ /night");
+        tf.getChildren().addAll(t0, netEarnings, t1, netEarningsDay, t2);
+        box.getChildren().addAll(tf);
+        if (be.getNetEarnings() <= 0) {
+            box.getStyleClass().addAll("warning", "warning-bg");
+        }
+        content.getChildren().add(box);
+
+    }
+
+    private void addCheckInNote(final Pane content, final BookingBean be) {
+        final VBox b = new VBox();
+        b.getChildren().add(new Text("Check-in Note"));
+        final TextArea ta0 = new TextArea(be.getCheckInNote());
+        ta0.setWrapText(true);
+        ta0.setPrefHeight(80);
+        b.getChildren().add(ta0);
+        booking2CheckInNote.put(be, ta0);
+        content.getChildren().add(b);
+
+    }
+
+    private void addCheckOutNote(final Pane content, final BookingBean be) {
+        final VBox b = new VBox();
+        b.getChildren().add(new Text("Check-out Note"));
+        final TextArea ta0 = new TextArea(be.getCheckOutNote());
+        ta0.setWrapText(true);
+        ta0.setPrefHeight(80);
+        b.getChildren().add(ta0);
+        booking2CheckOutNote.put(be, ta0);
+        content.getChildren().add(b);
+
+    }
+
+    private void addRow1(final Pane content, final BookingBean be) {
 		final VBox box = new VBox();
 		final HBox box0 = new HBox();
 		final HBox box1 = new HBox();
@@ -203,11 +201,15 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private static void addRow2(final Pane content, final Booking be) {
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
 
-	}
+    private static final int prefTextInputFieldWidth = 80;
 
-	private void addRowNetEarnings(final Pane content, final Booking be) {
+    private static final int boxSpacing = 4;
+
+    private static final Insets boxPadding = new Insets(boxSpacing);
+
+    private void addRowNetEarnings(final Pane content, final BookingBean be) {
 		final HBox box = new HBox();
 		box.setSpacing(boxSpacing);
 		box.setPadding(boxPadding);
@@ -227,15 +229,7 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private static final DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-
-	private static final int prefTextInputFieldWidth = 80;
-
-	private static final int boxSpacing = 4;
-
-	private static final Insets boxPadding = new Insets(boxSpacing);
-
-	private void addRowFees(final Pane content, final Booking be) {
+    private void addRowFees(final Pane content, final BookingBean be) {
 		final HBox box = new HBox();
 
 		// configure box
@@ -297,27 +291,7 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private static void addRow4(final Pane content, final Booking be) {
-		final HBox box = new HBox();
-		box.setPadding(new Insets(4));
-		box.setAlignment(Pos.CENTER_LEFT);
-		box.setFillHeight(true);
-		final TextFlow tf = new TextFlow();
-		final Text t0 = new Text("Net Earnings: \t");
-		final Text netEarnings = new Text(String.format("%3.2f", be.getNetEarnings()));
-		final Text t1 = new Text("€ total \t");
-		final Text netEarningsDay = new Text(String.format("%3.2f", be.getNetEarnings() / be.getNumberOfNights()));
-		final Text t2 = new Text("€ /night");
-		tf.getChildren().addAll(t0, netEarnings, t1, netEarningsDay, t2);
-		box.getChildren().addAll(tf);
-		if (be.getNetEarnings() <= 0) {
-			box.getStyleClass().addAll("warning", "warning-bg");
-		}
-		content.getChildren().add(box);
-
-	}
-
-	private void addRow5(final Pane content, final Booking be) {
+    private void addRow5(final Pane content, final BookingBean be) {
 		final HBox box = new HBox();
 		box.setPadding(new Insets(4));
 		box.setFillHeight(true);
@@ -364,7 +338,7 @@ public class BookingDetailsController implements Initializable {
 		content.getChildren().add(bb);
 	}
 
-	private void addSpecialRequestNote(final Pane content, final Booking be) {
+    private void addSpecialRequestNote(final Pane content, final BookingBean be) {
 		final VBox b = new VBox();
 		b.getChildren().add(new Text("Special Requests"));
 		final TextArea ta0 = new TextArea(be.getSpecialRequestNote());
@@ -392,27 +366,27 @@ public class BookingDetailsController implements Initializable {
 
 	@FXML
 	public void handleActionSaveBookingDetails(final ActionEvent e) {
-		for (final Entry<Booking, TextInputControl> en : booking2CheckInNote.entrySet()) {
+        for (final Entry<BookingBean, TextInputControl> en : booking2CheckInNote.entrySet()) {
 			en.getKey().setCheckInNote(en.getValue().getText());
 		}
-		for (final Entry<Booking, TextInputControl> en : booking2CheckOutNote.entrySet()) {
+        for (final Entry<BookingBean, TextInputControl> en : booking2CheckOutNote.entrySet()) {
 			en.getKey().setCheckOutNote(en.getValue().getText());
 		}
-		for (final Entry<Booking, TextInputControl> en : booking2SpecialRequestNote.entrySet()) {
+        for (final Entry<BookingBean, TextInputControl> en : booking2SpecialRequestNote.entrySet()) {
 			en.getKey().setSpecialRequestNote(en.getValue().getText());
 		}
-		for (final Entry<Booking, TextInputControl> en : booking2GrossEarnings.entrySet()) {
+        for (final Entry<BookingBean, TextInputControl> en : booking2GrossEarnings.entrySet()) {
 			en.getKey().setGrossEarningsExpression(en.getValue().getText());
 		}
 
-		for (final Entry<Booking, CheckBox> en : booking2WelcomeMail.entrySet()) {
+        for (final Entry<BookingBean, CheckBox> en : booking2WelcomeMail.entrySet()) {
 			en.getKey().setWelcomeMailSend(en.getValue().isSelected());
 		}
 		// first date, then flag! Wont work otherwise
-		for (final Entry<Booking, DatePicker> en : booking2PaymentDate.entrySet()) {
+        for (final Entry<BookingBean, DatePicker> en : booking2PaymentDate.entrySet()) {
 			en.getKey().setDateOfPayment(en.getValue().getValue());
 		}
-		for (final Entry<Booking, CheckBox> en : booking2Payment.entrySet()) {
+        for (final Entry<BookingBean, CheckBox> en : booking2Payment.entrySet()) {
 			en.getKey().setPaymentDone(en.getValue().isSelected());
 		}
 		// final Stage stage = (Stage) content.getScene().getWindow();
@@ -422,20 +396,20 @@ public class BookingDetailsController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
-		SettingsManager.getInstance().cleaningFeesProperty().addListener((ChangeListener<Number>) (observable, oldValue,
-				newValue) -> update(RoomBeanSelectionManager.getInstance().getSelection()));
+        SettingsManager.getInstance().cleaningFeesProperty().addListener((observable, oldValue,
+                                                                          newValue) -> update(RoomBeanSelectionManager.getInstance().getSelection()));
 		update(RoomBeanSelectionManager.getInstance().getSelection());
 
 	}
 
 	private void update(final Collection<? extends RoomBean> rooms) {
 		clearAll();
-		final List<Booking> bookings = new ArrayList<>(
+        final List<BookingBean> bookings = new ArrayList<>(
 				rooms.stream().flatMap(r -> r.getFilteredBookingEntries().stream().map(b -> b.getElement()))
 						.collect(Collectors.toSet()));
 		Collections.sort(bookings);
-		for (final Iterator<Booking> it = bookings.iterator(); it.hasNext();) {
-			final Booking be = it.next();
+        for (final Iterator<BookingBean> it = bookings.iterator(); it.hasNext(); ) {
+            final BookingBean be = it.next();
 			addBookingEntry(be);
 			if (it.hasNext()) {
 				addSeparator();
@@ -443,7 +417,7 @@ public class BookingDetailsController implements Initializable {
 		}
 	}
 
-	private void addBookingEntry(final Booking be) {
+    private void addBookingEntry(final BookingBean be) {
 		// System.err.println("Adding entry for " + be);
 		final VBox box = new VBox(4);
 		// box.setPadding(new Insets(4));
@@ -464,7 +438,7 @@ public class BookingDetailsController implements Initializable {
 
 	}
 
-	private void addModifyButton(final VBox box, final Booking be) {
+    private void addModifyButton(final VBox box, final BookingBean be) {
 		final Button b = new Button();
 		b.setText("Modify");
 		b.setPrefWidth(100);

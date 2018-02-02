@@ -52,7 +52,7 @@ public class MainManager {
 
     private final BookingOriginProvider bookingOriginProvider;
 
-    private final List<Booking> bookings;
+    private final List<BookingBean> bookings;
 
     private final Multimap<LocalDate, CleaningEntry> cleaningEntries;
 
@@ -108,7 +108,7 @@ public class MainManager {
         return Optional.empty();
     }
 
-    public synchronized Booking addBooking(final Booking booking) throws OverbookingException {
+    public synchronized BookingBean addBooking(final BookingBean booking) throws OverbookingException {
         for (final BookingEntry b : Bookings.toEntries(booking)) {
             if (roomBusy(b)) {
                 throw new OverbookingException("Cannot add " + booking);
@@ -130,9 +130,9 @@ public class MainManager {
     }
 
     public synchronized CleaningEntry addCleaning(final LocalDate date, final String cleaningName,
-                                                  final Booking booking) {
+                                                  final BookingBean booking) {
         Objects.requireNonNull(date, "Date must not be null");
-        Objects.requireNonNull(booking, "Booking must not be null");
+        Objects.requireNonNull(booking, "BookingBean must not be null");
         if (cleaningName == null || cleaningName.trim().length() == 0) {
             throw new IllegalArgumentException();
         }
@@ -160,11 +160,11 @@ public class MainManager {
         return addCleaning(date, cleaningName, findBooking(date, roomName));
     }
 
-    private Booking findBooking(final LocalDate date, final String roomName) throws MatchException {
+    private BookingBean findBooking(final LocalDate date, final String roomName) throws MatchException {
         final int maxCount = 100;
         int count = 0;
         LocalDate date2 = date;
-        Collection<Booking> result2 = null;
+        Collection<BookingBean> result2 = null;
         do {
             result2 = bookingEntries.get(date2).stream().filter(b -> b.getRoom().getName().equals(roomName))
                     .filter(b -> !b.isCheckIn()).map(b -> b.getElement()).collect(Collectors.toSet());
@@ -247,8 +247,8 @@ public class MainManager {
         uiDataMap.clear();
     }
 
-    public boolean containsBookingByNameAndDate(final Booking booking) {
-        for (final Booking b : bookings) {
+    public boolean containsBookingByNameAndDate(final BookingBean booking) {
+        for (final BookingBean b : bookings) {
             if (b.getGuest().getName().equals(booking.getGuest().getName())
                     && b.getCheckIn().equals(booking.getCheckIn()) && b.getCheckOut().equals(booking.getCheckOut())) {
                 return true;
@@ -267,9 +267,8 @@ public class MainManager {
         return false;
     }
 
-    public synchronized Booking createBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
-                                              final String guestName, final String roomName, final String originName)
-            throws OverbookingException {
+    public synchronized BookingBean createBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
+                                                  final String guestName, final String roomName, final String originName) {
         return createBooking(null, checkInDate, checkOutDate, guestName, roomName, originName);
     }
 
@@ -285,8 +284,8 @@ public class MainManager {
      * @return
      * @throws OverbookingException
      */
-    public synchronized Booking createBooking(final String id, final LocalDate checkInDate,
-                                              final LocalDate checkOutDate, final String guestName, final String
+    public synchronized BookingBean createBooking(final String id, final LocalDate checkInDate,
+                                                  final LocalDate checkOutDate, final String guestName, final String
                                                       roomName, final String originName) {
         Objects.requireNonNull(checkInDate);
         Objects.requireNonNull(checkOutDate);
@@ -299,7 +298,7 @@ public class MainManager {
         final Guest guest = guestProvider.getOrCreateElement(guestName);
         final Room room = roomProvider.getOrCreateElement(roomName);
         final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
-        final Booking booking = new Booking(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
+        final BookingBean booking = new BookingBean(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
         return booking;
     }
 
@@ -332,7 +331,7 @@ public class MainManager {
         return Collections.unmodifiableCollection(bookingEntries.get(date));
     }
 
-    public synchronized List<Booking> getBookings() {
+    public synchronized List<BookingBean> getBookings() {
         return bookings;
     }
 
@@ -389,10 +388,10 @@ public class MainManager {
     // return true;
     // }
 
-    public void modifyBooking(final Booking booking, final LocalDate checkInDate, final LocalDate checkOutDate)
+    public void modifyBooking(final BookingBean booking, final LocalDate checkInDate, final LocalDate checkOutDate)
             throws OverbookingException {
         removeBooking(booking);
-        final Booking newBooking = new Booking(booking.getId(), booking.getGuest(), booking.getRoom(),
+        final BookingBean newBooking = new BookingBean(booking.getId(), booking.getGuest(), booking.getRoom(),
                 booking.getBookingOrigin(), checkInDate, checkOutDate);
         newBooking.setCheckInNote(booking.getCheckInNote());
         newBooking.setCheckOutNote(booking.getCheckOutNote());
@@ -419,15 +418,15 @@ public class MainManager {
     public synchronized boolean needsCleaning(final String roomName, final LocalDate date) {
         final Collection<BookingEntry> bookings = bookingEntries.get(date);
         final Stream<BookingEntry> sbe = bookings.stream().filter(be -> be.getRoom().getName().equals(roomName));
-        final Stream<Booking> sb = sbe.map(be -> be.getElement());
+        final Stream<BookingBean> sb = sbe.map(be -> be.getElement());
         return sb.anyMatch(b -> b.getCleaning() == null);
     }
 
-    public synchronized boolean removeBooking(final Booking booking) {
+    public synchronized boolean removeBooking(final BookingBean booking) {
         return removeBookings(Arrays.asList(booking));
     }
 
-    public synchronized boolean removeBookings(final List<Booking> bookings) {
+    public synchronized boolean removeBookings(final List<BookingBean> bookings) {
         this.bookings.removeAll(bookings);
         for (final Iterator<BookingEntry> it = bookingEntries.values().iterator(); it.hasNext(); ) {
             final BookingEntry be = it.next();
@@ -436,7 +435,7 @@ public class MainManager {
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Booking entries now " + bookingEntries.size());
+            logger.debug("BookingBean entries now " + bookingEntries.size());
         }
         final boolean result = this.bookings.removeAll(bookings);
         if (logger.isDebugEnabled()) {
@@ -461,12 +460,12 @@ public class MainManager {
         removeUiDataCleaning(cleaningEntry);
     }
 
-    private void removeUiDataBooking(final Collection<? extends Booking> bookings) {
+    private void removeUiDataBooking(final Collection<? extends BookingBean> bookings) {
         for (final DateBean e : uiData) {
             for (final RoomBean r : e.getRooms()) {
                 for (final Iterator<BookingEntry> it = r.getBookingEntries().iterator(); it.hasNext(); ) {
                     final BookingEntry be = it.next();
-                    for (final Booking bb : bookings) {
+                    for (final BookingBean bb : bookings) {
                         if (be.getElement().equals(bb)) {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Removing " + be);
@@ -514,8 +513,8 @@ public class MainManager {
         return false;
     }
 
-    public Optional<Booking> getBooking(final String bookingId) {
-        final Collection<Booking> c = bookings.stream().filter(b -> b.getId().equals(bookingId))
+    public Optional<BookingBean> getBooking(final String bookingId) {
+        final Collection<BookingBean> c = bookings.stream().filter(b -> b.getId().equals(bookingId))
                 .collect(Collectors.toSet());
         if (!c.isEmpty()) {
             if (c.size() > 1) {

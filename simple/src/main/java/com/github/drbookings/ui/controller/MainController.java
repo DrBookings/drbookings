@@ -26,7 +26,7 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
@@ -239,7 +239,7 @@ public class MainController implements Initializable {
                     if (rb.isEmpty()) {
                         continue;
                     }
-                    final Booking booking = rb.getFilteredBookingEntries().get(0).getElement();
+                    final BookingBean booking = rb.getFilteredBookingEntries().get(0).getElement();
                     if (logger.isDebugEnabled()) {
                         logger.debug("Deleting " + booking);
                     }
@@ -467,13 +467,13 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItemOpenBookingExcel(final ActionEvent event) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Opening Booking Excel");
+            logger.debug("Opening BookingBean Excel");
         }
         final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Excel", Arrays.asList("*.xls", "*.XLS")),
                 new FileChooser.ExtensionFilter("All Files", "*"));
-        fileChooser.setTitle("Open Booking Excel");
+        fileChooser.setTitle("Open BookingBean Excel");
         final File file = fileChooser.showOpenDialog(node.getScene().getWindow());
         if (file != null) {
             final BookingReaderService reader = new BookingReaderService(getManager(), new XlsxBookingFactory(file));
@@ -641,7 +641,7 @@ public class MainController implements Initializable {
         final File file = SettingsManager.getInstance().getDataFile();
         fileChooser.setInitialDirectory(file.getParentFile());
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Dr.Booking Booking Data", Arrays.asList("*.xml", "*.XML")),
+                new FileChooser.ExtensionFilter("Dr.BookingBean BookingBean Data", Arrays.asList("*.xml", "*.XML")),
                 new FileChooser.ExtensionFilter("All Files", "*"));
         fileChooser.setTitle("Open Resource File");
         fileChooser.setInitialFileName(file.getName());
@@ -834,7 +834,7 @@ public class MainController implements Initializable {
             stage.setWidth(300);
             stage.setHeight(600);
             final Scene scene = new Scene(root);
-            stage.setTitle("Add Booking");
+            stage.setTitle("Add BookingBean");
             stage.setScene(scene);
             final AddBookingController c = loader.getController();
             c.setManager(manager);

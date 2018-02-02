@@ -1,32 +1,30 @@
-package com.github.drbookings.ui;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.ui;
+
+import com.github.drbookings.model.data.BookingBean;
 
 import java.util.function.Predicate;
 
-import com.github.drbookings.model.data.Booking;
-
-public class BookingFilter2 implements Predicate<Booking> {
+public class BookingFilter2 implements Predicate<BookingBean> {
 
     private String filterString;
 
@@ -43,7 +41,7 @@ public class BookingFilter2 implements Predicate<Booking> {
     }
 
     @Override
-    public boolean test(final Booking t) {
+    public boolean test(final BookingBean t) {
 	if (filterString == null || filterString.length() < 1) {
 	    return true;
 	}

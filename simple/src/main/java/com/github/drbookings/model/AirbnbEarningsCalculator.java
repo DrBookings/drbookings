@@ -20,7 +20,7 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingMapFactory;
 import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Multimap;
@@ -48,11 +48,11 @@ public class AirbnbEarningsCalculator extends EarningsCalculator {
 
         double result = 0;
 
-        Multimap<Booking, BookingEntry> bookingMap = BookingMapFactory.buildMap(bookings);
+        Multimap<BookingBean, BookingEntry> bookingMap = BookingMapFactory.buildMap(bookings);
 
         long nightsToPay = getNightsToPay();
 
-        for (Map.Entry<Booking, Collection<BookingEntry>> e : bookingMap.asMap().entrySet()) {
+        for (Map.Entry<BookingBean, Collection<BookingEntry>> e : bookingMap.asMap().entrySet()) {
             long nightsBooked = e.getKey().getNumberOfNights();
             if (nightsBooked > nightsToPay) {
                 double nightly = getNightly(e.getKey());
@@ -72,7 +72,7 @@ public class AirbnbEarningsCalculator extends EarningsCalculator {
 
     }
 
-    private float getNightly(Booking booking) {
+    private float getNightly(BookingBean booking) {
         return booking.getNetEarnings() / booking.getNumberOfNights();
     }
 

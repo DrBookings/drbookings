@@ -1,54 +1,46 @@
-package com.github.drbookings.ui.controller;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
+ *
  * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.ui.controller;
+
+import com.github.drbookings.LocalDates;
+import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.ui.UIUtils;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.LocalDates;
-import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.data.Booking;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.UIUtils;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 public class AddBookingController implements Initializable {
 
@@ -106,7 +98,7 @@ public class AddBookingController implements Initializable {
 		final boolean valid = validateInput();
 		if (valid) {
 			try {
-				final Booking b = getManager().createBooking(datePickerCheckIn.getValue(),
+                final BookingBean b = getManager().createBooking(datePickerCheckIn.getValue(),
 						datePickerCheckOut.getValue(), textFieldGuestName.getText().trim(),
 						comboBoxRoom.getSelectionModel().getSelectedItem(), textFieldSource.getText().trim());
 				b.setGrossEarningsExpression(getGrossEarnings() + "");
@@ -170,7 +162,7 @@ public class AddBookingController implements Initializable {
 		}
 		comboBoxRoom.getItems().addAll(numbers);
 		textFieldGrossEarnings.textProperty()
-				.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateInfoLabel());
+                .addListener((observable, oldValue, newValue) -> updateInfoLabel());
 		textFieldServiceFees.setText(String.format("%4.2f", SettingsManager.getInstance().getServiceFees()));
 		textFieldServiceFeesPercent
 				.setText(String.format("%4.2f", SettingsManager.getInstance().getServiceFeesPercent()));

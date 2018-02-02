@@ -20,7 +20,7 @@
 
 package com.github.drbookings.google;
 
-import com.github.drbookings.model.data.Booking;
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CleaningEntry;
@@ -88,7 +88,7 @@ public class GoogleCalendarSync {
 
     }
 
-    private static void addCheckInEvent(final Booking b) throws IOException {
+    private static void addCheckInEvent(final BookingBean b) throws IOException {
         final CalendarListEntry flats = getCalendar();
         String note = "Checkin: ";
         if (b.getCheckInNote() != null) {
@@ -102,7 +102,7 @@ public class GoogleCalendarSync {
         b.addCalendarId(addEvent(flats.getId(), checkInEvent));
     }
 
-    private static void addCheckOutEvent(final Booking b) throws IOException {
+    private static void addCheckOutEvent(final BookingBean b) throws IOException {
         final CalendarListEntry flats = getCalendar();
         String note = "Checkout: ";
         if (b.getCheckOutNote() != null) {
@@ -155,7 +155,7 @@ public class GoogleCalendarSync {
                 .authorize("557837674207-61uehop5b0u5enflhc7ata9a75sf731e.apps.googleusercontent.com");
     }
 
-    private static void clearEvent(final String calendarId, final Booking b) throws IOException {
+    private static void clearEvent(final String calendarId, final BookingBean b) throws IOException {
         for (final Iterator<String> it = b.getCalendarIds().iterator(); it.hasNext(); ) {
             final String id = it.next();
             final Delete d = client.events().delete(calendarId, id);
@@ -193,15 +193,15 @@ public class GoogleCalendarSync {
         return null;
     }
 
-    private static String getCheckInSummary(final Booking b) {
+    private static String getCheckInSummary(final BookingBean b) {
         return getEventSummary("Check-in ", b);
     }
 
-    private static String getCheckOutSummary(final Booking b) {
+    private static String getCheckOutSummary(final BookingBean b) {
         return getEventSummary("Check-out ", b);
     }
 
-    private static String getEventSummary(final String prefix, final Booking b) {
+    private static String getEventSummary(final String prefix, final BookingBean b) {
         return prefix + SettingsManager.getInstance().getRoomNamePrefix() + b.getRoom().getName() + " "
                 + b.getBookingOrigin().getName();
     }
@@ -296,7 +296,7 @@ public class GoogleCalendarSync {
     }
 
     private void writeBookings() throws IOException {
-        for (final Booking b : manager.getBookings()) {
+        for (final BookingBean b : manager.getBookings()) {
             if (b.getCheckIn().isAfter(LocalDate.now().minusDays(getDaysBehind()))
                     && b.getCheckIn().isBefore(LocalDate.now().plusDays(getDaysAhead()))) {
                 addCheckInEvent(b);
