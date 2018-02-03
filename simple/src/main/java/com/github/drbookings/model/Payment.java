@@ -20,10 +20,14 @@
 
 package com.github.drbookings.model;
 
+import com.github.drbookings.model.ser.PaymentSer;
+
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 public class Payment {
 
@@ -67,5 +71,13 @@ public class Payment {
 
     public MonetaryAmount getAmount() {
         return amount;
+    }
+
+    public static List<Payment> transform(List<? extends PaymentSer> paymentsSoFar) {
+        List<Payment> result = new ArrayList<>();
+        for (PaymentSer ps : paymentsSoFar) {
+            result.add(new Payment(ps.date, ps.amount));
+        }
+        return result;
     }
 }
