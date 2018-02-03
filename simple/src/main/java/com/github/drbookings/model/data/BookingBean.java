@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 public class BookingBean extends IDed
-        implements Comparable<BookingBean>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
+    implements Comparable<BookingBean>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
     private static final Logger logger = LoggerFactory.getLogger(BookingBean.class);
@@ -101,9 +101,9 @@ public class BookingBean extends IDed
 
     public static Callback<BookingBean, Observable[]> extractor() {
         return param -> new Observable[]{param.serviceFeeProperty(), param.serviceFeesPercentProperty(),
-                param.grossEarningsProperty(), param.cleaningProperty(), param.netEarningsProperty(),
-                param.checkInNoteProperty(), param.checkOutNoteProperty(), param.specialRequestNoteProperty(),
-                param.paymentDoneProperty(), param.welcomeMailSendProperty(), param.dateOfPaymentProperty()};
+            param.grossEarningsProperty(), param.cleaningProperty(), param.netEarningsProperty(),
+            param.checkInNoteProperty(), param.checkOutNoteProperty(), param.specialRequestNoteProperty(),
+            param.paymentDoneProperty(), param.welcomeMailSendProperty(), param.dateOfPaymentProperty()};
     }
 
     public ReadOnlyDoubleProperty paymentSoFarProperty() {
@@ -146,10 +146,10 @@ public class BookingBean extends IDed
         // logger.debug("Binding on " + Thread.currentThread().getName());
         // }
         grossEarningsProperty()
-                .bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
+            .bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
         netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
-                cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(), cleaningProperty(),
-                SettingsManager.getInstance().showNetEarningsProperty()));
+            cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(), cleaningProperty(),
+            SettingsManager.getInstance().showNetEarningsProperty()));
         paymentDoneProperty().addListener((c, o, n) -> {
             if (n && getDateOfPayment() == null) {
                 setDateOfPayment(LocalDate.now());
@@ -157,6 +157,7 @@ public class BookingBean extends IDed
                 setDateOfPayment(null);
             }
         });
+
         dateOfPaymentProperty().addListener((c, o, n) -> {
             if (n != null) {
                 setPaymentDone(true);
@@ -165,6 +166,8 @@ public class BookingBean extends IDed
             }
         });
         paymentSoFar.bind(Bindings.createObjectBinding(calculatePaymentSoFar(), payments));
+
+
     }
 
     private Callable<Number> calculateNetEarnings() {
@@ -365,14 +368,14 @@ public class BookingBean extends IDed
     @Override
     public String toString() {
         return "BookingBean{" +
-                "checkIn=" + checkIn +
-                ",\tcheckOut=" + checkOut +
-                ",\tguest=" + guest +
-                ",\troom=" + room +
-                ",\tbookingOrigin=" + bookingOrigin +
-                ",\tcleaningFees=" + cleaningFees +
-                ",\tcleaning=" + cleaning +
-                '}';
+            "checkIn=" + checkIn +
+            ",\tcheckOut=" + checkOut +
+            ",\tguest=" + guest +
+            ",\troom=" + room +
+            ",\tbookingOrigin=" + bookingOrigin +
+            ",\tcleaningFees=" + cleaningFees +
+            ",\tcleaning=" + cleaning +
+            '}';
     }
 
     public BooleanProperty welcomeMailSendProperty() {
@@ -406,7 +409,7 @@ public class BookingBean extends IDed
     public BookingEntry getEntry(final LocalDate date) {
         if (date.isBefore(getCheckIn()) && date.isAfter(getCheckOut())) {
             throw new NoSuchElementException(
-                    "For date " + date + "checkin:" + getCheckIn() + ",checkout:" + getCheckOut());
+                "For date " + date + "checkin:" + getCheckIn() + ",checkout:" + getCheckOut());
         }
         return new BookingEntry(date, this);
     }
