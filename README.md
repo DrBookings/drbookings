@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/DrBookings/drbookings/branch/master/graph/badge.svg)](https://codecov.io/gh/DrBookings/drbookings)
 
 ### Booking managment through a rich graphical interface.
+#### (Others might call it simply 'the world's only Open Source Channel Manager)
 
 ## Features
 
