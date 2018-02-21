@@ -4,7 +4,7 @@
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://github.com/DrBookings/drbookings/blob/master/LICENCE.txt)
 [![codecov](https://codecov.io/gh/DrBookings/drbookings/branch/master/graph/badge.svg)](https://codecov.io/gh/DrBookings/drbookings)
 
-### Booking managment through a rich graphical interface.
+### Booking managment and analysis through a rich graphical interface.
 #### (Others might call it simply 'the world's only Open Source Channel Manager)
 
 ## Features
