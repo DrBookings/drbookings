@@ -166,6 +166,11 @@ public class BookingBean extends IDed
             }
         });
         paymentSoFar.bind(Bindings.createObjectBinding(calculatePaymentSoFar(), payments));
+        paymentSoFar.addListener((o, ov, nv) -> {
+            if (nv != null && nv.floatValue() > 0) {
+                setPaymentDone(true);
+            }
+        });
 
 
     }

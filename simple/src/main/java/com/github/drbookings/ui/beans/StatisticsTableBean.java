@@ -23,7 +23,6 @@ package com.github.drbookings.ui.beans;
  */
 
 import com.github.drbookings.model.data.BookingEntries;
-import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.BookingEntry;
 import com.google.common.collect.Range;
@@ -34,9 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 public class StatisticsTableBean {
 
@@ -145,17 +143,17 @@ public class StatisticsTableBean {
 	public static StatisticsTableBean buildSum(final Collection<StatisticsTableBean> data) {
 		final StatisticsTableBean result = new StatisticsTableBean(false);
 		result.setOrigin("sum");
-        result.setNumberOfPayedNights(data.stream().mapToInt(b -> b.getNumberOfPayedNights()).sum());
-        result.setNumberOfPayedBookings(data.stream().mapToInt(b -> b.getNumberOfPayedBookings()).sum());
-        result.setCleaningCount(data.stream().mapToInt(b -> b.getCleaningCount()).sum());
-        result.setCleaningCosts((float) data.stream().mapToDouble(b -> b.getCleaningCosts()).sum());
-        result.setCleaningFees((float) data.stream().mapToDouble(b -> b.getCleaningFees()).sum());
-        result.setGrossIncome((float) data.stream().mapToDouble(b -> b.getGrossEarnings()).sum());
-        result.setNetIncome((float) data.stream().mapToDouble(b -> b.getNetIncome()).sum());
-        result.setServiceFees((float) data.stream().mapToDouble(b -> b.getServiceFees()).sum());
-        result.setEarnings((float) data.stream().mapToDouble(b -> b.getEarnings()).sum());
-        result.setEarningsPayout((float) data.stream().mapToDouble(b -> b.getEarningsPayout()).sum());
-        result.setNetEarnings((float) data.stream().mapToDouble(b -> b.getNetEarnings()).sum());
+        result.setNumberOfPayedNights(data.stream().mapToInt(StatisticsTableBean::getNumberOfPayedNights).sum());
+        result.setNumberOfPayedBookings(data.stream().mapToInt(StatisticsTableBean::getNumberOfPayedBookings).sum());
+        result.setCleaningCount(data.stream().mapToInt(StatisticsTableBean::getCleaningCount).sum());
+        result.setCleaningCosts((float) data.stream().mapToDouble(StatisticsTableBean::getCleaningCosts).sum());
+        result.setCleaningFees((float) data.stream().mapToDouble(StatisticsTableBean::getCleaningFees).sum());
+        result.setGrossIncome((float) data.stream().mapToDouble(StatisticsTableBean::getGrossEarnings).sum());
+        result.setNetIncome((float) data.stream().mapToDouble(StatisticsTableBean::getNetIncome).sum());
+        result.setServiceFees((float) data.stream().mapToDouble(StatisticsTableBean::getServiceFees).sum());
+        result.setEarnings((float) data.stream().mapToDouble(StatisticsTableBean::getEarnings).sum());
+        result.setEarningsPayout((float) data.stream().mapToDouble(StatisticsTableBean::getEarningsPayout).sum());
+        result.setNetEarnings((float) data.stream().mapToDouble(StatisticsTableBean::getNetEarnings).sum());
         return result;
 
 	}

@@ -32,6 +32,7 @@ import javax.money.MonetaryAmountFactory;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AirbnbEarningsCalculator extends EarningsCalculator {
@@ -68,12 +69,28 @@ public class AirbnbEarningsCalculator extends EarningsCalculator {
         }
         MonetaryAmountFactory<?> moneyFactory = Monetary.getDefaultAmountFactory().setCurrency(DrBookingsApplication.DEFAULT_CURRENCY.getCurrencyCode());
         MonetaryAmount result = moneyFactory.setNumber(0).create();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Calculating earnings for\n" + bookings.stream().map(b -> b.toString()).collect(Collectors.joining("\n")));
+        }
         for (BookingBean b : bookings) {
             if (b.getNumberOfNights() > LocalDate.now().getMonth().minLength()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Days in month " + LocalDate.now().getMonth() + ": " + LocalDate.now().getMonth().minLength());
+                }
                 if (logger.isInfoEnabled()) {
                     logger.info("Airbnb long term booking, looking at manual registered payments");
                 }
-                result = result.add(moneyFactory.setNumber(b.getPaymentSoFar()).create());
+                Optional<Payment> op = Payments.getLastPayment(b.getPayments());
+                MonetaryAmount payment;
+                if (op.isPresent()) {
+                    payment = op.get().getAmount();
+                } else {
+                    payment = moneyFactory.setNumber(0).create();
+                }
+                if(logger.isDebugEnabled()){
+                    logger.debug("Payment is " + payment);
+                }
+                result = result.add(payment);
             } else
                 result = result.add(moneyFactory.setNumber(b.getEarnings(isNetEarnings())).create());
         }

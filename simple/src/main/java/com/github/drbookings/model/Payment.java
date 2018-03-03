@@ -80,4 +80,12 @@ public class Payment {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+            "date=" + date +
+            ", amount=" + amount +
+            '}';
+    }
 }
