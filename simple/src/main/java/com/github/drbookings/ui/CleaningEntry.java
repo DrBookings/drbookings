@@ -36,10 +36,6 @@ import java.util.Objects;
 public class CleaningEntry extends DateEntry<Cleaning> {
 
     private final FloatProperty cleaningCosts = new SimpleFloatProperty();
-    /**
-     * @deprecated Move away
-     */
-    @Deprecated
     private final MainManager mainManager;
     private final BookingBean booking;
     private List<String> calendarIds = new ArrayList<>();
@@ -63,7 +59,7 @@ public class CleaningEntry extends DateEntry<Cleaning> {
                 ", cleaningFees=" + booking.getCleaningFees() +
                 ", origin=" + booking.getBookingOrigin() +
                 ", guest=" + booking.getGuest() +
-                ", shortTime=" + isShortTime() +
+//                ", shortTime=" + isShortTime() +
                 ", date=" + getDate() +
                 ", element=" + getElement() +
                 '}';
