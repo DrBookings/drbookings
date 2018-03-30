@@ -20,7 +20,7 @@
 
 package com.github.drbookings;
 
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 
 import java.util.Collection;
 import java.util.Objects;

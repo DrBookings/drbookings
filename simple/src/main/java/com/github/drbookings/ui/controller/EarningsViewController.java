@@ -26,7 +26,7 @@ import com.github.drbookings.PaymentDateFilter;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.Range;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;

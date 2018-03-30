@@ -21,7 +21,7 @@
 package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.BookingEntryBin;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 

@@ -22,7 +22,6 @@ package com.github.drbookings.model;
 
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
 
 import java.time.LocalDate;
 import java.util.*;

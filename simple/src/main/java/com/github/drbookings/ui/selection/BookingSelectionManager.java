@@ -21,7 +21,7 @@
 package com.github.drbookings.ui.selection;
 
 import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.beans.RoomBean;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;

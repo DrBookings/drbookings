@@ -18,12 +18,12 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.ui;
+package com.github.drbookings.model;
 
 import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.*;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
+import com.github.drbookings.model.data.DateRoomEntry;
 import com.github.drbookings.model.settings.SettingsManager;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -85,7 +85,7 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
     /**
      * Creates a new {@code BookingEntry} for given date and from given parent.
      *
-     * @param date Date of this {@code BookingEntry}
+     * @param date    Date of this {@code BookingEntry}
      * @param booking parent for this {@code BookingEntry}
      */
     public BookingEntry(final LocalDate date, final BookingBean booking) {

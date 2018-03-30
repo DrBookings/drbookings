@@ -22,10 +22,9 @@ package com.github.drbookings.model.data;
 
 import com.github.drbookings.model.AirbnbEarningsCalculator;
 import com.github.drbookings.model.EarningsProvider;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CleaningEntry;
-import com.github.drbookings.ui.DateEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

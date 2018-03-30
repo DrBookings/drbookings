@@ -18,7 +18,10 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.ui;
+package com.github.drbookings.model.data;
+
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.ui.CleaningEntry;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -72,7 +75,7 @@ public class DateEntry<E> implements Comparable<DateEntry<E>> {
 
     @Override
     public String toString() {
-        return e.toString();
+        return getClass().getSimpleName() + ":"+e.toString();
     }
 
 }

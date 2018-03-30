@@ -21,7 +21,7 @@
 package com.github.drbookings;
 
 import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.Range;
 
 import java.time.LocalDate;

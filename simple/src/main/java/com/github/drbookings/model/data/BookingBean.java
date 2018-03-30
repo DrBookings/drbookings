@@ -24,7 +24,7 @@ import com.github.drbookings.Scripting;
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.*;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.CleaningEntry;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -40,6 +40,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+/**
+ * A booking.<br>
+ * That is, a certain period of time ({@link #getCheckIn()} -> {@link #getCheckOut()}), for which a certain guest ({@link Guest}) has booked a certain {@link Room}.<br>
+ * A {@code BookingBean} can be split into multiple {@link BookingEntry booking entries}.<br>
+ * {@code BookingBean} is used both in UI and Model.<br>
+ *
+ * @see BookingEntry
+ * @ee Guest
+ * @see Room
+ */
 public class BookingBean extends IDed
     implements Comparable<BookingBean>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
@@ -68,7 +78,7 @@ public class BookingBean extends IDed
     private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
     private final ListProperty<Payment> payments = new SimpleListProperty<>(FXCollections.observableArrayList());
     /**
-     * Set by the cleaning entry.
+     * Optional bi-di relationship owned by {@code CleaningEntry}
      */
     private final ObjectProperty<CleaningEntry> cleaning = new SimpleObjectProperty<>();
     private String externalId;
@@ -471,5 +481,4 @@ public class BookingBean extends IDed
 
         return !isPaymentDone() && lastMonth;
     }
-
 }

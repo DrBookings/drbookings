@@ -26,7 +26,7 @@ import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CurrencyCellValueFactory;
 import com.github.drbookings.ui.IntegerCellValueFactory;

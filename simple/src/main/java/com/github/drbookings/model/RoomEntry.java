@@ -18,43 +18,27 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.ui;
+package com.github.drbookings.model;
 
+import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.DateEntry;
 import com.github.drbookings.model.data.Room;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
-public class DateRoomEntry<E> extends DateEntry<E> {
+public class RoomEntry extends DateEntry<Room> {
 
-    private final Room room;
-
-    public DateRoomEntry(final LocalDate date, final Room room, final E element) {
-	super(date, element);
-	this.room = room;
+    public RoomEntry(LocalDate date, Room element) {
+        super(date, element);
     }
 
-    public Room getRoom() {
-	return room;
+    private Cleaning cleaning;
+
+    public Cleaning getCleaning() {
+        return cleaning;
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof DateRoomEntry)) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final DateRoomEntry<?> that = (DateRoomEntry<?>) o;
-        return Objects.equals(getRoom(), that.getRoom());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getRoom());
+    public void setCleaning(Cleaning cleaning) {
+        this.cleaning = cleaning;
     }
 }

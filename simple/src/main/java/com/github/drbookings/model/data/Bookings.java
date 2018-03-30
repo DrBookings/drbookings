@@ -21,7 +21,7 @@
 package com.github.drbookings.model.data;
 
 import com.github.drbookings.DateRange;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,6 +20,8 @@
 
 package com.github.drbookings.ui;
 
+import com.github.drbookings.model.BookingEntry;
+
 import java.util.Collection;
 import java.util.Iterator;
 

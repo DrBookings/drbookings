@@ -24,7 +24,6 @@ import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.data.Room;
-import com.github.drbookings.ui.BookingEntry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

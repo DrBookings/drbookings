@@ -22,7 +22,7 @@ package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.model.BinType;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;

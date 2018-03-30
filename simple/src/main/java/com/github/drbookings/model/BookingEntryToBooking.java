@@ -21,7 +21,6 @@
 package com.github.drbookings.model;
 
 import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.BookingEntry;
 
 import java.util.Arrays;
 import java.util.Collection;
