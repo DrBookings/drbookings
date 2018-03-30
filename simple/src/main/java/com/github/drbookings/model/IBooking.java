@@ -1,11 +1,8 @@
-package com.github.drbookings.model;
-
-/*-
- * #%L
+/*
  * DrBookings
- * %%
- * Copyright (C) 2016 - 2017 Alexander Kerner
- * %%
+ *
+ * Copyright (C) 2016 - 2018 Alexander Kerner
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
@@ -19,8 +16,9 @@ package com.github.drbookings.model;
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
- * #L%
  */
+
+package com.github.drbookings.model;
 
 import com.github.drbookings.model.data.BookingOrigin;
 
