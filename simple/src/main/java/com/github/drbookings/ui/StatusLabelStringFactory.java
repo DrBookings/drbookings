@@ -21,6 +21,7 @@
 package com.github.drbookings.ui;
 
 import com.github.drbookings.LocalDates;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.BookingEntryToBooking;
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.model.settings.SettingsManager;

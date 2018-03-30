@@ -1,4 +1,3 @@
-
 /*
  * DrBookings
  *
@@ -20,14 +19,6 @@
  */
 
 /**
- * Types in this package compose the application UI. Some types from {@link com.github.drbookings.model} are reused.
- * <p>
- * The UI is structured roughly as follows:
- * <ol>
- * <li>{@link com.github.drbookings.ui.beans.DateBean}</li>
- * <li>{@link com.github.drbookings.ui.beans.RoomBean}</li>
- * <li>{@link com.github.drbookings.model.BookingEntry}</li>
- * </ol>
- * </p>
+ * Types in this package compose the application model. Some of the types are used as well in the UI.
  */
-package com.github.drbookings.ui;
+package com.github.drbookings.model;
