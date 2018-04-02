@@ -21,16 +21,37 @@
 package com.github.drbookings.model.data.manager;
 
 import com.github.drbookings.DateRange;
-import com.github.drbookings.OverbookingException;
-import com.github.drbookings.model.data.*;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.RoomEntry;
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.BookingOrigin;
+import com.github.drbookings.model.data.Bookings;
+import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.Guest;
+import com.github.drbookings.model.data.MatchException;
+import com.github.drbookings.model.data.Room;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.ui.CleaningEntry;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,26 +59,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class MainManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MainManager.class);
 
     private final Multimap<LocalDate, BookingEntry> bookingEntries;
 
+    private final Multimap<LocalDate, RoomEntry> roomEntries;
+
     private final BookingOriginProvider bookingOriginProvider;
 
     private final List<BookingBean> bookings;
 
-    private final Multimap<LocalDate, CleaningEntry> cleaningEntries;
+    /**
+     * Room name -> Date -> Entry
+     */
+    private final Map<String, Map<LocalDate, CleaningEntry>> cleaningEntries;
 
-    private final ListProperty<CleaningEntry> cleaningEntriesList = new SimpleListProperty<>(
-            FXCollections.observableArrayList());
+    /**
+     * Used by the cleaning plan.
+     */
+    private final ReadOnlyListProperty<CleaningEntry> cleaningEntriesList = new SimpleListProperty<>(
+        FXCollections.observableArrayList());
 
     private final CleaningProvider cleaningProvider;
 
@@ -67,18 +90,25 @@ public class MainManager {
 
     private final RoomProvider roomProvider;
 
+    /**
+     * The 'main' UI data, i.e., the data elements/ rows in the main table.
+     */
     private final ListProperty<DateBean> uiData;
 
+    /**
+     * Access-by-date map.
+     */
     private final Map<LocalDate, DateBean> uiDataMap;
 
-    MainManager() {
+    public MainManager() {
         roomProvider = new RoomProvider();
         guestProvider = new GuestProvider();
         cleaningProvider = new CleaningProvider();
         bookingOriginProvider = new BookingOriginProvider();
         bookings = new ArrayList<>();
-        cleaningEntries = ArrayListMultimap.create();
+        cleaningEntries = new LinkedHashMap<>();
         bookingEntries = ArrayListMultimap.create();
+        roomEntries = ArrayListMultimap.create();
         uiData = new SimpleListProperty<>(FXCollections.observableArrayList(DateBean.extractor()));
         uiDataMap = new LinkedHashMap<>();
 
@@ -89,6 +119,9 @@ public class MainManager {
     }
 
     public Optional<BookingEntry> getAfter(BookingEntry e) {
+
+        //TODO: Move to own type
+
         LocalDate plusOneDay = e.getDate().plusDays(1);
         Room room = e.getRoom();
         Collection<BookingEntry> bookingsThatDay = bookingEntries.get(plusOneDay);
@@ -99,6 +132,9 @@ public class MainManager {
     }
 
     public Optional<BookingEntry> getBefore(BookingEntry e) {
+
+        //TODO: Move to own type
+
         LocalDate plusOneDay = e.getDate().minusDays(1);
         Room room = e.getRoom();
         Collection<BookingEntry> bookingsThatDay = bookingEntries.get(plusOneDay);
@@ -108,7 +144,8 @@ public class MainManager {
         return Optional.empty();
     }
 
-    public synchronized BookingBean addBooking(final BookingBean booking) throws OverbookingException {
+    public synchronized BookingBean addBooking(final BookingBean booking)
+        throws OverbookingException {
         for (final BookingEntry b : Bookings.toEntries(booking)) {
             if (roomBusy(b)) {
                 throw new OverbookingException("Cannot add " + booking);
@@ -130,56 +167,64 @@ public class MainManager {
     }
 
     public synchronized CleaningEntry addCleaning(final LocalDate date, final String cleaningName,
-                                                  final BookingBean booking) {
+        final String roomName) {
         Objects.requireNonNull(date, "Date must not be null");
-        Objects.requireNonNull(booking, "BookingBean must not be null");
         if (cleaningName == null || cleaningName.trim().length() == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cleaning name must not be null");
         }
-
         final Cleaning cleaning = cleaningProvider.getOrCreateElement(cleaningName);
-        final CleaningEntry cleaningEntry = new CleaningEntry(date, booking, cleaning, this);
-        cleaningEntry.setCleaningCosts(SettingsManager.getInstance().getCleaningCosts());
-        if (containsCleaningByNameDateRoom(cleaningEntry)) {
-            if (logger.isWarnEnabled()) {
-                logger.warn("Skip cleaning " + cleaning);
-            }
-        } else {
-            cleaningEntries.put(date, cleaningEntry);
-            cleaningEntriesList.add(cleaningEntry);
-            addUiDataCleaning(cleaningEntry);
-
-            return cleaningEntry;
-        }
+        final Room room = roomProvider.getOrCreateElement(roomName);
+//        final CleaningEntry cleaningEntry = new CleaningEntry(new RoomEntry(date, room), cleaning,
+//            this);
+//        cleaningEntry.setCleaningCosts(SettingsManager.getInstance().getCleaningCosts());
+//        if (containsCleaningByNameDateRoom(cleaningEntry)) {
+//            if (logger.isWarnEnabled()) {
+//                logger.warn("Skip cleaning " + cleaning);
+//            }
+//        } else {
+//            Map<LocalDate, CleaningEntry> map = cleaningEntries.get(roomName);
+//            if (map == null) {
+//                map = new LinkedHashMap<>();
+//                CleaningEntry oldValue = map.put(date, cleaningEntry);
+//                if (oldValue != null) {
+//                    throw new RuntimeException();
+//                }
+//                cleaningEntries.put(roomName, map);
+//            }
+////            cleaningEntries.put(date, cleaningEntry);
+//            cleaningEntriesList.add(cleaningEntry);
+//            addUiDataCleaning(cleaningEntry);
+//
+//            return cleaningEntry;
+//        }
+        System.err.println("Removed cleaning");
         return null;
-
     }
 
-    public synchronized CleaningEntry addCleaning(final LocalDate date, final String cleaningName,
-                                                  final String roomName) throws MatchException {
-        return addCleaning(date, cleaningName, findBooking(date, roomName));
-    }
-
-    private BookingBean findBooking(final LocalDate date, final String roomName) throws MatchException {
+    private BookingBean findBooking(final LocalDate date, final String roomName)
+        throws MatchException {
         final int maxCount = 100;
         int count = 0;
         LocalDate date2 = date;
         Collection<BookingBean> result2 = null;
         do {
-            result2 = bookingEntries.get(date2).stream().filter(b -> b.getRoom().getName().equals(roomName))
-                    .filter(b -> !b.isCheckIn()).map(b -> b.getElement()).collect(Collectors.toSet());
-            if (result2.stream().anyMatch(b -> b.getCleaning() != null)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found entry with cleaning, aborting");
-                }
-                throw new MatchException("Failed to find matching booking for " + date + " and " + roomName);
-            }
-            result2 = result2.stream().filter(b -> b.getCleaning() == null).collect(Collectors.toSet());
+            result2 = bookingEntries.get(date2).stream()
+                .filter(b -> b.getRoom().getName().equals(roomName))
+                .filter(b -> !b.isCheckIn()).map(b -> b.getElement()).collect(Collectors.toSet());
+            System.err.println("Removed cleaning");
+//            if (result2.stream().anyMatch(b -> b.getCleaning() != null)) {
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("Found entry with cleaning, aborting");
+//                }
+//                throw new MatchException("Failed to find matching booking for " + date + " and " + roomName);
+//            }
+//            result2 = result2.stream().filter(b -> b.getCleaning() == null).collect(Collectors.toSet());
             count++;
             date2 = date2.minusDays(1);
         } while ((result2 == null || result2.isEmpty()) && count < maxCount);
         if (count == maxCount) {
-            throw new MatchException("Failed to find matching booking for " + date + " and " + roomName);
+            throw new MatchException(
+                "Failed to find matching booking for " + date + " and " + roomName);
         }
         if (result2.size() > 1) {
             throw new MatchException("Found more than one matching booking");
@@ -200,7 +245,8 @@ public class MainManager {
             db = new DateBean(bookingEntry.getDate(), this);
             addDateBean(db);
         }
-        db.getRoom(room.getName()).addBookingEntry(bookingEntry);
+
+        db.getRoom(room).addBookingEntry(bookingEntry);
         fillMissing();
     }
 
@@ -212,7 +258,7 @@ public class MainManager {
             uiData.add(db);
             uiDataMap.put(db.getDate(), db);
         }
-        db.getRoom(room.getName()).setCleaningEntry(cleaningEntry);
+        db.getRoom(room).setCleaningEntry(cleaningEntry);
     }
 
     public synchronized void applyFilter(final String guestNameFilterString) {
@@ -233,7 +279,7 @@ public class MainManager {
         }
     }
 
-    public ListProperty<CleaningEntry> cleaningEntriesListProperty() {
+    public ReadOnlyListProperty<CleaningEntry> cleaningEntriesListProperty() {
         return this.cleaningEntriesList;
     }
 
@@ -250,7 +296,8 @@ public class MainManager {
     public boolean containsBookingByNameAndDate(final BookingBean booking) {
         for (final BookingBean b : bookings) {
             if (b.getGuest().getName().equals(booking.getGuest().getName())
-                    && b.getCheckIn().equals(booking.getCheckIn()) && b.getCheckOut().equals(booking.getCheckOut())) {
+                && b.getCheckIn().equals(booking.getCheckIn()) && b.getCheckOut()
+                .equals(booking.getCheckOut())) {
                 return true;
             }
         }
@@ -258,35 +305,31 @@ public class MainManager {
     }
 
     public boolean containsCleaningByNameDateRoom(final CleaningEntry cleaning) {
-        for (final Entry<LocalDate, CleaningEntry> b : cleaningEntries.entries()) {
-            if (b.getValue().getElement().getName().equals(cleaning.getElement().getName())
-                    && b.getKey().equals(cleaning.getDate()) && b.getValue().getRoom().equals(cleaning.getRoom())) {
-                return true;
-            }
+        Map<LocalDate, CleaningEntry> map = cleaningEntries.get(cleaning.getRoom());
+        if (map != null) {
+            return map.containsKey(cleaning.getDate());
         }
+//        for (final Entry<LocalDate, CleaningEntry> b : cleaningEntries.entries()) {
+//            if (b.getValue().getElement().getName().equals(cleaning.getElement().getName())
+//                && b.getKey().equals(cleaning.getDate()) && b.getValue().getRoom().equals(cleaning.getRoom())) {
+//                return true;
+//            }
+//        }
         return false;
     }
 
-    public synchronized BookingBean createBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
-                                                  final String guestName, final String roomName, final String originName) {
+    public synchronized BookingBean createBooking(final LocalDate checkInDate,
+        final LocalDate checkOutDate,
+        final String guestName, final String roomName, final String originName) {
         return createBooking(null, checkInDate, checkOutDate, guestName, roomName, originName);
     }
 
     /**
      * The booking will <b>not</b> be added.
-     *
-     * @param id
-     * @param checkInDate
-     * @param checkOutDate
-     * @param guestName
-     * @param roomName
-     * @param originName
-     * @return
-     * @throws OverbookingException
      */
     public synchronized BookingBean createBooking(final String id, final LocalDate checkInDate,
-                                                  final LocalDate checkOutDate, final String guestName, final String
-                                                      roomName, final String originName) {
+        final LocalDate checkOutDate, final String guestName, final String
+        roomName, final String originName) {
         Objects.requireNonNull(checkInDate);
         Objects.requireNonNull(checkOutDate);
         if (guestName == null || guestName.length() < 1) {
@@ -298,7 +341,8 @@ public class MainManager {
         final Guest guest = guestProvider.getOrCreateElement(guestName);
         final Room room = roomProvider.getOrCreateElement(roomName);
         final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
-        final BookingBean booking = new BookingBean(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
+        final BookingBean booking = new BookingBean(id, guest, room, bookingOrigin, checkInDate,
+            checkOutDate);
         return booking;
     }
 
@@ -336,14 +380,15 @@ public class MainManager {
     }
 
     public synchronized Collection<CleaningEntry> getCleaningEntries() {
-        return Collections.unmodifiableCollection(cleaningEntries.values());
+        return Collections.unmodifiableList(cleaningEntriesList);
     }
 
     public List<CleaningEntry> getCleaningEntriesList() {
         return this.cleaningEntriesListProperty().get();
     }
 
-    public void setCleaningEntriesList(final Collection<? extends CleaningEntry> cleaningEntriesList) {
+    public void setCleaningEntriesList(
+        final Collection<? extends CleaningEntry> cleaningEntriesList) {
         this.cleaningEntriesListProperty().setAll(cleaningEntriesList);
     }
 
@@ -388,11 +433,13 @@ public class MainManager {
     // return true;
     // }
 
-    public void modifyBooking(final BookingBean booking, final LocalDate checkInDate, final LocalDate checkOutDate)
-            throws OverbookingException {
+    public void modifyBooking(final BookingBean booking, final LocalDate checkInDate,
+        final LocalDate checkOutDate)
+        throws OverbookingException {
         removeBooking(booking);
-        final BookingBean newBooking = new BookingBean(booking.getId(), booking.getGuest(), booking.getRoom(),
-                booking.getBookingOrigin(), checkInDate, checkOutDate);
+        final BookingBean newBooking = new BookingBean(booking.getId(), booking.getGuest(),
+            booking.getRoom(),
+            booking.getBookingOrigin(), checkInDate, checkOutDate);
         newBooking.setCheckInNote(booking.getCheckInNote());
         newBooking.setCheckOutNote(booking.getCheckOutNote());
         newBooking.setExternalId(booking.getExternalId());
@@ -401,7 +448,8 @@ public class MainManager {
         newBooking.setWelcomeMailSend(booking.isWelcomeMailSend());
         newBooking.setSpecialRequestNote(booking.getSpecialRequestNote());
         newBooking.setCalendarIds(booking.getCalendarIds());
-        newBooking.setCleaning(booking.getCleaning());
+//        newBooking.setCleaning(booking.getCleaning());
+        System.err.println("Removed cleaning");
         newBooking.setCleaningFees(booking.getCleaningFees());
         newBooking.setDateOfPayment(booking.getDateOfPayment());
         newBooking.setServiceFee(booking.getServiceFee());
@@ -417,9 +465,12 @@ public class MainManager {
 
     public synchronized boolean needsCleaning(final String roomName, final LocalDate date) {
         final Collection<BookingEntry> bookings = bookingEntries.get(date);
-        final Stream<BookingEntry> sbe = bookings.stream().filter(be -> be.getRoom().getName().equals(roomName));
+        final Stream<BookingEntry> sbe = bookings.stream()
+            .filter(be -> be.getRoom().getName().equals(roomName));
         final Stream<BookingBean> sb = sbe.map(be -> be.getElement());
-        return sb.anyMatch(b -> b.getCleaning() == null);
+        System.err.println("Removed cleaning");
+//        return sb.anyMatch(b -> b.getCleaning() == null);
+        return false;
     }
 
     public synchronized boolean removeBooking(final BookingBean booking) {
@@ -448,22 +499,23 @@ public class MainManager {
     public void removeCleaning(final CleaningEntry cleaningEntry) {
         cleaningEntries.values().remove(cleaningEntry);
         cleaningEntriesList.remove(cleaningEntry);
-        bookings.forEach(b -> {
-            if (cleaningEntry.equals(b.getCleaning())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing cleaning from booking " + b);
-                }
-                b.setCleaning(null);
-
-            }
-        });
+        System.err.println("Removed cleaning");
+//        bookings.forEach(b -> {
+//            if (cleaningEntry.equals(b.getCleaning())) {
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("Removing cleaning from booking " + b);
+//                }
+//                b.setCleaning(null);
+//            }
+//        });
         removeUiDataCleaning(cleaningEntry);
     }
 
     private void removeUiDataBooking(final Collection<? extends BookingBean> bookings) {
         for (final DateBean e : uiData) {
             for (final RoomBean r : e.getRooms()) {
-                for (final Iterator<BookingEntry> it = r.getBookingEntries().iterator(); it.hasNext(); ) {
+                for (final Iterator<BookingEntry> it = r.getBookingEntries().iterator();
+                    it.hasNext(); ) {
                     final BookingEntry be = it.next();
                     for (final BookingBean bb : bookings) {
                         if (be.getElement().equals(bb)) {
@@ -486,7 +538,7 @@ public class MainManager {
                 logger.warn("No date entry found for " + cleaningEntry);
             }
         } else {
-            db.getRoom(room.getName()).setCleaningEntry(null);
+            db.getRoom(room).setCleaningEntry(null);
         }
     }
 
@@ -515,7 +567,7 @@ public class MainManager {
 
     public Optional<BookingBean> getBooking(final String bookingId) {
         final Collection<BookingBean> c = bookings.stream().filter(b -> b.getId().equals(bookingId))
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
         if (!c.isEmpty()) {
             if (c.size() > 1) {
                 throw new RuntimeException("Ambiguous booking id " + bookingId);
@@ -526,6 +578,7 @@ public class MainManager {
     }
 
     private static class InstanceHolder {
+
         private static final MainManager instance = new MainManager();
     }
 

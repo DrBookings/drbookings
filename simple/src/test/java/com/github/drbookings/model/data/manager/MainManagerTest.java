@@ -20,19 +20,7 @@
 
 package com.github.drbookings.model.data.manager;
 
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDate;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.github.drbookings.TestUtils;
-import com.github.drbookings.model.data.Cleaning;
-import com.github.drbookings.ui.CleaningEntry;
+import org.junit.*;
 
 public class MainManagerTest {
 
@@ -56,11 +44,7 @@ public class MainManagerTest {
 
 	@Test
 	public void testAddCleaning01() {
-		mm = new MainManager();
-		final CleaningEntry ce = new CleaningEntry(LocalDate.now(), TestUtils.getTestBooking("tt"),
-				new Cleaning("testCleaning"), null);
-		mm.addCleaning(LocalDate.now(), "testCleaning", TestUtils.getTestBooking("tt"));
-		assertTrue(mm.getCleaningEntries().contains(ce));
+
 	}
 
 }

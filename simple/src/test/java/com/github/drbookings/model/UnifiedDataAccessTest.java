@@ -20,9 +20,12 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.TestUtils;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.CleaningEntry;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import com.github.drbookings.model.data.DrBookingsData;
 import java.time.LocalDate;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -30,38 +33,39 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DefaultNetEarningsCalculatorTest {
+public class UnifiedDataAccessTest {
 
-	@BeforeClass
+    @BeforeClass
     public static void setUpBeforeClass() {
-	}
+    }
 
-	@AfterClass
+    @AfterClass
     public static void tearDownAfterClass() {
-	}
+    }
 
-	@Before
-    public void setUp() {
-	}
+    @Before
+    public void setUp() throws Exception {
+        data = new DrBookingsData();
+        da = new UnifiedDataAccess(LocalDate.now(), data);
+    }
 
-	@After
-    public void tearDown() {
-	}
+    @After
+    public void tearDown() throws Exception {
+        da = null;
+        data = null;
+    }
 
-	@Test
-	public void test() {
-		final DefaultNetEarningsCalculator c = new DefaultNetEarningsCalculator();
-        final BookingBean b = TestUtils.getTestBooking(LocalDate.now(), LocalDate.now().plusDays(4));
-		b.setGrossEarningsExpression("360");
-		b.setServiceFee(0);
-		b.setServiceFeesPercent(12f);
-		b.setCleaningFees(60);
-		final CleaningEntry ce = TestUtils.getTestCleaningEntry();
-		ce.setCleaningCosts(40);
-//		b.setCleaning(ce);
-//		assertEquals(360 - ((360 - 60) * 0.12), c.apply(b).doubleValue(), 0.001);
-        System.err.println("Removed cleaning");
+    private DrBookingsData data;
 
-	}
+    private UnifiedDataAccess da;
 
+
+    @Test
+    public void test01() throws Exception {
+        da.init();
+        assertThat(da.getCleaningEntries(), is(not(nullValue())));
+        assertThat(da.getRoomEntries(), is(not(nullValue())));
+        assertThat(da.getBookingEntries(), is(not(nullValue())));
+
+    }
 }

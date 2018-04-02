@@ -18,31 +18,29 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.ui;
+package com.github.drbookings.model.exception;
 
-import org.junit.*;
+public class AlreadyBusyException extends Exception {
 
-public class CleaningEntryTest {
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+
+    public AlreadyBusyException() {
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public AlreadyBusyException(String message) {
+        super(message);
     }
 
-    @Before
-    public void setUp() throws Exception {
+    public AlreadyBusyException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @After
-    public void tearDown() throws Exception {
+    public AlreadyBusyException(Throwable cause) {
+        super(cause);
     }
 
-    @Test
-    public void testEqualsHashCode01() {
-       
+    public AlreadyBusyException(String message, Throwable cause, boolean enableSuppression,
+        boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
-
 }

@@ -20,14 +20,13 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.RoomEntry;
 import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.DateEntry;
 import com.github.drbookings.model.data.Room;
-import com.github.drbookings.model.data.manager.MainManager;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,34 +34,28 @@ import java.util.Objects;
 
 public class CleaningEntry extends DateEntry<Cleaning> {
 
+    /**
+     * The costs for this cleaning, i.e., the money going to the cleaning person.
+     */
     private final FloatProperty cleaningCosts = new SimpleFloatProperty();
-    private final MainManager mainManager;
-    private final BookingBean booking;
+
+    /**
+     * Bi-di relationship owned by {@code CleaningEntry}.
+     */
+    private final RoomEntry room;
+
+    /**
+     * The Google Calendar IDs.
+     */
     private List<String> calendarIds = new ArrayList<>();
 
-    public CleaningEntry(final LocalDate date, final BookingBean booking, final Cleaning element,
-                         final MainManager mainManager) {
-        super(date, element);
-        this.booking = booking;
-        this.booking.setCleaning(this);
-        this.mainManager = mainManager;
-    }
-
-    public BookingBean getBooking() {
-        return booking;
-    }
-
-    @Override
-    public String toString() {
-        return "CleaningEntry{" +
-                "cleaningCosts=" + getCleaningCosts() +
-                ", cleaningFees=" + booking.getCleaningFees() +
-                ", origin=" + booking.getBookingOrigin() +
-                ", guest=" + booking.getGuest() +
-//                ", shortTime=" + isShortTime() +
-                ", date=" + getDate() +
-                ", element=" + getElement() +
-                '}';
+    public CleaningEntry(final RoomEntry room, final Cleaning element) {
+        super(room.getDate(), element);
+        this.room = room;
+        /**
+         * Date is taken-over by the RoomEntry, therefore it cannot mismatch.
+         */
+        this.room.setCleaning(this);
     }
 
     public void addCalendarId(final String id) {
@@ -92,29 +85,30 @@ public class CleaningEntry extends DateEntry<Cleaning> {
         this.cleaningCostsProperty().set(cleaningCosts);
     }
 
-    public boolean isShortTime() {
-        return mainManager.hasCheckIn(getDate(), booking.getEntry(getDate()).getRoom().getName());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CleaningEntry)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         CleaningEntry that = (CleaningEntry) o;
-        return Objects.equals(getBooking(), that.getBooking());
+        return Objects.equals(getRoom(), that.getRoom());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getBooking());
+
+        return Objects.hash(super.hashCode(), getRoom());
     }
 
     public Room getRoom() {
-        return booking.getEntry(getDate()).getRoom();
+        return room.getElement();
     }
 
     public String getName() {
         return getElement().getName();
+    }
+
+    public static enum ShortTerm {
+        YES, NO, UNKNOWN
     }
 }

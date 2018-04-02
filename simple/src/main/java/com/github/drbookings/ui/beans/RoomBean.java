@@ -21,9 +21,9 @@
 package com.github.drbookings.ui.beans;
 
 import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.data.MatchException;
+import com.github.drbookings.model.data.Room;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.BookingFilter;
 import com.github.drbookings.ui.CleaningEntry;
 import javafx.beans.Observable;
@@ -44,48 +44,61 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * UI Bean used by {@link DateBean} to nest room specific information.
+ * <p>
+ * {@code RoomBean} can be seen as a manifestation of given {@link Room} at given date (via the {@link DateBean}).
+ * A Room can be empty, have one or two {@link BookingEntry bookings}.
+ * </p>
+ */
 public class RoomBean extends WarnableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(RoomBean.class);
-    private final ObjectProperty<CleaningEntry> cleaningEntries = new SimpleObjectProperty<>();
-    private final ListProperty<BookingEntry> bookingEntries = new SimpleListProperty<>(
-            FXCollections.observableArrayList(BookingEntry.extractor()));
-    private final ListProperty<BookingEntry> filteredBookingEntries = new SimpleListProperty<>(
-            FXCollections.observableArrayList(BookingEntry.extractor()));
-    private final String name;
+    private final ObjectProperty<CleaningEntry> cleaningEntry = new SimpleObjectProperty<>();
+    /**
+     * Bookings for this {@code RoomBean}. Size can be 0, 1 or 2.
+     */
+    private final ListProperty<BookingEntry> bookingEntries;
+    /**
+     * Filtered bookings.
+     */
+    private final ListProperty<BookingEntry> filteredBookingEntries;
+    /**
+     * The room that is manifesting at this date.
+     */
+    private final Room room;
     private final MainManager manager;
+    /**
+     * Mandatory bi-di relationship owned by {@link DateBean}.
+     */
     private final DateBean dateBean;
     private final StringProperty bookingFilterString = new SimpleStringProperty();
     private final BooleanProperty needsCleaning = new SimpleBooleanProperty();
 
-    public RoomBean(final String name, final DateBean date, final MainManager manager) {
-        this.name = name;
+    public RoomBean(final Room room, final DateBean date, final MainManager manager) {
+        this.room = Objects.requireNonNull(room);
+        this.dateBean = Objects.requireNonNull(date);
         this.manager = manager;
-        this.dateBean = date;
+        this.bookingEntries = new SimpleListProperty<>(
+            FXCollections.observableArrayList(BookingEntry.extractor()));
+        this.filteredBookingEntries = new SimpleListProperty<>(
+            FXCollections.observableArrayList(BookingEntry.extractor()));
         bindProperties();
     }
 
     public static Callback<RoomBean, Observable[]> extractor() {
         return param -> new Observable[]{param.bookingFilterStringProperty(), param.bookingEntriesProperty(),
-                param.filteredBookingEntriesProperty(), param.cleaningEntryProperty()};
+            param.filteredBookingEntriesProperty(), param.cleaningEntryProperty()};
     }
 
     public void addBookingEntry(final BookingEntry e) {
-        Objects.requireNonNull(e);
-        bookingEntriesProperty().add(e);
-        // if (logger.isDebugEnabled()) {
-        // logger.debug(this + " booking entries now " + getBookingEntries());
-        // }
-        // if (logger.isDebugEnabled()) {
-        // logger.debug("filtered booking entries now " +
-        // getFilteredBookingEntries());
-        // }
+        bookingEntriesProperty().add(Objects.requireNonNull(e));
     }
 
     @Override
     protected void bindProperties() {
         filteredBookingEntriesProperty().bind(Bindings.createObjectBinding(filterBookings(),
-                bookingFilterStringProperty(), bookingEntriesProperty()));
+            bookingFilterStringProperty(), bookingEntriesProperty()));
         needsCleaningProperty().bind(Bindings.createObjectBinding(calulateNeedsCleaning(), manager.getUIData()));
         super.bindProperties();
 
@@ -111,38 +124,24 @@ public class RoomBean extends WarnableBean {
             // }
 
             final boolean payment = filteredBookingEntriesProperty().stream()
-                    .filter(b -> b.getElement().isPaymentDone()).count() == filteredBookingEntriesProperty().size();
+                .filter(b -> b.getElement().isPaymentDone()).count() == filteredBookingEntriesProperty().size();
 
             if (!payment && lastMonth) {
                 return true;
             }
             final boolean welcomeMail = filteredBookingEntriesProperty().stream()
-                    .filter(b -> b.getElement().isWelcomeMailSend()).count() == filteredBookingEntriesProperty().size();
+                .filter(b -> b.getElement().isWelcomeMailSend()).count() == filteredBookingEntriesProperty().size();
             return !lastMonth && !welcomeMail;
 
         };
     }
 
     public Callable<Boolean> calulateNeedsCleaning() {
-        return () -> {
-
-            if (getDate().isBefore(LocalDate.now())) {
-                // time out
-                return false;
-            }
-            // if (getGuestNames().size() > 1) {
-            // System.err.println(getGuestNames());
-            // }
-            if (getFilteredBookingEntries().size() > 1 && hasCheckIn() && hasCheckOut() && !hasCleaning()) {
-                return getGuestNames().size() >= 2;
-            }
-            return hasCheckOut() && getFilteredBookingEntries().stream().filter(be -> !be.isCheckIn())
-                    .anyMatch(b -> b.getElement().getCleaning() == null);
-        };
+       return () -> false;
     }
 
     public ObjectProperty<CleaningEntry> cleaningEntryProperty() {
-        return this.cleaningEntries;
+        return this.cleaningEntry;
     }
 
     private Callable<ObservableList<BookingEntry>> filterBookings() {
@@ -153,7 +152,7 @@ public class RoomBean extends WarnableBean {
             // }
             final ObservableList<BookingEntry> result = FXCollections.observableArrayList();
             result.addAll(bookingEntriesProperty().stream().filter(new BookingFilter(getBookingFilterString()))
-                    .collect(Collectors.toList()));
+                .collect(Collectors.toList()));
             // if (logger.isDebugEnabled()) {
             // logger.debug("filtered booking entries now " + result);
             // }
@@ -219,7 +218,7 @@ public class RoomBean extends WarnableBean {
     }
 
     public String getName() {
-        return name;
+        return room.getName();
     }
 
     protected BookingEntry getSingleBooking(final Predicate<BookingEntry> filter) {
@@ -241,6 +240,9 @@ public class RoomBean extends WarnableBean {
 
     public boolean hasCheckIn() {
         final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+        if(filteredBookingEntries.isEmpty()){
+            return false;
+        }
         if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckIn()) {
             return true;
         }
@@ -261,6 +263,9 @@ public class RoomBean extends WarnableBean {
 
     public boolean hasCheckOut() {
         final List<BookingEntry> filteredBookingEntries = getFilteredBookingEntries();
+        if(filteredBookingEntries.isEmpty()){
+            return false;
+        }
         if (filteredBookingEntries.size() == 1 && filteredBookingEntries.get(0).isCheckOut()) {
             return true;
         }
@@ -303,18 +308,18 @@ public class RoomBean extends WarnableBean {
 
     }
 
+    public Room getRoom() {
+        return room;
+    }
+
     public void setCleaning(final String cleaningName) {
         if (getCleaningEntry() != null) {
             manager.removeCleaning(getCleaningEntry());
             setCleaningEntry(null);
         }
-        try {
-            manager.addCleaning(getDate(), cleaningName, getName());
-        } catch (final MatchException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Failed to add cleaning " + cleaningName + ", " + e.getLocalizedMessage(), e);
-            }
-        }
+
+        manager.addCleaning(getDate(), cleaningName, getName());
+
 
     }
 
@@ -325,7 +330,7 @@ public class RoomBean extends WarnableBean {
     @Override
     public String toString() {
         return "roomBean:" + getDate() + ",name:" + getName() + ",filteredBookings:"
-                + getFilteredBookingEntries().size() + " " + getBookingEntries().size();
+            + getFilteredBookingEntries().size() + " " + getBookingEntries().size();
     }
 
 }

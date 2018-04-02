@@ -26,8 +26,10 @@ import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingEntries;
+import com.github.drbookings.model.data.Room;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ser.DataStore;
@@ -235,7 +237,7 @@ public class MainController implements Initializable {
                 if (db.getRooms().isEmpty()) {
 
                 } else {
-                    final RoomBean rb = db.getRoom("" + c);
+                    final RoomBean rb = db.getRoom(new Room("" + c));
                     if (rb.isEmpty()) {
                         continue;
                     }
@@ -258,7 +260,7 @@ public class MainController implements Initializable {
                 final int c = tp.getColumn();
                 final Object cell = tp.getTableColumn().getCellData(r);
                 if (cell instanceof DateBean) {
-                    final RoomBean room = ((DateBean) cell).getRoom("" + c);
+                    final RoomBean room = ((DateBean) cell).getRoom(new Room("" + c));
                     if (room != null) {
                         cells.add(room);
                     }
@@ -1122,6 +1124,7 @@ public class MainController implements Initializable {
                 }
             });
             setOnFailed(event -> {
+                progressLabel.setText(event.getSource().getException().getLocalizedMessage());
                 setWorking(false);
             });
 

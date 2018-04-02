@@ -24,8 +24,6 @@ import com.github.drbookings.Scripting;
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.*;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.ui.CleaningEntry;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -53,6 +51,13 @@ import java.util.concurrent.Callable;
 public class BookingBean extends IDed
     implements Comparable<BookingBean>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
+
+    // TODO: rename type to avoid confusions about Model/ UI
+
+
+    /**
+     *
+     */
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
     private static final Logger logger = LoggerFactory.getLogger(BookingBean.class);
     private final RoundingMode roundingMode = DEFAULT_ROUNDING_MODE;
@@ -75,12 +80,9 @@ public class BookingBean extends IDed
     private final DoubleProperty paymentSoFar = new SimpleDoubleProperty();
     @Deprecated
     private final BooleanProperty splitBooking = new SimpleBooleanProperty(false);
+    @Deprecated
     private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
     private final ListProperty<Payment> payments = new SimpleListProperty<>(FXCollections.observableArrayList());
-    /**
-     * Optional bi-di relationship owned by {@code CleaningEntry}
-     */
-    private final ObjectProperty<CleaningEntry> cleaning = new SimpleObjectProperty<>();
     private String externalId;
     private List<String> calendarIds = new ArrayList<>();
 
@@ -111,7 +113,7 @@ public class BookingBean extends IDed
 
     public static Callback<BookingBean, Observable[]> extractor() {
         return param -> new Observable[]{param.serviceFeeProperty(), param.serviceFeesPercentProperty(),
-            param.grossEarningsProperty(), param.cleaningProperty(), param.netEarningsProperty(),
+            param.grossEarningsProperty(), param.netEarningsProperty(),
             param.checkInNoteProperty(), param.checkOutNoteProperty(), param.specialRequestNoteProperty(),
             param.paymentDoneProperty(), param.welcomeMailSendProperty(), param.dateOfPaymentProperty()};
     }
@@ -158,7 +160,7 @@ public class BookingBean extends IDed
         grossEarningsProperty()
             .bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
         netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
-            cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(), cleaningProperty(),
+            cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(),
             SettingsManager.getInstance().showNetEarningsProperty()));
         paymentDoneProperty().addListener((c, o, n) -> {
             if (n && getDateOfPayment() == null) {
@@ -389,7 +391,6 @@ public class BookingBean extends IDed
             ",\troom=" + room +
             ",\tbookingOrigin=" + bookingOrigin +
             ",\tcleaningFees=" + cleaningFees +
-            ",\tcleaning=" + cleaning +
             '}';
     }
 
@@ -427,28 +428,6 @@ public class BookingBean extends IDed
                 "For date " + date + "checkin:" + getCheckIn() + ",checkout:" + getCheckOut());
         }
         return new BookingEntry(date, this);
-    }
-
-    /**
-     * Set by the cleaning entry.
-     *
-     * @return
-     */
-    public final ObjectProperty<CleaningEntry> cleaningProperty() {
-        return cleaning;
-    }
-
-    public final CleaningEntry getCleaning() {
-        return cleaningProperty().get();
-    }
-
-    /**
-     * Set by the cleaning entry.
-     *
-     * @param cleaning
-     */
-    public final void setCleaning(final CleaningEntry cleaning) {
-        cleaningProperty().set(cleaning);
     }
 
     public final ObjectProperty<LocalDate> dateOfPaymentProperty() {

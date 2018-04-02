@@ -20,7 +20,7 @@
 
 package com.github.drbookings.ser;
 
-import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.model.Payment;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
@@ -57,9 +57,10 @@ public class DataStore {
         b.room = c.getRoom().getName();
         b.calendarIds = c.getCalendarIds();
         b.cleaningCosts = c.getCleaningCosts();
-        if (c.getBooking() != null) {
-            b.bookingId = c.getBooking().getId();
-        }
+//        if (c.getBooking() != null) {
+//            b.bookingId = c.getBooking().getId();
+//        }
+        System.err.println("Removed cleaning");
         return b;
     }
 
@@ -151,16 +152,19 @@ public class DataStore {
 
         for (final CleaningBeanSer cb : getCleaningsSer()) {
 
-            final Optional<BookingBean> b = manager.getBooking(cb.bookingId);
-            if (b.isPresent()) {
-                manager.addCleaning(cb.date, cb.name, b.get()).setCalendarIds(cb.calendarIds)
-                    .setCleaningCosts(cb.cleaningCosts);
-            } else {
-                if (logger.isWarnEnabled()) {
-                    logger.warn("Failed to add cleaning " + cb + ", failed to find booking for ID " + cb.bookingId);
-                }
-            }
+            CleaningEntry ce = manager.addCleaning(cb.date, cb.name, cb.room);
+            ce.setCalendarIds(cb.calendarIds);
+            ce.setCleaningCosts(cb.cleaningCosts);
 
+            final Optional<BookingBean> b = manager.getBooking(cb.bookingId);
+//            if (b.isPresent()) {
+//               ce.bookingProperty().set(b.get());
+//            } else {
+//                if (logger.isWarnEnabled()) {
+//                    logger.warn("Cannot link " + ce + " to booking, failed to find booking for ID " + cb.bookingId);
+//                }
+//            }
+            System.err.println("Removed cleaning");
         }
     }
 }

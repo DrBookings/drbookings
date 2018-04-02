@@ -18,31 +18,38 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.ui;
+package com.github.drbookings.model.exception;
 
-import org.junit.*;
+public class OverbookingException extends AlreadyBusyException {
 
-public class CleaningEntryTest {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 4308273152755034370L;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public OverbookingException() {
+
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public OverbookingException(final String message) {
+	super(message);
+
     }
 
-    @Before
-    public void setUp() throws Exception {
+    public OverbookingException(final String message, final Throwable cause) {
+	super(message, cause);
+
     }
 
-    @After
-    public void tearDown() throws Exception {
+    public OverbookingException(final String message, final Throwable cause, final boolean enableSuppression,
+	    final boolean writableStackTrace) {
+	super(message, cause, enableSuppression, writableStackTrace);
+
     }
 
-    @Test
-    public void testEqualsHashCode01() {
-       
+    public OverbookingException(final Throwable cause) {
+	super(cause);
+
     }
 
 }

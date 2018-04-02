@@ -193,13 +193,14 @@ public class RoomDetailsController implements Initializable {
             });
         }
 
-        if (room.getCleaningEntry() != null) {
-            cleaningName.setText(room.getCleaningEntry().getElement().getName());
-            cleaningBooking.setText("for " + room.getCleaningEntry().getBooking().getGuest().getName());
-        } else {
-            cleaningName.setText(null);
-            cleaningBooking.setText(null);
-        }
+//        if (room.getCleaningEntry() != null) {
+//            cleaningName.setText(room.getCleaningEntry().getElement().getName());
+//            cleaningBooking.setText("for " + room.getCleaningEntry().getBooking().getGuest().getName());
+//        } else {
+//            cleaningName.setText(null);
+//            cleaningBooking.setText(null);
+//        }
+        System.err.println("Removed cleaning");
 
     }
 

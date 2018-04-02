@@ -24,6 +24,10 @@ import com.github.drbookings.model.data.Room;
 
 public class RoomProvider extends NamedProvider<Room> {
 
+    public RoomProvider(){
+
+    }
+
     @Override
     protected Room buildNewElement(final String name) {
 	return new Room(name);

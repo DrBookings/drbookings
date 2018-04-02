@@ -62,15 +62,17 @@ public class BookingEntries {
 
     public static Collection<CleaningEntry> getCleanings(final Collection<? extends BookingEntry> bookings) {
 
-        Collection<CleaningEntry> result = bookings.stream().filter(b -> b.getElement().getCleaning() != null).map(e -> e.getElement().getCleaning()).collect(Collectors.toSet());
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Got cleanings for bookings:\n" + result.stream()
-                .map(i -> i.toString())
-                .collect(Collectors.joining("\n")));
-        }
-
-        return result;
+//        Collection<CleaningEntry> result = bookings.stream().filter(b -> b.getElement().getCleaning() != null).map(e -> e.getElement().getCleaning()).collect(Collectors.toSet());
+//
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("Got cleanings for bookings:\n" + result.stream()
+//                .map(i -> i.toString())
+//                .collect(Collectors.joining("\n")));
+//        }
+//
+//        return result;
+        System.err.println("Removed cleaning");
+        return Collections.emptyList();
     }
 
     public static long countNights(final BookingsByOrigin<? extends BookingEntry> bo, final boolean all) {
@@ -120,7 +122,10 @@ public class BookingEntries {
     }
 
     public static double getCleaningFees(final Collection<? extends BookingEntry> bookings) {
-        return getCleanings(bookings).stream().mapToDouble(value -> value.getBooking().getCleaningFees()).sum();
+//        return getCleanings(bookings).stream().mapToDouble(value -> value.getBooking().getCleaningFees()).sum();
+        System.err.println("Removed cleaning");
+        return 0;
+
     }
 
     public static double getGrossEarningsAirbnb(final Collection<? extends BookingEntry> bookings) {

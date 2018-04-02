@@ -18,33 +18,32 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
-
-import com.github.drbookings.model.data.DateEntry;
-import com.github.drbookings.model.data.Room;
-import com.github.drbookings.ui.CleaningEntry;
+package com.github.drbookings.model.data;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
 
-public class RoomEntry extends DateEntry<Room> {
-
-    public RoomEntry(LocalDate date, Room element) {
-        super(date, element);
-    }
+public class NameDateElementStore<T> {
 
     /**
-     * Bi-di relationship owned by {@link CleaningEntry}.
-     * <p>
-     * Date is taken-over by the RoomEntry, therefore it cannot mismatch.
-     * </p>
+     * Name -> Date -> Entry
      */
-    private CleaningEntry cleaning;
+    private final Map<String, Map<LocalDate, T>> entries;
 
-    public CleaningEntry getCleaning() {
-        return cleaning;
+    private final BiFunction<String, LocalDate, T> newElementSupplier;
+
+    public NameDateElementStore(BiFunction<String, LocalDate, T> newElementSupplier) {
+        entries = new LinkedHashMap<>();
+        this.newElementSupplier = newElementSupplier;
     }
 
-    public void setCleaning(CleaningEntry cleaning) {
-        this.cleaning = cleaning;
+    public T add(String name, LocalDate date){
+        Map<LocalDate, T> map = entries.computeIfAbsent(name, k -> new LinkedHashMap<>());
+        T entry = map.computeIfAbsent(date, k -> newElementSupplier.apply(name, date));
+        return entry;
     }
+
+
 }

@@ -22,7 +22,7 @@ package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.model.data.Guest;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.ui.BookingEntry;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
 import javafx.fxml.FXML;
@@ -184,17 +184,13 @@ public class CellContentController implements Initializable {
                 cellContainer.getChildren().add(buildEntryCheckOut(bb));
                 cellContainer.setAlignment(Pos.TOP_CENTER);
             }
-            if (cleaningToAdd && rb.needsCleaning()) {
+            if (cleaningToAdd && rb.getCleaningEntry() != null) {
                 cellContainer.getChildren().add(buildEntryCleaning(rb));
                 cleaningToAdd = false;
             }
             if (bb.isCheckIn()) {
                 cellContainer.getChildren().add(buildEntryCheckIn(bb));
                 cellContainer.setAlignment(Pos.BOTTOM_CENTER);
-            }
-            if (cleaningToAdd && rb.hasCleaning()) {
-                cellContainer.getChildren().add(buildEntryCleaning(rb));
-                cleaningToAdd = false;
             }
             if (!bb.isCheckIn() && !bb.isCheckOut()) {
                 cellContainer.getChildren().add(buildEntryStay(bb));
@@ -203,6 +199,9 @@ public class CellContentController implements Initializable {
             last = bb;
             guestsAdded.add(bb.getElement().getGuest());
         }
+
+        if(rb.getFilteredBookingEntries().isEmpty() && rb.getCleaningEntry() != null)
+            cellContainer.getChildren().add(buildEntryCleaning(rb));
 
         // if (guestNames0.getChildren().isEmpty()) {
         // guestNames0.getChildren().add(getNewLabel(null));

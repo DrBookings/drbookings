@@ -21,7 +21,7 @@
 package com.github.drbookings.ui.controller;
 
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;

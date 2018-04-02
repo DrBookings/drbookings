@@ -25,11 +25,23 @@ import com.github.drbookings.model.Payment;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.CleaningEntry;
 import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
@@ -38,7 +50,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -49,13 +69,6 @@ import javafx.util.converter.NumberStringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class BookingDetailsController implements Initializable {
 
@@ -274,23 +287,24 @@ public class BookingDetailsController implements Initializable {
 
         // add cleaning costs
 
-        final CleaningEntry ce = be.getCleaning();
-        if (ce != null) {
-            final TextField cleaningCostsTextField = new TextField();
-            Bindings.bindBidirectional(cleaningCostsTextField.textProperty(), ce.cleaningCostsProperty(),
-                new NumberStringConverter(decimalFormat));
-            cleaningCostsTextField.setPrefWidth(prefTextInputFieldWidth);
-            final TextFlow cleaningCostsTextFlow = new TextFlow(new Text("Cleaning Costs: "), cleaningCostsTextField,
-                new Text(" €"));
-            box.getChildren().add(cleaningCostsTextFlow);
-        } else {
-            final TextField cleaningCostsTextField = new TextField("No Cleaning");
-            cleaningCostsTextField.setEditable(false);
-            cleaningCostsTextField.setPrefWidth(prefTextInputFieldWidth);
-            final TextFlow cleaningCostsTextFlow = new TextFlow(new Text("Cleaning Costs: "), cleaningCostsTextField);
-            cleaningCostsTextField.getStyleClass().add("warning");
-            box.getChildren().add(cleaningCostsTextFlow);
-        }
+//        final CleaningEntry ce = be.getCleaning();
+//        if (ce != null) {
+//            final TextField cleaningCostsTextField = new TextField();
+//            Bindings.bindBidirectional(cleaningCostsTextField.textProperty(), ce.cleaningCostsProperty(),
+//                new NumberStringConverter(decimalFormat));
+//            cleaningCostsTextField.setPrefWidth(prefTextInputFieldWidth);
+//            final TextFlow cleaningCostsTextFlow = new TextFlow(new Text("Cleaning Costs: "), cleaningCostsTextField,
+//                new Text(" €"));
+//            box.getChildren().add(cleaningCostsTextFlow);
+//        } else {
+//            final TextField cleaningCostsTextField = new TextField("No Cleaning");
+//            cleaningCostsTextField.setEditable(false);
+//            cleaningCostsTextField.setPrefWidth(prefTextInputFieldWidth);
+//            final TextFlow cleaningCostsTextFlow = new TextFlow(new Text("Cleaning Costs: "), cleaningCostsTextField);
+//            cleaningCostsTextField.getStyleClass().add("warning");
+//            box.getChildren().add(cleaningCostsTextFlow);
+//        }
+        System.err.println("Removed cleaning");
 
         // add service fees
         final TextField serviceFeesTextField = new TextField();

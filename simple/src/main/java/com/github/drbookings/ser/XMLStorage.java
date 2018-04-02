@@ -20,7 +20,7 @@
 
 package com.github.drbookings.ser;
 
-import com.github.drbookings.OverbookingException;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.io.Backup;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;

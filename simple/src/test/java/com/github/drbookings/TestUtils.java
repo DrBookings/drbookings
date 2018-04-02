@@ -28,12 +28,14 @@ import java.time.LocalDate;
 
 public class TestUtils {
 
+    public static final String TEST_ROOM_NAME = "testRoom";
+
     public static Guest getTestGuest() {
         return new Guest("testGuest");
     }
 
     public static Room getTestRoom() {
-        return new Room("testRoom");
+        return new Room(TEST_ROOM_NAME);
     }
 
     public static BookingOrigin getTestBookingOrigin() {

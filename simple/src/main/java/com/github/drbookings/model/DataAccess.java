@@ -18,38 +18,22 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings;
+package com.github.drbookings.model;
 
-public class OverbookingException extends Exception {
+import com.github.drbookings.model.data.DrBookingsData;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 4308273152755034370L;
+public class DataAccess {
 
-    public OverbookingException() {
-
+    public DataAccess(DrBookingsData data) {
+        this.data = data;
     }
 
-    public OverbookingException(final String message) {
-	super(message);
+    protected final DrBookingsData data;
 
-    }
+    public DataAccess init(){
+        // nothing per default
 
-    public OverbookingException(final String message, final Throwable cause) {
-	super(message, cause);
-
-    }
-
-    public OverbookingException(final String message, final Throwable cause, final boolean enableSuppression,
-	    final boolean writableStackTrace) {
-	super(message, cause, enableSuppression, writableStackTrace);
-
-    }
-
-    public OverbookingException(final Throwable cause) {
-	super(cause);
-
+        return this;
     }
 
 }

@@ -38,8 +38,10 @@ public class CleaningDateFilter implements Predicate<BookingEntry> {
 	@Override
 	public boolean test(final BookingEntry be) {
         final BookingBean t = be.getElement();
-		return t.getCleaning() != null && t.getCleaning().getDate().isAfter(dates.lowerEndpoint().minusDays(1))
-				&& t.getCleaning().getDate().isBefore(dates.upperEndpoint().plusDays(1));
+//		return t.getCleaning() != null && t.getCleaning().getDate().isAfter(dates.lowerEndpoint().minusDays(1))
+//				&& t.getCleaning().getDate().isBefore(dates.upperEndpoint().plusDays(1));
+        System.err.println("Removed cleaning");
+        return true;
 	}
 
 }
