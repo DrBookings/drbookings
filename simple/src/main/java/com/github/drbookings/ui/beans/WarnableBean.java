@@ -27,6 +27,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+/**
+ * Abstract UI-Bean that holds a {@link BooleanProperty} to inform about a warning.
+ */
 public abstract class WarnableBean {
 
     protected final BooleanProperty warning = new SimpleBooleanProperty();
