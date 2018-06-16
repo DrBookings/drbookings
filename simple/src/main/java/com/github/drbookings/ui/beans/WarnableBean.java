@@ -28,7 +28,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Abstract UI-Bean that holds a {@link BooleanProperty} to inform about a warning.
+ * Abstract UI-Bean that holds a {@link BooleanProperty} to inform about a
+ * warning.
  */
 public abstract class WarnableBean {
 
@@ -36,6 +37,10 @@ public abstract class WarnableBean {
 
     public WarnableBean() {
 
+    }
+
+    protected void bindProperties() {
+	bindWarningProperty();
     }
 
     protected void bindWarningProperty() {
@@ -46,10 +51,6 @@ public abstract class WarnableBean {
     protected abstract Callable<Boolean> calculateWarningProperty();
 
     protected abstract Observable[] getWarnableObservables();
-
-    protected void bindProperties() {
-	bindWarningProperty();
-    }
 
     public boolean isWarning() {
 	return this.warningProperty().get();

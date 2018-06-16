@@ -20,18 +20,29 @@
 
 package com.github.drbookings.model.data;
 
-import org.junit.*;
-
-import java.time.LocalDate;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class BookingBeanTest {
 
-    private BookingBean b1, b2;
+    public static BookingBean newInstance() {
+	return newInstance(LocalDate.of(2017, 06, 01), LocalDate.of(2017, 06, 04));
+    }
+
+    public static BookingBean newInstance(final LocalDate checkin, final LocalDate checkout) {
+	return new BookingBean(new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"), checkin,
+		checkout);
+    }
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -41,16 +52,7 @@ public class BookingBeanTest {
     public static void tearDownAfterClass() {
     }
 
-    public static BookingBean newInstance() {
-        return newInstance(
-                LocalDate.of(2017, 06, 01), LocalDate.of(2017, 06, 04));
-    }
-
-    public static BookingBean newInstance(LocalDate checkin, LocalDate checkout) {
-        return new BookingBean
-                (new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"),
-                        checkin, checkout);
-    }
+    private BookingBean b1, b2;
 
     @Before
     public void setUp() {
@@ -58,57 +60,57 @@ public class BookingBeanTest {
 
     @After
     public void tearDown() {
-        b1 = null;
-        b2 = null;
-    }
-
-    @Test
-    public void testNumberOfDaysAndNights01() {
-        final BookingBean b = new BookingBean(new Guest("testGuest"), new Room("testRoom"), new BookingOrigin("testOrigin"),
-                LocalDate.of(2017, 06, 01), LocalDate.of(2017, 07, 01));
-        assertEquals(31, b.getNumberOfDays());
-        assertEquals(30, b.getNumberOfNights());
-
+	b1 = null;
+	b2 = null;
     }
 
     @Test
     public void testDateOfPayment01() {
-        final BookingBean b = newInstance();
-        assertThat(b.isPaymentDone(), is(false));
-        b.setPaymentDone(true);
-        assertThat(b.isPaymentDone(), is(true));
+	final BookingBean b = newInstance();
+	assertThat(b.isPaymentDone(), is(false));
+	b.setPaymentDone(true);
+	assertThat(b.isPaymentDone(), is(true));
     }
 
     @Test
     public void testDateOfPayment02() {
-        final BookingBean b = newInstance();
-        assertThat(b.isPaymentDone(), is(false));
-        assertThat(b.getDateOfPayment(), is(nullValue()));
-        b.setPaymentDone(true);
-        assertThat(b.getDateOfPayment(), is(LocalDate.now()));
+	final BookingBean b = newInstance();
+	assertThat(b.isPaymentDone(), is(false));
+	assertThat(b.getDateOfPayment(), is(nullValue()));
+	b.setPaymentDone(true);
+	assertThat(b.getDateOfPayment(), is(LocalDate.now()));
     }
 
     @Test
     public void testDateOfPayment03() {
-        final BookingBean b = newInstance();
-        assertThat(b.getDateOfPayment(), is(nullValue()));
-        b.setDateOfPayment(LocalDate.of(2017, 12, 12));
-        assertThat(b.getDateOfPayment(), is(LocalDate.of(2017, 12, 12)));
-        assertThat(b.isPaymentDone(), is(true));
+	final BookingBean b = newInstance();
+	assertThat(b.getDateOfPayment(), is(nullValue()));
+	b.setDateOfPayment(LocalDate.of(2017, 12, 12));
+	assertThat(b.getDateOfPayment(), is(LocalDate.of(2017, 12, 12)));
+	assertThat(b.isPaymentDone(), is(true));
     }
 
     @Test
     public void testGrossEarnings01() {
-        final BookingBean b = newInstance();
-        b.setGrossEarningsExpression("30");
-        assertThat(b.getGrossEarnings(), is(30f));
+	final BookingBean b = newInstance();
+	b.setGrossEarningsExpression("30");
+	assertThat(b.getGrossEarnings(), is(30f));
     }
 
     @Test
     public void testNetEarnings01() {
-        final BookingBean b = newInstance();
-        b.setGrossEarningsExpression("30");
-        assertThat(b.getNetEarnings(), is(30f));
+	final BookingBean b = newInstance();
+	b.setGrossEarningsExpression("30");
+	assertThat(b.getNetEarnings(), is(30f));
+    }
+
+    @Test
+    public void testNumberOfDaysAndNights01() {
+	final BookingBean b = new BookingBean(new Guest("testGuest"), new Room("testRoom"),
+		new BookingOrigin("testOrigin"), LocalDate.of(2017, 06, 01), LocalDate.of(2017, 07, 01));
+	assertEquals(31, b.getNumberOfDays());
+	assertEquals(30, b.getNumberOfNights());
+
     }
 
 }

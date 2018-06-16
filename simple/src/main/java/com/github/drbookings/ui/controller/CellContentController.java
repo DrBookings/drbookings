@@ -46,14 +46,6 @@ public class CellContentController implements Initializable {
 
     @SuppressWarnings("unused")
     private static Logger logger = LoggerFactory.getLogger(CellContentController.class);
-    @FXML
-    private VBox guestNames0;
-    @FXML
-    private VBox guestNames1;
-    @FXML
-    private VBox cleaning;
-    @FXML
-    private VBox cellContainer;
 
     private static Node buildEntryCheckIn(final BookingEntry e) {
 	final Label l = getNewLabel(e.getElement().getGuest().getName());
@@ -121,36 +113,32 @@ public class CellContentController implements Initializable {
 	return l;
     }
 
+    @FXML
+    private VBox guestNames0;
+
+    @FXML
+    private VBox guestNames1;
+
+    @FXML
+    private VBox cleaning;
+
+    @FXML
+    private VBox cellContainer;
+
     public VBox getCellContainer() {
 	return cellContainer;
-    }
-
-    public void setCellContainer(final VBox cellContainer) {
-	this.cellContainer = cellContainer;
     }
 
     public VBox getCleaning() {
 	return cleaning;
     }
 
-    public void setCleaning(final VBox cleaning) {
-	this.cleaning = cleaning;
-    }
-
     public VBox getGuestNames0() {
 	return guestNames0;
     }
 
-    public void setGuestNames0(final VBox guestNamesCheckIn) {
-	this.guestNames0 = guestNamesCheckIn;
-    }
-
     public VBox getGuestNames1() {
 	return guestNames1;
-    }
-
-    public void setGuestNames1(final VBox guestNamesCheckOut) {
-	this.guestNames1 = guestNamesCheckOut;
     }
 
     @Override
@@ -158,6 +146,14 @@ public class CellContentController implements Initializable {
 	// VBox.setVgrow(guestNames0, Priority.ALWAYS);
 	// VBox.setVgrow(guestNames1, Priority.ALWAYS);
 	// VBox.setVgrow(cleaning, Priority.ALWAYS);
+    }
+
+    public void setCellContainer(final VBox cellContainer) {
+	this.cellContainer = cellContainer;
+    }
+
+    public void setCleaning(final VBox cleaning) {
+	this.cleaning = cleaning;
     }
 
     public void setData(final RoomBean rb) {
@@ -200,6 +196,14 @@ public class CellContentController implements Initializable {
 	    final BookingEntry entry = bep.getLast();
 	    cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(entry.getBookingOrigin().getName()));
 	}
+    }
+
+    public void setGuestNames0(final VBox guestNamesCheckIn) {
+	this.guestNames0 = guestNamesCheckIn;
+    }
+
+    public void setGuestNames1(final VBox guestNamesCheckOut) {
+	this.guestNames1 = guestNamesCheckOut;
     }
 
 }

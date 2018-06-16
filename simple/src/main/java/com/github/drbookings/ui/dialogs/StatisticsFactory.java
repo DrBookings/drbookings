@@ -28,22 +28,22 @@ import com.github.drbookings.ui.controller.StatsViewController;
 
 public class StatisticsFactory extends AbstractViewFactory implements ViewFactory {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(StatisticsFactory.class);
-	private final MainManager manager;
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsFactory.class);
+    private final MainManager manager;
 
-	public StatisticsFactory(final MainManager manager) {
-		setFxml("/fxml/StatisticsView.fxml");
-		setTitle("Statistics for Selection");
-		setHeight(240);
-		setWidth(1000);
-		this.manager = manager;
-	}
+    public StatisticsFactory(final MainManager manager) {
+	setFxml("/fxml/StatisticsView.fxml");
+	setTitle("Statistics for Selection");
+	setHeight(240);
+	setWidth(1000);
+	this.manager = manager;
+    }
 
-	@Override
-	protected void visitController(final Object controller) {
-		super.visitController(controller);
-		final StatsViewController c = (StatsViewController) controller;
-		c.setMainManager(manager);
-	}
+    @Override
+    protected void visitController(final Object controller) {
+	super.visitController(controller);
+	final StatsViewController c = (StatsViewController) controller;
+	c.setMainManager(manager);
+    }
 }

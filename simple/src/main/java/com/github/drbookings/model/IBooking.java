@@ -24,12 +24,12 @@ import com.github.drbookings.model.data.BookingOrigin;
 
 public interface IBooking {
 
-	float getGrossEarnings();
+    BookingOrigin getBookingOrigin();
 
-	float getNetEarnings();
+    float getGrossEarnings();
 
-	BookingOrigin getBookingOrigin();
+    float getNetEarnings();
 
-	boolean isPaymentOverdue();
+    boolean isPaymentOverdue();
 
 }

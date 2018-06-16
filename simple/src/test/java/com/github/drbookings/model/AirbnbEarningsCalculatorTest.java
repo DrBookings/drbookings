@@ -20,18 +20,21 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingBeanTest;
-import org.junit.*;
-
-import java.time.LocalDate;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class AirbnbEarningsCalculatorTest {
+import java.time.LocalDate;
 
-    private AirbnbEarningsCalculator c;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.BookingBeanTest;
+
+public class AirbnbEarningsCalculatorTest {
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -41,41 +44,43 @@ public class AirbnbEarningsCalculatorTest {
     public static void tearDownAfterClass() {
     }
 
+    private AirbnbEarningsCalculator c;
+
     @Before
     public void setUp() {
-        c = new AirbnbEarningsCalculator().filterForPaymentDone(false);
+	c = new AirbnbEarningsCalculator().filterForPaymentDone(false);
     }
 
     @After
     public void tearDown() {
-        c = null;
+	c = null;
     }
 
     @Test
     public void test01() {
-        BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
-        b.setPaymentDone(true);
-        float result = c.calculateEarnings(b);
-        assertThat(result, is(0f));
+	final BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
+	b.setPaymentDone(true);
+	final float result = c.calculateEarnings(b);
+	assertThat(result, is(0f));
     }
 
     @Test
     public void test02() {
-        BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
-        b.setPaymentDone(true);
-        b.setGrossEarningsExpression("30");
-        float result = c.calculateEarnings(b);
-        assertThat(result, is(30f));
+	final BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2012, 02, 02), LocalDate.of(2012, 2, 5));
+	b.setPaymentDone(true);
+	b.setGrossEarningsExpression("30");
+	final float result = c.calculateEarnings(b);
+	assertThat(result, is(30f));
     }
 
     @Test
     public void test03() {
-        BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2018, 01, 27), LocalDate.of(2018, 8, 5));
-        b.setPaymentDone(true);
-        b.setGrossEarningsExpression("8252.86");
-        b.getPayments().add(new Payment(LocalDate.of(2018, 01, 29), 1300));
-        assertThat(b.getNumberOfNights(), is(190));
-        float result = c.calculateEarnings(b);
-        assertThat(result, is(1300f));
+	final BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2018, 01, 27), LocalDate.of(2018, 8, 5));
+	b.setPaymentDone(true);
+	b.setGrossEarningsExpression("8252.86");
+	b.getPayments().add(new Payment(LocalDate.of(2018, 01, 29), 1300));
+	assertThat(b.getNumberOfNights(), is(190));
+	final float result = c.calculateEarnings(b);
+	assertThat(result, is(1300f));
     }
 }

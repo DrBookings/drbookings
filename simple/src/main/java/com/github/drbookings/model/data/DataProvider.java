@@ -20,42 +20,44 @@
 
 package com.github.drbookings.model.data;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.BookingEntryPair;
 import com.github.drbookings.model.exception.AlreadyBusyException;
 import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.ui.CleaningEntry;
+
 import javafx.beans.property.BooleanProperty;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 public interface DataProvider {
-    
+
+    List<BookingEntry> addBooking(BookingBean b) throws OverbookingException;
+
+    CleaningEntry addCleaning(String name, LocalDate date, String room) throws AlreadyBusyException;
+
+    boolean cleaningNeededFor(String name, LocalDate date);
+
+    BooleanProperty cleaningsChangedProperty();
+
+    BookingBean createBooking(String bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestName,
+	    String roomName, String source);
+
+    Optional<BookingEntry> getAfter(BookingEntry e);
+
+    Optional<BookingEntry> getBefore(BookingEntry e);
+
+    List<BookingEntry> getBookingEntries();
+
+    Optional<BookingEntryPair> getBookingEntryPair(String name, LocalDate date);
+
+    List<BookingEntryPair> getBookingEntryPairs();
+
     List<BookingBean> getBookings();
 
     List<CleaningEntry> getCleaningEntries();
 
-    Optional<BookingEntry> getBefore(BookingEntry e);
-
-    Optional<BookingEntry> getAfter(BookingEntry e);
-
-    List<BookingEntry> addBooking(BookingBean b) throws OverbookingException;
-
-    BooleanProperty cleaningsChangedProperty();
-
-    List<BookingEntry> getBookingEntries();
-
-    CleaningEntry addCleaning(String name, LocalDate date, String room) throws AlreadyBusyException;
-
     Optional<CleaningEntry> getCleaningEntry(String name, LocalDate date);
-
-    Optional<BookingEntryPair> getBookingEntryPair(String name, LocalDate date);
-
-    boolean cleaningNeededFor(String name, LocalDate date);
-
-    BookingBean createBooking(String bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestName, String roomName, String source);
-
-    List<BookingEntryPair> getBookingEntryPairs();
 }

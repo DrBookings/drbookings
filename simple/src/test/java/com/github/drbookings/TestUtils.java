@@ -20,53 +20,57 @@
 
 package com.github.drbookings;
 
-import com.github.drbookings.model.RoomEntry;
-import com.github.drbookings.model.data.*;
-import com.github.drbookings.ui.CleaningEntry;
-
 import java.time.LocalDate;
+
+import com.github.drbookings.model.RoomEntry;
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.BookingOrigin;
+import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.Guest;
+import com.github.drbookings.model.data.Room;
+import com.github.drbookings.ui.CleaningEntry;
 
 public class TestUtils {
 
     public static final String TEST_ROOM_NAME = "testRoom";
 
-    public static Guest getTestGuest() {
-        return new Guest("testGuest");
-    }
-
-    public static Room getTestRoom() {
-        return new Room(TEST_ROOM_NAME);
-    }
-
-    public static BookingOrigin getTestBookingOrigin() {
-        return new BookingOrigin("TestBookingOrigin");
+    public static BookingBean getTestBooking() {
+	return getTestBooking(LocalDate.now(), LocalDate.now().plusDays(1));
     }
 
     public static BookingBean getTestBooking(final LocalDate checkIn, final LocalDate checkOut) {
-        return new BookingBean(getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
+	return new BookingBean(getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
     }
 
-    public static BookingBean getTestBooking(String id, final LocalDate checkIn, final LocalDate checkOut) {
-        return new BookingBean(id, getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
+    public static BookingBean getTestBooking(final String id) {
+	return getTestBooking(id, LocalDate.now(), LocalDate.now().plusDays(1));
     }
 
-    public static BookingBean getTestBooking() {
-        return getTestBooking(LocalDate.now(), LocalDate.now().plusDays(1));
+    public static BookingBean getTestBooking(final String id, final LocalDate checkIn, final LocalDate checkOut) {
+	return new BookingBean(id, getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
     }
 
-    public static BookingBean getTestBooking(String id) {
-        return getTestBooking(id, LocalDate.now(), LocalDate.now().plusDays(1));
-    }
-
-    public static CleaningEntry getTestCleaningEntry() {
-        return new CleaningEntry(new RoomEntry(getTestDate(), getTestRoom()),getTestCleaning());
-    }
-
-    public static LocalDate getTestDate() {
-        return LocalDate.of(2014, 04, 21);
+    public static BookingOrigin getTestBookingOrigin() {
+	return new BookingOrigin("TestBookingOrigin");
     }
 
     public static Cleaning getTestCleaning() {
-        return new Cleaning("testCleaning");
+	return new Cleaning("testCleaning");
+    }
+
+    public static CleaningEntry getTestCleaningEntry() {
+	return new CleaningEntry(new RoomEntry(getTestDate(), getTestRoom()), getTestCleaning());
+    }
+
+    public static LocalDate getTestDate() {
+	return LocalDate.of(2014, 04, 21);
+    }
+
+    public static Guest getTestGuest() {
+	return new Guest("testGuest");
+    }
+
+    public static Room getTestRoom() {
+	return new Room(TEST_ROOM_NAME);
     }
 }

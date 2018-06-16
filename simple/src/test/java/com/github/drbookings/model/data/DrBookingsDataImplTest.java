@@ -51,6 +51,8 @@ public class DrBookingsDataImplTest {
     public static void tearDownAfterClass() {
     }
 
+    private DrBookingsDataImpl data;
+
     @Before
     public void setUp() throws Exception {
 	data = new DrBookingsDataImpl();
@@ -61,36 +63,11 @@ public class DrBookingsDataImplTest {
 	data = null;
     }
 
-    private DrBookingsDataImpl data;
-
     @Test
-    public void testCreateCleaningEntry01() throws Exception {
-
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
-	assertThat(ce, is(not(nullValue())));
-	final Cleaning c = ce.getElement();
-	assertThat(c, is(not(nullValue())));
-	assertThat(c.getName(), is("testc"));
-
-    }
-
-    @Test
-    public void testCreateCleaningEntry02() throws Exception {
-
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
-	final List<CleaningEntry> entries = data.getCleaningEntries();
-	assertThat(entries, is(not(nullValue())));
-	assertThat(entries.size(), is(1));
-	assertThat(entries.get(0), sameInstance(ce));
-
-    }
-
-    @Test(expected = AlreadyBusyException.class)
-    public void testCreateCleaningEntry03() throws Exception {
-
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
-	final CleaningEntry ce2 = data.addCleaning("testc", LocalDate.now(), "3");
-
+    public void testAddBooking01() throws Exception {
+	data.addBooking(new BookingBean(TestUtils.getTestGuest(), TestUtils.getTestRoom(),
+		TestUtils.getTestBookingOrigin(), LocalDate.of(2018, 05, 01), LocalDate.of(2018, 05, 04)));
+	assertThat(data.isEmtpy(), is(false));
     }
 
     @Test
@@ -126,10 +103,32 @@ public class DrBookingsDataImplTest {
     }
 
     @Test
-    public void testGetBookingEntryPair01() throws Exception {
-	data.createAndAddBooking(LocalDate.of(2018, 05, 01), LocalDate.of(2018, 05, 04), "g", "r", "s");
-	final Optional<BookingEntryPair> bookings = data.getBookingEntryPair("r", LocalDate.of(2018, 05, 01));
-	assertThat(bookings.isPresent(), is(true));
+    public void testCreateCleaningEntry01() throws Exception {
+
+	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
+	assertThat(ce, is(not(nullValue())));
+	final Cleaning c = ce.getElement();
+	assertThat(c, is(not(nullValue())));
+	assertThat(c.getName(), is("testc"));
+
+    }
+
+    @Test
+    public void testCreateCleaningEntry02() throws Exception {
+
+	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
+	final List<CleaningEntry> entries = data.getCleaningEntries();
+	assertThat(entries, is(not(nullValue())));
+	assertThat(entries.size(), is(1));
+	assertThat(entries.get(0), sameInstance(ce));
+
+    }
+
+    @Test(expected = AlreadyBusyException.class)
+    public void testCreateCleaningEntry03() throws Exception {
+
+	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
+	final CleaningEntry ce2 = data.addCleaning("testc", LocalDate.now(), "3");
 
     }
 
@@ -140,16 +139,17 @@ public class DrBookingsDataImplTest {
     }
 
     @Test
-    public void testAddBooking01() throws Exception {
+    public void testGetBookingEntry01() throws Exception {
 	data.addBooking(new BookingBean(TestUtils.getTestGuest(), TestUtils.getTestRoom(),
 		TestUtils.getTestBookingOrigin(), LocalDate.of(2018, 05, 01), LocalDate.of(2018, 05, 04)));
 	assertThat(data.isEmtpy(), is(false));
     }
 
     @Test
-    public void testGetBookingEntry01() throws Exception {
-	data.addBooking(new BookingBean(TestUtils.getTestGuest(), TestUtils.getTestRoom(),
-		TestUtils.getTestBookingOrigin(), LocalDate.of(2018, 05, 01), LocalDate.of(2018, 05, 04)));
-	assertThat(data.isEmtpy(), is(false));
+    public void testGetBookingEntryPair01() throws Exception {
+	data.createAndAddBooking(LocalDate.of(2018, 05, 01), LocalDate.of(2018, 05, 04), "g", "r", "s");
+	final Optional<BookingEntryPair> bookings = data.getBookingEntryPair("r", LocalDate.of(2018, 05, 01));
+	assertThat(bookings.isPresent(), is(true));
+
     }
 }

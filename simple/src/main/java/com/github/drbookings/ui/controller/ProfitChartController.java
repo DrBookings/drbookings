@@ -49,107 +49,107 @@ import javafx.scene.chart.XYChart.Series;
 
 public class ProfitChartController extends AbstractBinningChart<DateBean> implements Initializable {
 
-	private final static Logger logger = LoggerFactory.getLogger(ProfitChartController.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProfitChartController.class);
 
-	@FXML
-	private StackedBarChart<String, Number> chart;
+    private static double getCostsToCover() {
+	double result = 0;
+	result += SettingsManager.getInstance().getAdditionalCosts();
+	result *= SettingsManager.getInstance().getNumberOfRooms();
+	return result;
+    }
 
-	@FXML
-	private CategoryAxis xAxis;
+    private static double getRefColdRentLongTerm() {
+	return SettingsManager.getInstance().getReferenceColdRentLongTerm()
+		* SettingsManager.getInstance().getNumberOfRooms();
+    }
 
-	@FXML
-	private NumberAxis yAxis;
+    @FXML
+    private StackedBarChart<String, Number> chart;
 
-	private final DoubleProperty allBookingEntries = new SimpleDoubleProperty();
+    @FXML
+    private CategoryAxis xAxis;
 
-	public ProfitChartController() {
+    @FXML
+    private NumberAxis yAxis;
 
+    private final DoubleProperty allBookingEntries = new SimpleDoubleProperty();
+
+    public ProfitChartController() {
+
+    }
+
+    public final DoubleProperty allBookingEntriesProperty() {
+	return this.allBookingEntries;
+    }
+
+    private Callable<Double> calculateAllBookingEntries() {
+	return () -> Double.valueOf(BookingSelectionManager.getInstance().getSelection().size());
+    }
+
+    @Override
+    protected void flushBin() {
+	if (bin.isEmpty()) {
+	    return;
 	}
+	final Optional<LocalDate> xValue = bin.stream().map(d -> d.getDate()).max((d1, d2) -> d1.compareTo(d2));
+	final Map<String, Number> yValue = new TreeMap<>();
 
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-
-		allBookingEntriesProperty().bind(Bindings.createDoubleBinding(calculateAllBookingEntries(),
-				BookingSelectionManager.getInstance().selectionProperty()));
-	}
-
-	private Callable<Double> calculateAllBookingEntries() {
-		return () -> Double.valueOf(BookingSelectionManager.getInstance().getSelection().size());
-	}
-
-	@Override
-	protected void flushBin() {
-		if (bin.isEmpty()) {
-			return;
+	final double costsToCover = getCostsToCover();
+	final double refColdRentLongTerm = getRefColdRentLongTerm();
+	for (final DateBean d : bin) {
+	    for (final Entry<String, Number> e : d.getEarningsPerOrigin().entrySet()) {
+		double n = yValue.getOrDefault(e.getKey(), Double.valueOf(0)).doubleValue();
+		final double earnings = e.getValue().doubleValue();
+		final double sizeThis = 1;
+		final double sizeAll = allBookingEntries.get();
+		System.err.println(sizeThis);
+		System.err.println(sizeAll);
+		final double percent = sizeThis / sizeAll;
+		if (logger.isDebugEnabled()) {
+		    logger.debug("percent: " + percent);
+		    logger.debug("earnings: " + earnings);
+		    logger.debug("costsToCover: " + (costsToCover * percent));
+		    logger.debug("refColdRent: " + (refColdRentLongTerm * percent));
 		}
-		final Optional<LocalDate> xValue = bin.stream().map(d -> d.getDate()).max((d1, d2) -> d1.compareTo(d2));
-		final Map<String, Number> yValue = new TreeMap<>();
+		final double performance = (earnings - (costsToCover * percent) - (refColdRentLongTerm * percent));
+		n += performance / bin.size();
+		yValue.put(e.getKey(), n);
+		System.err.println("yValue: " + yValue);
 
-		final double costsToCover = getCostsToCover();
-		final double refColdRentLongTerm = getRefColdRentLongTerm();
-		for (final DateBean d : bin) {
-			for (final Entry<String, Number> e : d.getEarningsPerOrigin().entrySet()) {
-				double n = yValue.getOrDefault(e.getKey(), Double.valueOf(0)).doubleValue();
-				final double earnings = e.getValue().doubleValue();
-				final double sizeThis = 1;
-				final double sizeAll = allBookingEntries.get();
-				System.err.println(sizeThis);
-				System.err.println(sizeAll);
-				final double percent = sizeThis / sizeAll;
-				if (logger.isDebugEnabled()) {
-					logger.debug("percent: " + percent);
-					logger.debug("earnings: " + earnings);
-					logger.debug("costsToCover: " + (costsToCover * percent));
-					logger.debug("refColdRent: " + (refColdRentLongTerm * percent));
-				}
-				final double performance = (earnings - (costsToCover * percent) - (refColdRentLongTerm * percent));
-				n += performance / bin.size();
-				yValue.put(e.getKey(), n);
-				System.err.println("yValue: " + yValue);
-
-			}
-		}
-
-		for (final Entry<String, Number> e : yValue.entrySet()) {
-			// System.err.println("Entry " + e);
-			Series<String, Number> s = mapSeries.get(e.getKey());
-			if (s == null) {
-				s = new Series<>();
-				s.setName(e.getKey());
-				mapSeries.put(e.getKey(), s);
-				chart.getData().add(s);
-
-			}
-			final XYChart.Data<String, Number> data = new XYChart.Data<>(xValue.get().toString(), e.getValue());
-			categories.add(xValue.get().toString());
-			s.getData().add(data);
-			// System.err.println("Adding " + data);
-		}
-		bin.clear();
+	    }
 	}
 
-	private static double getCostsToCover() {
-		double result = 0;
-		result += SettingsManager.getInstance().getAdditionalCosts();
-		result *= SettingsManager.getInstance().getNumberOfRooms();
-		return result;
-	}
+	for (final Entry<String, Number> e : yValue.entrySet()) {
+	    // System.err.println("Entry " + e);
+	    Series<String, Number> s = mapSeries.get(e.getKey());
+	    if (s == null) {
+		s = new Series<>();
+		s.setName(e.getKey());
+		mapSeries.put(e.getKey(), s);
+		chart.getData().add(s);
 
-	private static double getRefColdRentLongTerm() {
-		return SettingsManager.getInstance().getReferenceColdRentLongTerm()
-				* SettingsManager.getInstance().getNumberOfRooms();
+	    }
+	    final XYChart.Data<String, Number> data = new XYChart.Data<>(xValue.get().toString(), e.getValue());
+	    categories.add(xValue.get().toString());
+	    s.getData().add(data);
+	    // System.err.println("Adding " + data);
 	}
+	bin.clear();
+    }
 
-	public final DoubleProperty allBookingEntriesProperty() {
-		return this.allBookingEntries;
-	}
+    public final double getAllBookingEntries() {
+	return this.allBookingEntriesProperty().get();
+    }
 
-	public final double getAllBookingEntries() {
-		return this.allBookingEntriesProperty().get();
-	}
+    @Override
+    public void initialize(final URL location, final ResourceBundle resources) {
 
-	public final void setAllBookingEntries(final double allBookingEntries) {
-		this.allBookingEntriesProperty().set(allBookingEntries);
-	}
+	allBookingEntriesProperty().bind(Bindings.createDoubleBinding(calculateAllBookingEntries(),
+		BookingSelectionManager.getInstance().selectionProperty()));
+    }
+
+    public final void setAllBookingEntries(final double allBookingEntries) {
+	this.allBookingEntriesProperty().set(allBookingEntries);
+    }
 
 }

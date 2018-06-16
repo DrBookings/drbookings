@@ -38,23 +38,13 @@ public class AirbnbICalParser implements BookingParser {
     }
 
     @Override
-    public String getRoomName(final VEvent e) throws IOException {
-	if (e.getLocation() == null) {
-	    return null;
-	}
-	final String airbnbRoomName = e.getLocation().getValue().trim();
-	final String ourName = vendorNameToNameMap.get(airbnbRoomName);
-	return ourName;
-
+    public LocalDate getCheckInDate(final VEvent e) throws IOException {
+	return e.getDateStart().getValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     @Override
-    public String getGuestName(final VEvent e) throws IOException {
-	final String value = e.getSummary().getValue().trim();
-	final String name = value.substring(0, value.indexOf("(") - 1).trim();
-	// final String externalID = value.substring(value.indexOf("(") + 1,
-	// value.indexOf(")")).trim();
-	return name;
+    public LocalDate getCheckOutDate(final VEvent e) throws IOException {
+	return e.getDateEnd().getValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     @Override
@@ -67,13 +57,23 @@ public class AirbnbICalParser implements BookingParser {
     }
 
     @Override
-    public LocalDate getCheckInDate(final VEvent e) throws IOException {
-	return e.getDateStart().getValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    public String getGuestName(final VEvent e) throws IOException {
+	final String value = e.getSummary().getValue().trim();
+	final String name = value.substring(0, value.indexOf("(") - 1).trim();
+	// final String externalID = value.substring(value.indexOf("(") + 1,
+	// value.indexOf(")")).trim();
+	return name;
     }
 
     @Override
-    public LocalDate getCheckOutDate(final VEvent e) throws IOException {
-	return e.getDateEnd().getValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    public String getRoomName(final VEvent e) throws IOException {
+	if (e.getLocation() == null) {
+	    return null;
+	}
+	final String airbnbRoomName = e.getLocation().getValue().trim();
+	final String ourName = vendorNameToNameMap.get(airbnbRoomName);
+	return ourName;
+
     }
 
 }

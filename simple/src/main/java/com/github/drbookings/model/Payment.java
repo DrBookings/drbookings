@@ -20,18 +20,31 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.ser.PaymentSer;
-
-import javax.money.Monetary;
-import javax.money.MonetaryAmount;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+
+import com.github.drbookings.model.ser.PaymentSer;
+
 public class Payment {
 
     public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
+
+    private static MonetaryAmount createMondary(final Currency currency, final double amount) {
+	return Monetary.getDefaultAmountFactory().setCurrency(currency.getCurrencyCode()).setNumber(amount).create();
+    }
+
+    public static List<Payment> transform(final List<? extends PaymentSer> paymentsSoFar) {
+	final List<Payment> result = new ArrayList<>();
+	for (final PaymentSer ps : paymentsSoFar) {
+	    result.add(new Payment(ps.date, ps.amount));
+	}
+	return result;
+    }
 
     private final Currency currency;
 
@@ -39,53 +52,38 @@ public class Payment {
 
     private final MonetaryAmount amount;
 
-    public Payment(Currency currency, LocalDate date, MonetaryAmount amount) {
-        this.currency = currency;
-        this.date = date;
-        this.amount = amount;
+    public Payment(final Currency currency, final LocalDate date, final MonetaryAmount amount) {
+	this.currency = currency;
+	this.date = date;
+	this.amount = amount;
     }
 
-    public Payment(LocalDate date, MonetaryAmount amount) {
-        this(DEFAULT_CURRENCY, date, amount);
+    public Payment(final LocalDate date, final double amount) {
+	this(DEFAULT_CURRENCY, date, createMondary(DEFAULT_CURRENCY, amount));
     }
 
-    public Payment(LocalDate date, String amount) {
-        this(date, Double.parseDouble(amount));
+    public Payment(final LocalDate date, final MonetaryAmount amount) {
+	this(DEFAULT_CURRENCY, date, amount);
     }
 
-    public Payment(LocalDate date, double amount) {
-        this(DEFAULT_CURRENCY, date, createMondary(DEFAULT_CURRENCY, amount));
-    }
-
-    private static MonetaryAmount createMondary(Currency currency, double amount) {
-        return Monetary.getDefaultAmountFactory().setCurrency(currency.getCurrencyCode()).setNumber(amount).create();
-    }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public LocalDate getDate() {
-        return date;
+    public Payment(final LocalDate date, final String amount) {
+	this(date, Double.parseDouble(amount));
     }
 
     public MonetaryAmount getAmount() {
-        return amount;
+	return amount;
     }
 
-    public static List<Payment> transform(List<? extends PaymentSer> paymentsSoFar) {
-        List<Payment> result = new ArrayList<>();
-        for (PaymentSer ps : paymentsSoFar) {
-            result.add(new Payment(ps.date, ps.amount));
-        }
-        return result;
+    public Currency getCurrency() {
+	return currency;
+    }
+
+    public LocalDate getDate() {
+	return date;
     }
 
     @Override
     public String toString() {
-        return "Payment{" +
-            "date=" + date +
-            ", amount=" + amount +
-            '}';
+	return "Payment{" + "date=" + date + ", amount=" + amount + '}';
     }
 }

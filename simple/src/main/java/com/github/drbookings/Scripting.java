@@ -29,23 +29,23 @@ import org.slf4j.LoggerFactory;
 
 public class Scripting {
 
-	private static final Logger logger = LoggerFactory.getLogger(Scripting.class);
+    private static final Logger logger = LoggerFactory.getLogger(Scripting.class);
 
-	public static Number evaluateExpression(final String expression) {
-		if (expression != null && expression.trim().length() > 0) {
-			try {
-				final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-				final Object result = engine.eval(expression);
-				// if (logger.isDebugEnabled()) {
-				// logger.debug("Expression result: " + result);
-				// }
-				if (result instanceof Number) {
-					return ((Number) result);
-				}
-			} catch (final ScriptException e) {
-				logger.debug(e.toString());
-			}
+    public static Number evaluateExpression(final String expression) {
+	if ((expression != null) && (expression.trim().length() > 0)) {
+	    try {
+		final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+		final Object result = engine.eval(expression);
+		// if (logger.isDebugEnabled()) {
+		// logger.debug("Expression result: " + result);
+		// }
+		if (result instanceof Number) {
+		    return ((Number) result);
 		}
-		return 0;
+	    } catch (final ScriptException e) {
+		logger.debug(e.toString());
+	    }
 	}
+	return 0;
+    }
 }

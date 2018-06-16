@@ -20,22 +20,18 @@
 
 package com.github.drbookings.model.ser;
 
-import com.github.drbookings.ser.LocalDateAdapter;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
-import java.util.List;
+
+import com.github.drbookings.ser.LocalDateAdapter;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CleaningBeanSer {
-
-    @Override
-    public String toString() {
-        return "CleaningBeanSer date=" + date + ", name=" + name + ", room=" + room + "]";
-    }
 
     @XmlAttribute
     public List<String> calendarIds;
@@ -58,5 +54,10 @@ public class CleaningBeanSer {
 
     @XmlAttribute
     public String room;
+
+    @Override
+    public String toString() {
+	return "CleaningBeanSer date=" + date + ", name=" + name + ", room=" + room + "]";
+    }
 
 }

@@ -20,15 +20,19 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.BookingEntry;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.github.drbookings.model.BookingEntry;
 
 public class GuestNameAndBookingOriginView extends BookingEntryView {
 
     public GuestNameAndBookingOriginView(final Collection<BookingEntry> bookingEntries) {
 	super(bookingEntries);
+    }
+
+    public boolean isEmpty() {
+	return bookingEntries.isEmpty();
     }
 
     @Override
@@ -48,10 +52,6 @@ public class GuestNameAndBookingOriginView extends BookingEntryView {
 	}
 
 	return sb.toString();
-    }
-
-    public boolean isEmpty() {
-	return bookingEntries.isEmpty();
     }
 
 }

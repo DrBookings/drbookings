@@ -33,9 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.ui.CleaningEntry;
 import com.github.drbookings.ui.beans.DateBean;
 
@@ -307,7 +307,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    final List<CleaningEntry> upcomingCleanings = manager.getCleaningEntries().stream()
 		    .filter(c -> c.getDate().equals(date)).collect(Collectors.toList());
 	    addEvents(date, upcomingBookings, upcomingCleanings);
-	    if (i != lookAheadDays - 1) {
+	    if (i != (lookAheadDays - 1)) {
 		this.box.getChildren().add(new Separator());
 	    }
 	}

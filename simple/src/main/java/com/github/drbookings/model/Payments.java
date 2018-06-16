@@ -25,13 +25,13 @@ import java.util.Optional;
 
 public class Payments {
 
-    public static Optional<Payment> getLastPayment(Collection<? extends Payment> payments) {
-        Payment result = null;
-        for (Payment p : payments) {
-            if (result == null || result.getDate().isBefore(p.getDate())) {
-                result = p;
-            }
-        }
-        return Optional.ofNullable(result);
+    public static Optional<Payment> getLastPayment(final Collection<? extends Payment> payments) {
+	Payment result = null;
+	for (final Payment p : payments) {
+	    if ((result == null) || result.getDate().isBefore(p.getDate())) {
+		result = p;
+	    }
+	}
+	return Optional.ofNullable(result);
     }
 }

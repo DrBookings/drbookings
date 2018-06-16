@@ -34,16 +34,15 @@ public class NameDateElementStore<T> {
 
     private final BiFunction<String, LocalDate, T> newElementSupplier;
 
-    public NameDateElementStore(BiFunction<String, LocalDate, T> newElementSupplier) {
-        entries = new LinkedHashMap<>();
-        this.newElementSupplier = newElementSupplier;
+    public NameDateElementStore(final BiFunction<String, LocalDate, T> newElementSupplier) {
+	entries = new LinkedHashMap<>();
+	this.newElementSupplier = newElementSupplier;
     }
 
-    public T add(String name, LocalDate date){
-        Map<LocalDate, T> map = entries.computeIfAbsent(name, k -> new LinkedHashMap<>());
-        T entry = map.computeIfAbsent(date, k -> newElementSupplier.apply(name, date));
-        return entry;
+    public T add(final String name, final LocalDate date) {
+	final Map<LocalDate, T> map = entries.computeIfAbsent(name, k -> new LinkedHashMap<>());
+	final T entry = map.computeIfAbsent(date, k -> newElementSupplier.apply(name, date));
+	return entry;
     }
-
 
 }

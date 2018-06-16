@@ -27,26 +27,26 @@ public class Named extends IDed {
 
     private final StringProperty name = new SimpleStringProperty();
 
-    @Override
-    public String toString() {
-        return getName();
-    }
-
     public Named(final String name) {
-        super(name);
-        setName(name);
-    }
-
-    public StringProperty nameProperty() {
-        return name;
+	super(name);
+	setName(name);
     }
 
     public String getName() {
-        return nameProperty().get();
+	return nameProperty().get();
+    }
+
+    public StringProperty nameProperty() {
+	return name;
     }
 
     public void setName(final String name) {
-        nameProperty().set(name);
+	nameProperty().set(name);
+    }
+
+    @Override
+    public String toString() {
+	return getName();
     }
 
 }

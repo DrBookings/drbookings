@@ -20,9 +20,9 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.data.BookingBean;
-
 import java.util.function.Predicate;
+
+import com.github.drbookings.model.data.BookingBean;
 
 public class BookingFilter2 implements Predicate<BookingBean> {
 
@@ -42,7 +42,7 @@ public class BookingFilter2 implements Predicate<BookingBean> {
 
     @Override
     public boolean test(final BookingBean t) {
-	if (filterString == null || filterString.length() < 1) {
+	if ((filterString == null) || (filterString.length() < 1)) {
 	    return true;
 	}
 	boolean result = t.getGuest().getName().toLowerCase().contains(filterString.toLowerCase());

@@ -20,34 +20,36 @@
 
 package com.github.drbookings.concurrent;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ser.XMLStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-public class BookingExportCallable implements Callable<Void>{
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.ser.XMLStorage;
+
+public class BookingExportCallable implements Callable<Void> {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingExportCallable.class);
 
     private final Collection<? extends BookingBean> bookings;
 
-    public BookingExportCallable(Collection<? extends BookingBean> bookings) {
-        this.bookings = bookings;
+    public BookingExportCallable(final Collection<? extends BookingBean> bookings) {
+	this.bookings = bookings;
     }
 
     @Override
     public Void call() throws Exception {
 
-        if(logger.isInfoEnabled()){
-            logger.info("Exporting " + bookings.size() + " bookings");
-        }
+	if (logger.isInfoEnabled()) {
+	    logger.info("Exporting " + bookings.size() + " bookings");
+	}
 
-        XMLStorage.save(XMLStorage.buildDataStore(bookings),new File(System.getProperty("user.home"), "booking-export.xml"));
+	XMLStorage.save(XMLStorage.buildDataStore(bookings),
+		new File(System.getProperty("user.home"), "booking-export.xml"));
 
-        return null;
+	return null;
     }
 }

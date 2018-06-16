@@ -77,7 +77,7 @@ public class ICalBookingFactory implements BookingFactory {
 	final String guestName = iCalParser.getGuestName(e);
 	final String id = iCalParser.getExternalID(e);
 	final String roomName = iCalParser.getRoomName(e);
-	if (checkIn == null || checkOut == null || guestName == null || roomName == null) {
+	if ((checkIn == null) || (checkOut == null) || (guestName == null) || (roomName == null)) {
 	    throw new NullPointerException();
 	}
 	final BookingBeanSer b = new BookingBeanSer();

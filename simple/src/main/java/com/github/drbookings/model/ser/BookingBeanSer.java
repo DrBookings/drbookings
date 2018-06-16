@@ -20,15 +20,16 @@
 
 package com.github.drbookings.model.ser;
 
-import com.github.drbookings.ser.LocalDateAdapter;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
-import java.util.List;
+
+import com.github.drbookings.ser.LocalDateAdapter;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class BookingBeanSer {

@@ -20,19 +20,24 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.RoomEntry;
-import com.github.drbookings.model.data.Cleaning;
-import com.github.drbookings.model.data.DateEntry;
-import com.github.drbookings.model.data.Room;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.SimpleFloatProperty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import com.github.drbookings.model.RoomEntry;
+import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.DateEntry;
+import com.github.drbookings.model.data.Room;
+
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+
 public class CleaningEntry extends DateEntry<Cleaning> {
+
+    public static enum ShortTerm {
+	YES, NO, UNKNOWN
+    }
 
     /**
      * The costs for this cleaning, i.e., the money going to the cleaning person.
@@ -50,65 +55,67 @@ public class CleaningEntry extends DateEntry<Cleaning> {
     private List<String> calendarIds = new ArrayList<>();
 
     public CleaningEntry(final RoomEntry room, final Cleaning element) {
-        super(room.getDate(), element);
-        this.room = room;
-        /**
-         * Date is taken-over by the RoomEntry, therefore it cannot mismatch.
-         */
-        this.room.setCleaning(this);
+	super(room.getDate(), element);
+	this.room = room;
+	/**
+	 * Date is taken-over by the RoomEntry, therefore it cannot mismatch.
+	 */
+	this.room.setCleaning(this);
     }
 
     public void addCalendarId(final String id) {
-        calendarIds.add(id);
+	calendarIds.add(id);
     }
 
     public final FloatProperty cleaningCostsProperty() {
-        return this.cleaningCosts;
-    }
-
-    public List<String> getCalendarIds() {
-        return calendarIds;
-    }
-
-    public CleaningEntry setCalendarIds(final Collection<? extends String> calendarIds) {
-        if (calendarIds != null) {
-            this.calendarIds = new ArrayList<>(calendarIds);
-        }
-        return this;
-    }
-
-    public final float getCleaningCosts() {
-        return this.cleaningCostsProperty().get();
-    }
-
-    public final void setCleaningCosts(final float cleaningCosts) {
-        this.cleaningCostsProperty().set(cleaningCosts);
+	return this.cleaningCosts;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        CleaningEntry that = (CleaningEntry) o;
-        return Objects.equals(getRoom(), that.getRoom());
+    public boolean equals(final Object o) {
+	if (this == o) {
+	    return true;
+	}
+	if ((o == null) || (getClass() != o.getClass())) {
+	    return false;
+	}
+	if (!super.equals(o)) {
+	    return false;
+	}
+	final CleaningEntry that = (CleaningEntry) o;
+	return Objects.equals(getRoom(), that.getRoom());
+    }
+
+    public List<String> getCalendarIds() {
+	return calendarIds;
+    }
+
+    public final float getCleaningCosts() {
+	return this.cleaningCostsProperty().get();
+    }
+
+    public String getName() {
+	return getElement().getName();
+    }
+
+    public Room getRoom() {
+	return room.getElement();
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getRoom());
+	return Objects.hash(super.hashCode(), getRoom());
     }
 
-    public Room getRoom() {
-        return room.getElement();
+    public CleaningEntry setCalendarIds(final Collection<? extends String> calendarIds) {
+	if (calendarIds != null) {
+	    this.calendarIds = new ArrayList<>(calendarIds);
+	}
+	return this;
     }
 
-    public String getName() {
-        return getElement().getName();
-    }
-
-    public static enum ShortTerm {
-        YES, NO, UNKNOWN
+    public final void setCleaningCosts(final float cleaningCosts) {
+	this.cleaningCostsProperty().set(cleaningCosts);
     }
 }

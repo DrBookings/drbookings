@@ -19,6 +19,7 @@
  */
 
 /**
- * Types in this package compose the application model. Some of the types are used as well in the UI.
+ * Types in this package compose the application model. Some of the types are
+ * used as well in the UI.
  */
 package com.github.drbookings.model;

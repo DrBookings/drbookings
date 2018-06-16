@@ -20,23 +20,20 @@
 
 package com.github.drbookings.ui.controller;
 
-import com.github.drbookings.BookingEntryBin;
-import com.github.drbookings.model.BookingEntry;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+
+import com.github.drbookings.BookingEntryBin;
+import com.github.drbookings.model.BookingEntry;
 
 public abstract class BookingEntryBins<T> {
 
     protected Collection<? extends BookingEntry> elements = new ArrayList<>();
 
-    public BookingEntryBins(Collection<? extends BookingEntry> elements) {
-        this.elements = Objects.requireNonNull(elements);
+    public BookingEntryBins(final Collection<? extends BookingEntry> elements) {
+	this.elements = Objects.requireNonNull(elements);
     }
 
     public abstract Collection<BookingEntryBin<T>> getBins();
 }
-
-
-

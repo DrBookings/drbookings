@@ -20,28 +20,28 @@
 
 package com.github.drbookings.ui.dialogs;
 
-import com.github.drbookings.ui.controller.EarningsPerDayChartViewController;
-import com.github.drbookings.ui.controller.NightlyRateChartViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.ui.controller.NightlyRateChartViewController;
+
 public class NightlyRateChartFactory extends AbstractViewFactory implements ViewFactory {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(NightlyRateChartFactory.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(NightlyRateChartFactory.class);
 
-	public NightlyRateChartFactory() {
-		setFxml("/fxml/NightlyRateChartView.fxml");
-		setTitle("Nightly Rate");
-		setHeight(400);
-		setWidth(400);
+    public NightlyRateChartFactory() {
+	setFxml("/fxml/NightlyRateChartView.fxml");
+	setTitle("Nightly Rate");
+	setHeight(400);
+	setWidth(400);
 
-	}
+    }
 
-	@Override
-	protected void visitController(final Object controller) {
-		super.visitController(controller);
-		final NightlyRateChartViewController c = (NightlyRateChartViewController) controller;
-		// c.setMainManager(manager);
-	}
+    @Override
+    protected void visitController(final Object controller) {
+	super.visitController(controller);
+	final NightlyRateChartViewController c = (NightlyRateChartViewController) controller;
+	// c.setMainManager(manager);
+    }
 }

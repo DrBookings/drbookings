@@ -52,18 +52,6 @@ public class FileFormatBookingXLS {
 
     public final static int NA_INT = -1;
 
-    public static int getColumnIndexBookingNumber(final Row row) throws ExceptionFileFormat {
-	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_BOOKING_NUMBER);
-    }
-
-    public static int getColumnIndexCheckIn(final Row row) throws ExceptionFileFormat {
-	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_CHECK_IN);
-    }
-
-    public static int getColumnIndexCheckOut(final Row row) throws ExceptionFileFormat {
-	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_CHECK_OUT);
-    }
-
     public static int getBookingNumber(final Cell c) {
 	if (c != null) {
 	    if (c.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -80,6 +68,18 @@ public class FileFormatBookingXLS {
 	    }
 	}
 	return NA_INT;
+    }
+
+    public static int getColumnIndexBookingNumber(final Row row) throws ExceptionFileFormat {
+	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_BOOKING_NUMBER);
+    }
+
+    public static int getColumnIndexCheckIn(final Row row) throws ExceptionFileFormat {
+	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_CHECK_IN);
+    }
+
+    public static int getColumnIndexCheckOut(final Row row) throws ExceptionFileFormat {
+	return getColumnIndexForIdentifier(row, FileFormatBookingXLS.IDENTIFIER_CHECK_OUT);
     }
 
     public static int getColumnIndexClientName(final Row row) throws ExceptionFileFormat {
@@ -106,7 +106,7 @@ public class FileFormatBookingXLS {
     public static LocalDate getDate(final Cell cell) {
 	if (cell != null) {
 	    final String result = cell.getStringCellValue();
-	    if (result != null && !StringUtils.isEmpty(result)) {
+	    if ((result != null) && !StringUtils.isEmpty(result)) {
 		return LocalDate.parse(result);
 	    }
 	}

@@ -37,15 +37,15 @@ public class CleaningPlan {
 
     private final Multimap<String, CleaningEntry> nameToCleaningEntry;
 
+    public CleaningPlan() {
+	this.nameToCleaningEntry = ArrayListMultimap.create();
+    }
+
     public CleaningPlan(final Collection<CleaningEntry> cleaningEntries) {
 	this();
 	for (final CleaningEntry e : cleaningEntries) {
 	    nameToCleaningEntry.put(e.getElement().getName(), e);
 	}
-    }
-
-    public CleaningPlan() {
-	this.nameToCleaningEntry = ArrayListMultimap.create();
     }
 
     @Override
@@ -56,9 +56,8 @@ public class CleaningPlan {
 	    sb.append("\n");
 	    final List<CleaningEntry> entries = new ArrayList<>(entry.getValue());
 	    entries.stream().sorted()
-		    .filter(e -> e.getDate()
-			    .isAfter(LocalDate.now()
-				    .minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
+		    .filter(e -> e.getDate().isAfter(
+			    LocalDate.now().minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
 		    .forEach(e -> {
 			sb.append(myDateFormatter.format(e.getDate()));
 			sb.append("\t");

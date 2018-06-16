@@ -62,6 +62,11 @@ import javafx.util.Callback;
 public class DateBean implements Comparable<DateBean> {
 
     private static final Logger logger = LoggerFactory.getLogger(DateBean.class);
+
+    public static Callback<DateBean, Observable[]> extractor() {
+	return param -> new Observable[] { param.selfProperty(), param.roomsProperty(), param.totalEarningsProperty() };
+    }
+
     /**
      * The date that is represented by this bean.
      */
@@ -94,6 +99,7 @@ public class DateBean implements Comparable<DateBean> {
      * A reference to {@code this}. Used for change-event listening.
      */
     private final ObjectProperty<DateBean> self = new SimpleObjectProperty<>();
+
     /**
      * Access to all data. Needed for auto-creation of rooms. TODO: Refactor this.
      */
@@ -108,8 +114,13 @@ public class DateBean implements Comparable<DateBean> {
 
     }
 
-    public static Callback<DateBean, Observable[]> extractor() {
-	return param -> new Observable[] { param.selfProperty(), param.roomsProperty(), param.totalEarningsProperty() };
+    /**
+     * TODO rename this method.
+     *
+     * @return
+     */
+    public DoubleProperty auslastungProperty() {
+	return this.occupancy;
     }
 
     private void bindProperties() {
@@ -119,6 +130,20 @@ public class DateBean implements Comparable<DateBean> {
 	earningsPerOriginProperty().bind(Bindings.createObjectBinding(calculateEarningsPerOrigin(), roomsProperty(),
 		SettingsManager.getInstance().showNetEarningsProperty()));
 	totalEarningsProperty().bind(Bindings.createObjectBinding(calculateEarnings(), earningsPerOriginProperty()));
+    }
+
+    /**
+     * Calculates the earnings for this day. Can be net or gross earnings, depending
+     * on the settings.
+     *
+     * @return
+     */
+    private Callable<Number> calculateEarnings() {
+
+	return () -> {
+	    return getEarningsPerOrigin().values().stream().mapToDouble(eo -> eo.doubleValue()).sum();
+
+	};
     }
 
     /**
@@ -142,29 +167,6 @@ public class DateBean implements Comparable<DateBean> {
 	};
     }
 
-    /**
-     * TODO rename this method.
-     *
-     * @return
-     */
-    public DoubleProperty auslastungProperty() {
-	return this.occupancy;
-    }
-
-    /**
-     * Calculates the earnings for this day. Can be net or gross earnings, depending
-     * on the settings.
-     *
-     * @return
-     */
-    private Callable<Number> calculateEarnings() {
-
-	return () -> {
-	    return getEarningsPerOrigin().values().stream().mapToDouble(eo -> eo.doubleValue()).sum();
-
-	};
-    }
-
     private Callable<Number> calculateOccupancy() {
 	return () -> {
 	    return new OccupancyRateCalculator().apply(getRooms());
@@ -177,6 +179,10 @@ public class DateBean implements Comparable<DateBean> {
     @Override
     public int compareTo(final DateBean o) {
 	return getDate().compareTo(o.getDate());
+    }
+
+    public final MapProperty<String, Number> earningsPerOriginProperty() {
+	return this.earningsPerOrigin;
     }
 
     @Override
@@ -205,24 +211,24 @@ public class DateBean implements Comparable<DateBean> {
 	return this.auslastungProperty().get();
     }
 
+    public DrBookingsData getData() {
+	return manager;
+    }
+
     public LocalDate getDate() {
 	return date;
+    }
+
+    public final Map<String, Number> getEarningsPerOrigin() {
+	return this.earningsPerOriginProperty().get();
     }
 
     public double getOccupancy() {
 	return this.occupancyProperty().get();
     }
 
-    public void setOccupancy(final double occupancy) {
-	this.occupancyProperty().set(occupancy);
-    }
-
     public int getPaymentsReceived() {
 	return this.paymentsReceivedProperty().get();
-    }
-
-    public void setPaymentsReceived(final int paymentsReceived) {
-	this.paymentsReceivedProperty().set(paymentsReceived);
     }
 
     @Deprecated
@@ -250,7 +256,7 @@ public class DateBean implements Comparable<DateBean> {
      * @return a {@link RoomBean} by name
      */
     public RoomBean getRoom(final String name) {
-	if (name == null || name.length() < 1) {
+	if ((name == null) || (name.length() < 1)) {
 	    throw new IllegalArgumentException("No name given");
 	}
 	for (final RoomBean rb : getRooms()) {
@@ -271,25 +277,12 @@ public class DateBean implements Comparable<DateBean> {
 	return this.roomsProperty().get();
     }
 
-    public void setRooms(final Collection<? extends RoomBean> rooms) {
-	this.roomsProperty().setAll(rooms);
-    }
-
     public DateBean getSelf() {
 	return this.selfProperty().get();
     }
 
-    @SuppressWarnings("unused")
-    private void setSelf(final DateBean self) {
-	this.selfProperty().set(self);
-    }
-
     public double getTotalEarnings() {
 	return this.totalEarningsProperty().get();
-    }
-
-    public void setTotalEarnings(final float totalEarnings) {
-	this.totalEarningsProperty().set(totalEarnings);
     }
 
     public boolean isEmpty() {
@@ -312,6 +305,32 @@ public class DateBean implements Comparable<DateBean> {
 	return this.self;
     }
 
+    public final void setEarningsPerOrigin(final Map<String, Number> earningsPerOrigin) {
+	this.earningsPerOriginProperty().clear();
+	this.earningsPerOriginProperty().putAll(earningsPerOrigin);
+    }
+
+    public void setOccupancy(final double occupancy) {
+	this.occupancyProperty().set(occupancy);
+    }
+
+    public void setPaymentsReceived(final int paymentsReceived) {
+	this.paymentsReceivedProperty().set(paymentsReceived);
+    }
+
+    public void setRooms(final Collection<? extends RoomBean> rooms) {
+	this.roomsProperty().setAll(rooms);
+    }
+
+    @SuppressWarnings("unused")
+    private void setSelf(final DateBean self) {
+	this.selfProperty().set(self);
+    }
+
+    public void setTotalEarnings(final float totalEarnings) {
+	this.totalEarningsProperty().set(totalEarnings);
+    }
+
     @Override
     public String toString() {
 	return "DateBean: Date:" + getDate();
@@ -326,23 +345,6 @@ public class DateBean implements Comparable<DateBean> {
 	    // System.err.println("updating");
 	    return DateBean.this;
 	};
-    }
-
-    public final MapProperty<String, Number> earningsPerOriginProperty() {
-	return this.earningsPerOrigin;
-    }
-
-    public final Map<String, Number> getEarningsPerOrigin() {
-	return this.earningsPerOriginProperty().get();
-    }
-
-    public final void setEarningsPerOrigin(final Map<String, Number> earningsPerOrigin) {
-	this.earningsPerOriginProperty().clear();
-	this.earningsPerOriginProperty().putAll(earningsPerOrigin);
-    }
-
-    public DrBookingsData getData() {
-	return manager;
     }
 
 }

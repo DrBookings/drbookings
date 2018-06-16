@@ -20,8 +20,9 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.BookingEntryPair;
 import java.util.function.Predicate;
+
+import com.github.drbookings.model.BookingEntryPair;
 
 public class BookingFilter implements Predicate<BookingEntryPair> {
 
@@ -41,25 +42,26 @@ public class BookingFilter implements Predicate<BookingEntryPair> {
 
     @Override
     public boolean test(final BookingEntryPair t) {
-	if (filterString == null || filterString.length() < 1) {
+	if ((filterString == null) || (filterString.length() < 1)) {
 	    return true;
 	}
 	boolean result = testGuestNames(t);
 	if (!result) {
 	    result = testBookingOrigin(t);
-//	    result = t.getDate() != null
-//		    && t.getDate().getMonth().toString().toLowerCase().contains(filterString.toLowerCase());
+	    // result = t.getDate() != null
+	    // &&
+	    // t.getDate().getMonth().toString().toLowerCase().contains(filterString.toLowerCase());
 
 	}
 	return result;
     }
 
-    private boolean testBookingOrigin(BookingEntryPair t) {
-        return t.bookingOriginNamesView().contains(filterString);
+    private boolean testBookingOrigin(final BookingEntryPair t) {
+	return t.bookingOriginNamesView().contains(filterString);
     }
 
-    private boolean testGuestNames(BookingEntryPair t) {
-        return t.guestNameView().contains(filterString);
+    private boolean testGuestNames(final BookingEntryPair t) {
+	return t.guestNameView().contains(filterString);
     }
 
 }

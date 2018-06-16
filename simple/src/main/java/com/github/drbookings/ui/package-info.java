@@ -20,7 +20,8 @@
  */
 
 /**
- * Types in this package compose the application UI. Some types from {@link com.github.drbookings.model} are reused.
+ * Types in this package compose the application UI. Some types from
+ * {@link com.github.drbookings.model} are reused.
  * <p>
  * The UI is structured roughly as follows:
  * <ol>

@@ -20,10 +20,10 @@
 
 package com.github.drbookings;
 
-import com.github.drbookings.model.BookingEntry;
-
 import java.util.Collection;
 import java.util.Objects;
+
+import com.github.drbookings.model.BookingEntry;
 
 public class BookingEntryBin<T> {
 
@@ -31,16 +31,16 @@ public class BookingEntryBin<T> {
 
     private final Collection<? extends BookingEntry> entries;
 
-    public BookingEntryBin(T label, Collection<? extends BookingEntry> entries) {
-        this.label = Objects.requireNonNull(label);
-        this.entries = Objects.requireNonNull(entries);
+    public BookingEntryBin(final T label, final Collection<? extends BookingEntry> entries) {
+	this.label = Objects.requireNonNull(label);
+	this.entries = Objects.requireNonNull(entries);
     }
 
     public Collection<? extends BookingEntry> getEntries() {
-        return entries;
+	return entries;
     }
 
     public T getLabel() {
-        return label;
+	return label;
     }
 }

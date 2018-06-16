@@ -37,7 +37,7 @@ public class OccupancyCellFactory implements Callback<TableColumn<DateBean, Numb
 
 		super.updateItem(item, empty);
 		getStyleClass().removeAll("occupancy-low", "occupancy-medium", "occupancy-high", "occupancy-default");
-		if (empty || item == null) {
+		if (empty || (item == null)) {
 		    setText(null);
 		    setStyle("");
 		    setGraphic(null);

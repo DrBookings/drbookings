@@ -20,17 +20,13 @@
 
 package com.github.drbookings.model;
 
+import java.time.LocalDate;
+
 import com.github.drbookings.model.data.DateEntry;
 import com.github.drbookings.model.data.Room;
 import com.github.drbookings.ui.CleaningEntry;
 
-import java.time.LocalDate;
-
 public class RoomEntry extends DateEntry<Room> {
-
-    public RoomEntry(LocalDate date, Room element) {
-        super(date, element);
-    }
 
     /**
      * Bi-di relationship owned by {@link CleaningEntry}.
@@ -40,11 +36,15 @@ public class RoomEntry extends DateEntry<Room> {
      */
     private CleaningEntry cleaning;
 
-    public CleaningEntry getCleaning() {
-        return cleaning;
+    public RoomEntry(final LocalDate date, final Room element) {
+	super(date, element);
     }
 
-    public void setCleaning(CleaningEntry cleaning) {
-        this.cleaning = cleaning;
+    public CleaningEntry getCleaning() {
+	return cleaning;
+    }
+
+    public void setCleaning(final CleaningEntry cleaning) {
+	this.cleaning = cleaning;
     }
 }

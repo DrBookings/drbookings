@@ -20,28 +20,29 @@
 
 package com.github.drbookings;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.BookingEntry;
-import com.google.common.collect.Range;
-
 import java.time.LocalDate;
 import java.util.function.Predicate;
 
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.data.BookingBean;
+import com.google.common.collect.Range;
+
 public class CleaningDateFilter implements Predicate<BookingEntry> {
 
-	private final Range<LocalDate> dates;
+    private final Range<LocalDate> dates;
 
-	public CleaningDateFilter(final Range<LocalDate> dates) {
-		this.dates = dates;
-	}
+    public CleaningDateFilter(final Range<LocalDate> dates) {
+	this.dates = dates;
+    }
 
-	@Override
-	public boolean test(final BookingEntry be) {
-        final BookingBean t = be.getElement();
-//		return t.getCleaning() != null && t.getCleaning().getDate().isAfter(dates.lowerEndpoint().minusDays(1))
-//				&& t.getCleaning().getDate().isBefore(dates.upperEndpoint().plusDays(1));
-        System.err.println("Removed cleaning");
-        return true;
-	}
+    @Override
+    public boolean test(final BookingEntry be) {
+	final BookingBean t = be.getElement();
+	// return t.getCleaning() != null &&
+	// t.getCleaning().getDate().isAfter(dates.lowerEndpoint().minusDays(1))
+	// && t.getCleaning().getDate().isBefore(dates.upperEndpoint().plusDays(1));
+	System.err.println("Removed cleaning");
+	return true;
+    }
 
 }

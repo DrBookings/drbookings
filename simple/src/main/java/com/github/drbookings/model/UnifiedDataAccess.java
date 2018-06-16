@@ -20,10 +20,11 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.DrBookingsDataImpl;
-import com.github.drbookings.ui.CleaningEntry;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.github.drbookings.model.data.DrBookingsDataImpl;
+import com.github.drbookings.ui.CleaningEntry;
 
 public class UnifiedDataAccess extends DataAccess {
 
@@ -35,31 +36,31 @@ public class UnifiedDataAccess extends DataAccess {
 
     protected List<BookingEntryPair> bookingEntries;
 
-    public UnifiedDataAccess(LocalDate date, DrBookingsDataImpl data) {
-        super(data);
-        this.date = date;
+    public UnifiedDataAccess(final LocalDate date, final DrBookingsDataImpl data) {
+	super(data);
+	this.date = date;
     }
 
-    public List<RoomEntry> getRoomEntries() {
-        return roomEntries;
+    public List<BookingEntryPair> getBookingEntries() {
+	return bookingEntries;
     }
 
     public List<CleaningEntry> getCleaningEntries() {
-        return cleaningEntries;
+	return cleaningEntries;
+    }
+
+    public List<RoomEntry> getRoomEntries() {
+	return roomEntries;
     }
 
     @Override
     public UnifiedDataAccess init() {
-        super.init();
+	super.init();
 
-        roomEntries = data.getRoomEntries(date);
-        cleaningEntries = data.getCleaningEntries(date);
-        bookingEntries = data.getBookingEntryPairs(date);
+	roomEntries = data.getRoomEntries(date);
+	cleaningEntries = data.getCleaningEntries(date);
+	bookingEntries = data.getBookingEntryPairs(date);
 
-        return this;
-    }
-
-    public List<BookingEntryPair> getBookingEntries() {
-        return bookingEntries;
+	return this;
     }
 }

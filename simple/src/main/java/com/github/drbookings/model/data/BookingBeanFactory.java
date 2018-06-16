@@ -20,12 +20,14 @@
 
 package com.github.drbookings.model.data;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.github.drbookings.model.data.manager.BookingOriginProvider;
 import com.github.drbookings.model.data.manager.GuestProvider;
 import com.github.drbookings.model.data.manager.RoomProvider;
-import java.time.LocalDate;
-import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
 
 public class BookingBeanFactory {
 
@@ -44,37 +46,34 @@ public class BookingBeanFactory {
      */
     private final BookingOriginProvider bookingOriginProvider;
 
-    public BookingBeanFactory(GuestProvider guestProvider,
-        RoomProvider roomProvider,
-        BookingOriginProvider bookingOriginProvider) {
-        this.guestProvider = guestProvider;
-        this.roomProvider = roomProvider;
-        this.bookingOriginProvider = bookingOriginProvider;
+    public BookingBeanFactory() {
+	this(new GuestProvider(), new RoomProvider(), new BookingOriginProvider());
     }
 
-    public BookingBeanFactory() {
-        this(new GuestProvider(), new RoomProvider(), new BookingOriginProvider());
+    public BookingBeanFactory(final GuestProvider guestProvider, final RoomProvider roomProvider,
+	    final BookingOriginProvider bookingOriginProvider) {
+	this.guestProvider = guestProvider;
+	this.roomProvider = roomProvider;
+	this.bookingOriginProvider = bookingOriginProvider;
     }
 
     /**
      * @return the newly created {@link BookingBean}
      */
     public synchronized BookingBean createBooking(final String id, final LocalDate checkInDate,
-        final LocalDate checkOutDate, final String guestName, final String
-        roomName, final String originName) {
-        Objects.requireNonNull(checkInDate);
-        Objects.requireNonNull(checkOutDate);
-        if (StringUtils.isBlank(guestName)) {
-            throw new IllegalArgumentException("No guest name given");
-        }
-        if (StringUtils.isBlank(roomName)) {
-            throw new IllegalArgumentException("No room name given");
-        }
-        final Guest guest = guestProvider.getOrCreateElement(guestName);
-        final Room room = roomProvider.getOrCreateElement(roomName);
-        final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
-        final BookingBean booking = new BookingBean(id, guest, room, bookingOrigin, checkInDate,
-            checkOutDate);
-        return booking;
+	    final LocalDate checkOutDate, final String guestName, final String roomName, final String originName) {
+	Objects.requireNonNull(checkInDate);
+	Objects.requireNonNull(checkOutDate);
+	if (StringUtils.isBlank(guestName)) {
+	    throw new IllegalArgumentException("No guest name given");
+	}
+	if (StringUtils.isBlank(roomName)) {
+	    throw new IllegalArgumentException("No room name given");
+	}
+	final Guest guest = guestProvider.getOrCreateElement(guestName);
+	final Room room = roomProvider.getOrCreateElement(roomName);
+	final BookingOrigin bookingOrigin = bookingOriginProvider.getOrCreateElement(originName);
+	final BookingBean booking = new BookingBean(id, guest, room, bookingOrigin, checkInDate, checkOutDate);
+	return booking;
     }
 }

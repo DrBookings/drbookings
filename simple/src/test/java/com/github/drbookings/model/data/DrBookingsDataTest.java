@@ -48,6 +48,8 @@ public class DrBookingsDataTest {
     public static void tearDownAfterClass() {
     }
 
+    private DrBookingsData data;
+
     @Before
     public void setUp() throws Exception {
 	data = new DrBookingsDataImpl();
@@ -58,7 +60,30 @@ public class DrBookingsDataTest {
 	data = null;
     }
 
-    private DrBookingsData data;
+    @Test
+    public void testCreateAndAddBooking01() throws Exception {
+
+	final BookingBean b = data.createAndAddBooking(LocalDate.now(), LocalDate.now().plusDays(2), "testg", "3",
+		"booking");
+	assertThat(b, is(not(nullValue())));
+	final List<BookingBean> bookings = data.getBookings();
+	assertThat(bookings, is(not(nullValue())));
+	assertThat(bookings.size(), is(1));
+	assertThat(bookings.get(0), sameInstance(b));
+    }
+
+    @Test
+    public void testCreateAndAddBooking02() throws Exception {
+
+	final BookingBean b = data.createAndAddBooking(LocalDate.now(), LocalDate.now().plusDays(2), "testg", "3",
+		"booking");
+	final BookingBean b2 = data.createAndAddBooking(LocalDate.now().plusDays(2), LocalDate.now().plusDays(5),
+		"testg", "3", "booking");
+	final List<BookingBean> bookings = data.getBookings();
+	assertThat(bookings, is(not(nullValue())));
+	assertThat(bookings.size(), is(2));
+
+    }
 
     @Test
     public void testCreateCleaningEntry01() throws Exception {
@@ -87,31 +112,6 @@ public class DrBookingsDataTest {
 
 	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
 	final CleaningEntry ce2 = data.addCleaning("testc", LocalDate.now(), "3");
-
-    }
-
-    @Test
-    public void testCreateAndAddBooking01() throws Exception {
-
-	final BookingBean b = data.createAndAddBooking(LocalDate.now(), LocalDate.now().plusDays(2), "testg", "3",
-		"booking");
-	assertThat(b, is(not(nullValue())));
-	final List<BookingBean> bookings = data.getBookings();
-	assertThat(bookings, is(not(nullValue())));
-	assertThat(bookings.size(), is(1));
-	assertThat(bookings.get(0), sameInstance(b));
-    }
-
-    @Test
-    public void testCreateAndAddBooking02() throws Exception {
-
-	final BookingBean b = data.createAndAddBooking(LocalDate.now(), LocalDate.now().plusDays(2), "testg", "3",
-		"booking");
-	final BookingBean b2 = data.createAndAddBooking(LocalDate.now().plusDays(2), LocalDate.now().plusDays(5),
-		"testg", "3", "booking");
-	final List<BookingBean> bookings = data.getBookings();
-	assertThat(bookings, is(not(nullValue())));
-	assertThat(bookings.size(), is(2));
 
     }
 }

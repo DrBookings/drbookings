@@ -20,21 +20,22 @@
 
 package com.github.drbookings.ser;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.DrBookingsDataImpl;
 import java.io.File;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.DrBookingsDataImpl;
+
 public class XMLStorageTest {
 
-    public static final String DATA_FILE = File.separator +
-        "test" + File.separator + "resources" + File.separator + XMLStorage.class
-            .getSimpleName();
+    public static final String DATA_FILE = File.separator + "test" + File.separator + "resources" + File.separator
+	    + XMLStorage.class.getSimpleName();
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -44,30 +45,30 @@ public class XMLStorageTest {
     public static void tearDownAfterClass() {
     }
 
-    @Before
-    public void setUp() throws Exception {
-        data = new DrBookingsDataImpl();
-        storage = new XMLStorage();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        storage = null;
-        data = null;
-
-    }
-
     private DrBookingsDataImpl data;
 
     private XMLStorage storage;
 
+    @Before
+    public void setUp() throws Exception {
+	data = new DrBookingsDataImpl();
+	storage = new XMLStorage();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+	storage = null;
+	data = null;
+
+    }
+
     @Test
     public void testLoad01() throws Exception {
-        DataStore store = storage.load(new File(
-            "test" + File.separator + "resources" + File.separator + "bookings.xml"));
-        List<BookingBean> bookings = DataStore.transform(store.getBookingsSer());
-        for (BookingBean bb : bookings) {
-            data.addBooking(bb);
-        }
+	final DataStore store = storage
+		.load(new File("test" + File.separator + "resources" + File.separator + "bookings.xml"));
+	final List<BookingBean> bookings = DataStore.transform(store.getBookingsSer());
+	for (final BookingBean bb : bookings) {
+	    data.addBooking(bb);
+	}
     }
 }

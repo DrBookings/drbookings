@@ -30,8 +30,8 @@ import javafx.beans.property.ReadOnlyProperty;
  */
 public interface NetEarningsProvider {
 
-	float getNetEarnings();
+    float getNetEarnings();
 
-	ReadOnlyProperty<Number> netEarningsProperty();
+    ReadOnlyProperty<Number> netEarningsProperty();
 
 }

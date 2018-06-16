@@ -27,21 +27,21 @@ import com.github.drbookings.ui.controller.EarningsPerDayChartViewController;
 
 public class EarningsChartFactory extends AbstractViewFactory implements ViewFactory {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(EarningsChartFactory.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(EarningsChartFactory.class);
 
-	public EarningsChartFactory() {
-		setFxml("/fxml/EarningsPerDayChartView.fxml");
-		setTitle("Earnings per Day");
-		setHeight(400);
-		setWidth(400);
+    public EarningsChartFactory() {
+	setFxml("/fxml/EarningsPerDayChartView.fxml");
+	setTitle("Earnings per Day");
+	setHeight(400);
+	setWidth(400);
 
-	}
+    }
 
-	@Override
-	protected void visitController(final Object controller) {
-		super.visitController(controller);
-		final EarningsPerDayChartViewController c = (EarningsPerDayChartViewController) controller;
-		// c.setMainManager(manager);
-	}
+    @Override
+    protected void visitController(final Object controller) {
+	super.visitController(controller);
+	final EarningsPerDayChartViewController c = (EarningsPerDayChartViewController) controller;
+	// c.setMainManager(manager);
+    }
 }

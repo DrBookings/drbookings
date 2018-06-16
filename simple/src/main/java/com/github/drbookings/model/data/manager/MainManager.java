@@ -54,15 +54,28 @@ import javafx.collections.ObservableList;
  */
 public class MainManager implements DrBookingsData {
 
+    private static class InstanceHolder {
+
+	private static final MainManager instance = new MainManager();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MainManager.class);
+
+    public static MainManager getInstance() {
+
+	return InstanceHolder.instance;
+    }
+
     /**
      * The 'main' UI data, i.e., the data elements/ rows in the main table.
      */
     private final ListProperty<DateBean> uiData;
+
     /**
      * Access-by-date map.
      */
     private final Map<LocalDate, DateBean> uiDataMap;
+
     /**
      * Booking, Cleaning, .. data.
      */
@@ -75,15 +88,35 @@ public class MainManager implements DrBookingsData {
 	uiDataMap = new LinkedHashMap<>();
     }
 
-    public static MainManager getInstance() {
+    public List<BookingEntry> addBooking(final BookingBean b) throws OverbookingException {
 
-	return InstanceHolder.instance;
+	final List<BookingEntry> bookings = getData().addBooking(b);
+	bookings.forEach(b2 -> addUiDataBooking(b2));
+	return bookings;
+    }
+
+    @Override
+    public CleaningEntry addCleaning(final String name, final LocalDate date, final String room)
+	    throws AlreadyBusyException {
+
+	return getData().addCleaning(name, date, room);
     }
 
     private void addDateBean(final DateBean db) {
 
 	uiData.add(db);
 	uiDataMap.put(db.getDate(), db);
+    }
+
+    public void addUiDataBooking(final BookingEntry bookingEntry) {
+
+	final Room room = bookingEntry.getRoom();
+	DateBean db = uiDataMap.get(bookingEntry.getDate());
+	if (db == null) {
+	    db = new DateBean(bookingEntry.getDate(), this);
+	    addDateBean(db);
+	}
+	fillMissing();
     }
 
     public synchronized void applyFilter(final String guestNameFilterString) {
@@ -105,11 +138,146 @@ public class MainManager implements DrBookingsData {
 	// }
     }
 
+    @Override
+    public boolean cleaningNeededFor(final String name, final LocalDate date) {
+
+	return getData().cleaningNeededFor(name, date);
+    }
+
+    @Override
+    public BooleanProperty cleaningsChangedProperty() {
+
+	return getData().cleaningsChangedProperty();
+    }
+
     public void clearData() {
 
 	uiData.clear();
 	uiDataMap.clear();
 	data.clear();
+    }
+
+    @Override
+    public BookingBean createAndAddBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
+	    final String guestName, final String roomName, final String source) throws OverbookingException {
+	return data.createAndAddBooking(checkInDate, checkOutDate, guestName, roomName, source);
+    }
+
+    @Override
+    public BookingBean createBooking(final String bookingId, final LocalDate checkInDate, final LocalDate checkOutDate,
+	    final String guestName, final String roomName, final String source) {
+
+	return getData().createBooking(bookingId, checkInDate, checkOutDate, guestName, roomName, source);
+    }
+
+    private void fillMissing() {
+
+	final List<LocalDate> dates = new ArrayList<>(uiDataMap.keySet());
+	Collections.sort(dates);
+	final Collection<LocalDate> toAdd = new HashSet<>();
+	LocalDate last = null;
+	for (final LocalDate d : dates) {
+	    if (last != null) {
+		if (d.equals(last.plusDays(1))) {
+		    // ok
+		} else {
+		    toAdd.addAll(new DateRange(last.plusDays(1), d.minusDays(1)).toList());
+		}
+	    }
+	    last = d;
+	}
+	for (final LocalDate d : toAdd) {
+	    addDateBean(new DateBean(d, this));
+	}
+    }
+
+    @Override
+    public Optional<BookingEntryPair> getAfter(final BookingEntry e, final int numDays) {
+
+	return data.getAfter(e, numDays);
+    }
+
+    @Override
+    public Optional<BookingEntryPair> getBefore(final BookingEntry e, final int numDays) {
+
+	return data.getBefore(e, numDays);
+    }
+
+    @Override
+    public List<BookingEntry> getBookingEntries() {
+
+	return getData().getBookingEntries();
+    }
+
+    @Override
+    public Optional<BookingEntryPair> getBookingEntryPair(final String name, final LocalDate date) {
+
+	return getData().getBookingEntryPair(name, date);
+    }
+
+    @Override
+    public List<BookingEntryPair> getBookingEntryPairs() {
+
+	return getData().getBookingEntryPairs();
+    }
+
+    @Override
+    public List<BookingBean> getBookings() {
+
+	return getData().getBookings();
+    }
+
+    @Override
+    public List<CleaningEntry> getCleaningEntries() {
+
+	return getData().getCleaningEntries();
+    }
+
+    @Override
+    public Optional<CleaningEntry> getCleaningEntry(final String name, final LocalDate date) {
+
+	return getData().getCleaningEntry(name, date);
+    }
+
+    DrBookingsDataImpl getData() {
+
+	return data;
+    }
+
+    @Override
+    public Optional<BookingEntry> getFirstBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
+
+	return data.getFirstBookingEntry(bookingsThatDay);
+    }
+
+    @Override
+    public Optional<BookingEntry> getFirstBookingEntry(final String roomName, final LocalDate date) {
+
+	return data.getFirstBookingEntry(roomName, date);
+    }
+
+    @Override
+    public Optional<BookingEntry> getLastBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
+
+	return data.getLastBookingEntry(bookingsThatDay);
+    }
+
+    @Override
+    public Optional<BookingEntry> getLastBookingEntry(final String roomName, final LocalDate date) {
+
+	return data.getLastBookingEntry(roomName, date);
+    }
+
+    @Override
+    public Optional<BookingEntryPair> getOneDayAfter(final BookingEntry e) {
+
+	return data.getOneDayAfter(e);
+    }
+
+    @Override
+    public Optional<BookingEntryPair> getOneDayBefore(final BookingEntry e) {
+
+	return data.getOneDayBefore(e);
     }
 
     public synchronized ObservableList<DateBean> getUIData() {
@@ -161,171 +329,6 @@ public class MainManager implements DrBookingsData {
 	data.removeCleaning(cleaningEntry);
     }
 
-    DrBookingsDataImpl getData() {
-
-	return data;
-    }
-
-    @Override
-    public List<BookingBean> getBookings() {
-
-	return getData().getBookings();
-    }
-
-    @Override
-    public List<CleaningEntry> getCleaningEntries() {
-
-	return getData().getCleaningEntries();
-    }
-
-    private void fillMissing() {
-
-	final List<LocalDate> dates = new ArrayList<>(uiDataMap.keySet());
-	Collections.sort(dates);
-	final Collection<LocalDate> toAdd = new HashSet<>();
-	LocalDate last = null;
-	for (final LocalDate d : dates) {
-	    if (last != null) {
-		if (d.equals(last.plusDays(1))) {
-		    // ok
-		} else {
-		    toAdd.addAll(new DateRange(last.plusDays(1), d.minusDays(1)).toList());
-		}
-	    }
-	    last = d;
-	}
-	for (final LocalDate d : toAdd) {
-	    addDateBean(new DateBean(d, this));
-	}
-    }
-
-    public void addUiDataBooking(final BookingEntry bookingEntry) {
-
-	final Room room = bookingEntry.getRoom();
-	DateBean db = uiDataMap.get(bookingEntry.getDate());
-	if (db == null) {
-	    db = new DateBean(bookingEntry.getDate(), this);
-	    addDateBean(db);
-	}
-	fillMissing();
-    }
-
-    public List<BookingEntry> addBooking(final BookingBean b) throws OverbookingException {
-
-	final List<BookingEntry> bookings = getData().addBooking(b);
-	bookings.forEach(b2 -> addUiDataBooking(b2));
-	return bookings;
-    }
-
-    @Override
-    public BooleanProperty cleaningsChangedProperty() {
-
-	return getData().cleaningsChangedProperty();
-    }
-
-    @Override
-    public List<BookingEntry> getBookingEntries() {
-
-	return getData().getBookingEntries();
-    }
-
-    @Override
-    public CleaningEntry addCleaning(final String name, final LocalDate date, final String room)
-	    throws AlreadyBusyException {
-
-	return getData().addCleaning(name, date, room);
-    }
-
-    @Override
-    public Optional<CleaningEntry> getCleaningEntry(final String name, final LocalDate date) {
-
-	return getData().getCleaningEntry(name, date);
-    }
-
-    @Override
-    public Optional<BookingEntryPair> getBookingEntryPair(final String name, final LocalDate date) {
-
-	return getData().getBookingEntryPair(name, date);
-    }
-
-    @Override
-    public boolean cleaningNeededFor(final String name, final LocalDate date) {
-
-	return getData().cleaningNeededFor(name, date);
-    }
-
-    @Override
-    public BookingBean createBooking(final String bookingId, final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String source) {
-
-	return getData().createBooking(bookingId, checkInDate, checkOutDate, guestName, roomName, source);
-    }
-
-    @Override
-    public List<BookingEntryPair> getBookingEntryPairs() {
-
-	return getData().getBookingEntryPairs();
-    }
-
-    private static class InstanceHolder {
-
-	private static final MainManager instance = new MainManager();
-    }
-
-    @Override
-    public Optional<BookingEntryPair> getOneDayBefore(final BookingEntry e) {
-
-	return data.getOneDayBefore(e);
-    }
-
-    @Override
-    public Optional<BookingEntryPair> getOneDayAfter(final BookingEntry e) {
-
-	return data.getOneDayAfter(e);
-    }
-
-    @Override
-    public Optional<BookingEntry> getLastBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
-
-	return data.getLastBookingEntry(bookingsThatDay);
-    }
-
-    @Override
-    public Optional<BookingEntry> getFirstBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
-
-	return data.getFirstBookingEntry(bookingsThatDay);
-    }
-
-    @Override
-    public Optional<BookingEntry> getLastBookingEntry(final String roomName, final LocalDate date) {
-
-	return data.getLastBookingEntry(roomName, date);
-    }
-
-    @Override
-    public Optional<BookingEntry> getFirstBookingEntry(final String roomName, final LocalDate date) {
-
-	return data.getFirstBookingEntry(roomName, date);
-    }
-
-    @Override
-    public Optional<BookingEntryPair> getAfter(final BookingEntry e, final int numDays) {
-
-	return data.getAfter(e, numDays);
-    }
-
-    @Override
-    public Optional<BookingEntryPair> getBefore(final BookingEntry e, final int numDays) {
-
-	return data.getBefore(e, numDays);
-    }
-
-    @Override
-    public void setCleaning(final String name, final LocalDate date, final String roomName) {
-	data.setCleaning(name, date, roomName);
-
-    }
-
     @Override
     public void removeCleaning(final LocalDate date, final String roomName) {
 	data.removeCleaning(date, roomName);
@@ -333,8 +336,8 @@ public class MainManager implements DrBookingsData {
     }
 
     @Override
-    public BookingBean createAndAddBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String source) throws OverbookingException {
-	return data.createAndAddBooking(checkInDate, checkOutDate, guestName, roomName, source);
+    public void setCleaning(final String name, final LocalDate date, final String roomName) {
+	data.setCleaning(name, date, roomName);
+
     }
 }

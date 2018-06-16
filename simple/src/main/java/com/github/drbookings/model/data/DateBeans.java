@@ -31,9 +31,9 @@ import com.google.common.collect.Range;
 
 public class DateBeans {
 
-	public static Range<LocalDate> getDateRange(final Collection<? extends DateBean> dateBeans) {
-		return LocalDates
-				.getDateRange(dateBeans.stream().map(b -> b.getDate()).collect(Collectors.toCollection(TreeSet::new)));
-	}
+    public static Range<LocalDate> getDateRange(final Collection<? extends DateBean> dateBeans) {
+	return LocalDates
+		.getDateRange(dateBeans.stream().map(b -> b.getDate()).collect(Collectors.toCollection(TreeSet::new)));
+    }
 
 }

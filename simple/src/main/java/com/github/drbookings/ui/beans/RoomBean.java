@@ -65,22 +65,27 @@ public class RoomBean extends WarnableBean {
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(RoomBean.class);
 
-    private final ObjectProperty<CleaningEntry> cleaningEntry;
+    public static Callback<RoomBean, Observable[]> extractor() {
+	return param -> new Observable[] { param.bookingFilterStringProperty(), param.filteredBookingEntryProperty(),
+		param.cleaningEntryProperty() };
+    }
 
+    private final ObjectProperty<CleaningEntry> cleaningEntry;
     private final ObjectProperty<BookingEntryPair> bookingEntry;
     /**
      * Filtered bookings.
      */
     private final ObjectProperty<BookingEntryPair> filteredBookingEntry;
+
     /**
      * The room that is manifesting at this date.
      */
     private final Room room;
-
     /**
      * Mandatory bi-di relationship owned by {@link DateBean}.
      */
     private final DateBean dateBean;
+
     /**
      * the search string, on which bookings are filtered.
      */
@@ -97,38 +102,6 @@ public class RoomBean extends WarnableBean {
 	bindProperties();
 	loadData();
 
-    }
-
-    public DrBookingsData getData() {
-	return dateBean.getData();
-    }
-
-    private void loadData() {
-	loadBookingData();
-	loadCleaningData();
-	// this.needsCleaning.setValue(manager.getData().cleaningNeededFor(getName(),
-	// getDate()));
-    }
-
-    private void loadCleaningData() {
-	final Optional<CleaningEntry> cleaningEntryOptional = getData().getCleaningEntry(getName(), getDate());
-	if (cleaningEntryOptional.isPresent()) {
-	    final CleaningEntry cleaningEntry = cleaningEntryOptional.get();
-	    setCleaningEntry(cleaningEntry);
-	}
-    }
-
-    private void loadBookingData() {
-	final Optional<BookingEntryPair> bookingEntryPairOptional = getData().getBookingEntryPair(getName(), getDate());
-	if (bookingEntryPairOptional.isPresent()) {
-	    final BookingEntryPair bookingEntryPair = bookingEntryPairOptional.get();
-	    bookingEntry.set(bookingEntryPair);
-	}
-    }
-
-    public static Callback<RoomBean, Observable[]> extractor() {
-	return param -> new Observable[] { param.bookingFilterStringProperty(), param.filteredBookingEntryProperty(),
-		param.cleaningEntryProperty() };
     }
 
     @Override
@@ -198,16 +171,8 @@ public class RoomBean extends WarnableBean {
 	return this.bookingEntryProperty().get();
     }
 
-    public BookingEntryPair getFilteredBookingEntry() {
-	return this.filteredBookingEntry.get();
-    }
-
     public String getBookingFilterString() {
 	return this.bookingFilterStringProperty().get();
-    }
-
-    public void setBookingFilterString(final String bookingFilterString) {
-	this.bookingFilterStringProperty().set(bookingFilterString);
     }
 
     public CleaningEntry getCleaningEntry() {
@@ -215,16 +180,24 @@ public class RoomBean extends WarnableBean {
 	return result;
     }
 
-    public void setCleaningEntry(final CleaningEntry cleaningEntry) {
-	this.cleaningEntryProperty().set(cleaningEntry);
+    public DrBookingsData getData() {
+	return dateBean.getData();
     }
 
     public LocalDate getDate() {
 	return dateBean.getDate();
     }
 
+    public BookingEntryPair getFilteredBookingEntry() {
+	return this.filteredBookingEntry.get();
+    }
+
     public String getName() {
 	return room.getName();
+    }
+
+    public Room getRoom() {
+	return room;
     }
 
     @Override
@@ -248,6 +221,29 @@ public class RoomBean extends WarnableBean {
 	return filteredBookingEntry.get() == null;
     }
 
+    private void loadBookingData() {
+	final Optional<BookingEntryPair> bookingEntryPairOptional = getData().getBookingEntryPair(getName(), getDate());
+	if (bookingEntryPairOptional.isPresent()) {
+	    final BookingEntryPair bookingEntryPair = bookingEntryPairOptional.get();
+	    bookingEntry.set(bookingEntryPair);
+	}
+    }
+
+    private void loadCleaningData() {
+	final Optional<CleaningEntry> cleaningEntryOptional = getData().getCleaningEntry(getName(), getDate());
+	if (cleaningEntryOptional.isPresent()) {
+	    final CleaningEntry cleaningEntry = cleaningEntryOptional.get();
+	    setCleaningEntry(cleaningEntry);
+	}
+    }
+
+    private void loadData() {
+	loadBookingData();
+	loadCleaningData();
+	// this.needsCleaning.setValue(manager.getData().cleaningNeededFor(getName(),
+	// getDate()));
+    }
+
     public boolean needsCleaning() {
 	return this.needsCleaningProperty().get();
     }
@@ -256,8 +252,12 @@ public class RoomBean extends WarnableBean {
 	return this.needsCleaning;
     }
 
-    public Room getRoom() {
-	return room;
+    public void setBookingFilterString(final String bookingFilterString) {
+	this.bookingFilterStringProperty().set(bookingFilterString);
+    }
+
+    public void setCleaningEntry(final CleaningEntry cleaningEntry) {
+	this.cleaningEntryProperty().set(cleaningEntry);
     }
 
     @Override

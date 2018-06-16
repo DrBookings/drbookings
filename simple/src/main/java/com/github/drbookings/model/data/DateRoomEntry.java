@@ -20,40 +20,46 @@
 
 package com.github.drbookings.model.data;
 
-import com.github.drbookings.model.RoomEntry;
-
 import java.time.LocalDate;
 import java.util.Objects;
+
+import com.github.drbookings.model.RoomEntry;
 
 public class DateRoomEntry<E> extends DateEntry<E> {
 
     private final Room room;
 
+    public DateRoomEntry(final LocalDate date, final Room room, final E element) {
+	this(new RoomEntry(date, room), element);
+    }
+
     public DateRoomEntry(final RoomEntry room, final E element) {
-        super(room.getDate(), element);
-        this.room = room.getElement();
-    }
-
-    public DateRoomEntry(LocalDate date, Room room, E element) {
-        this(new RoomEntry(date, room), element);
-    }
-
-    public Room getRoom() {
-        return room;
+	super(room.getDate(), element);
+	this.room = room.getElement();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        DateRoomEntry<?> that = (DateRoomEntry<?>) o;
-        return Objects.equals(getRoom(), that.getRoom());
+    public boolean equals(final Object o) {
+	if (this == o) {
+	    return true;
+	}
+	if ((o == null) || (getClass() != o.getClass())) {
+	    return false;
+	}
+	if (!super.equals(o)) {
+	    return false;
+	}
+	final DateRoomEntry<?> that = (DateRoomEntry<?>) o;
+	return Objects.equals(getRoom(), that.getRoom());
+    }
+
+    public Room getRoom() {
+	return room;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getRoom());
+	return Objects.hash(super.hashCode(), getRoom());
     }
 }

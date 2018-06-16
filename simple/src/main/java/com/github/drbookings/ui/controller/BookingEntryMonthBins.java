@@ -20,27 +20,27 @@
 
 package com.github.drbookings.ui.controller;
 
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.github.drbookings.BookingEntryBin;
 import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class BookingEntryMonthBins extends BookingEntryBins<YearMonth> {
 
-    public BookingEntryMonthBins(Collection<? extends BookingEntry> elements) {
-        super(elements);
+    public BookingEntryMonthBins(final Collection<? extends BookingEntry> elements) {
+	super(elements);
     }
 
     @Override
     public Collection<BookingEntryBin<YearMonth>> getBins() {
-        Multimap<YearMonth, BookingEntry> result = ArrayListMultimap.create();
-        elements.forEach(e -> result.put(YearMonth.from(e.getDate()), e));
-        Collection<BookingEntryBin<YearMonth>> result2 = new ArrayList<>();
-        result.asMap().forEach((k, v) -> result2.add(new BookingEntryBin<>(k, v)));
-        return result2;
+	final Multimap<YearMonth, BookingEntry> result = ArrayListMultimap.create();
+	elements.forEach(e -> result.put(YearMonth.from(e.getDate()), e));
+	final Collection<BookingEntryBin<YearMonth>> result2 = new ArrayList<>();
+	result.asMap().forEach((k, v) -> result2.add(new BookingEntryBin<>(k, v)));
+	return result2;
     }
 }

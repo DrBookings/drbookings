@@ -28,17 +28,18 @@ import com.github.drbookings.ser.XMLStorage;
 
 public class CleaningFeesAdder {
 
-	public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
 
-		final File file = new File("/home/alex/bookings.xml");
-		final float cleaningFees = 60;
+	final File file = new File("/home/alex/bookings.xml");
+	final float cleaningFees = 60;
 
-		final DataStore ds = new XMLStorage().load(file);
-		for (final BookingBeanSer bs : ds.getBookingsSer()) {
-			if (bs.cleaningFees == 0) {
-				bs.cleaningFees = cleaningFees;
-			}
-		}
-		new XMLStorage().save(ds, file);
+	final DataStore ds = new XMLStorage().load(file);
+	for (final BookingBeanSer bs : ds.getBookingsSer()) {
+	    if (bs.cleaningFees == 0) {
+		bs.cleaningFees = cleaningFees;
+	    }
 	}
+	new XMLStorage();
+	XMLStorage.save(ds, file);
+    }
 }

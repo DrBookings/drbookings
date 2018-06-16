@@ -22,17 +22,14 @@ package com.github.drbookings.ui.selection;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.data.DateBeans;
 import com.github.drbookings.ui.beans.DateBean;
-import com.github.drbookings.ui.beans.RoomBean;
 import com.google.common.collect.Range;
 
 import javafx.beans.binding.Bindings;
@@ -41,53 +38,51 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 
 public class DateBeanSelectionManager {
 
-	private static class InstanceHolder {
-		private static final DateBeanSelectionManager instance = new DateBeanSelectionManager();
-	}
+    private static class InstanceHolder {
+	private static final DateBeanSelectionManager instance = new DateBeanSelectionManager();
+    }
 
-	private static final Logger logger = LoggerFactory.getLogger(DateBeanSelectionManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(DateBeanSelectionManager.class);
 
-	public static DateBeanSelectionManager getInstance() {
-		return InstanceHolder.instance;
-	}
+    public static DateBeanSelectionManager getInstance() {
+	return InstanceHolder.instance;
+    }
 
-	private final ListProperty<DateBean> selection = new SimpleListProperty<>(
-			FXCollections.observableArrayList(DateBean.extractor()));
+    private final ListProperty<DateBean> selection = new SimpleListProperty<>(
+	    FXCollections.observableArrayList(DateBean.extractor()));
 
-	private final ObjectProperty<Range<LocalDate>> selectedDateRange = new SimpleObjectProperty<>();
+    private final ObjectProperty<Range<LocalDate>> selectedDateRange = new SimpleObjectProperty<>();
 
-	private DateBeanSelectionManager() {
-		selectedDateRangeProperty().bind(Bindings.createObjectBinding(calculateDateRange(), selectionProperty()));
-	}
+    private DateBeanSelectionManager() {
+	selectedDateRangeProperty().bind(Bindings.createObjectBinding(calculateDateRange(), selectionProperty()));
+    }
 
-	private Callable<Range<LocalDate>> calculateDateRange() {
-		return () -> DateBeans.getDateRange(getSelection());
-	}
+    private Callable<Range<LocalDate>> calculateDateRange() {
+	return () -> DateBeans.getDateRange(getSelection());
+    }
 
-	public final List<DateBean> getSelection() {
-		return this.selectionProperty().get();
-	}
+    public final Range<LocalDate> getSelectedDateRange() {
+	return this.selectedDateRangeProperty().get();
+    }
 
-	public final ListProperty<DateBean> selectionProperty() {
-		return this.selection;
-	}
+    public final List<DateBean> getSelection() {
+	return this.selectionProperty().get();
+    }
 
-	public final DateBeanSelectionManager setSelection(Collection<? extends DateBean> dates){
-		selectionProperty().setAll(dates);
-		return this;
-	};
+    public final ObjectProperty<Range<LocalDate>> selectedDateRangeProperty() {
+	return this.selectedDateRange;
+    };
 
-	public final ObjectProperty<Range<LocalDate>> selectedDateRangeProperty() {
-		return this.selectedDateRange;
-	}
+    public final ListProperty<DateBean> selectionProperty() {
+	return this.selection;
+    }
 
-	public final Range<LocalDate> getSelectedDateRange() {
-		return this.selectedDateRangeProperty().get();
-	}
+    public final DateBeanSelectionManager setSelection(final Collection<? extends DateBean> dates) {
+	selectionProperty().setAll(dates);
+	return this;
+    }
 
 }

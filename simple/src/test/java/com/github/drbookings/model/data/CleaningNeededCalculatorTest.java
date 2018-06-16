@@ -23,13 +23,15 @@ package com.github.drbookings.model.data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.drbookings.TestUtils;
 import java.time.LocalDate;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.github.drbookings.TestUtils;
 
 public class CleaningNeededCalculatorTest {
 
@@ -41,55 +43,58 @@ public class CleaningNeededCalculatorTest {
     public static void tearDownAfterClass() {
     }
 
-    @Before
-    public void setUp() throws Exception {
-        data = new DrBookingsDataImpl();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        data = null;
-    }
-
     private DrBookingsDataImpl data;
 
     private CleaningNeededCalculator cc;
 
+    @Before
+    public void setUp() throws Exception {
+	data = new DrBookingsDataImpl();
+    }
 
-    @Test
-    public void testEmptyData01() throws Exception {
-        boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(LocalDate.now() , TestUtils.TEST_ROOM_NAME, data, null);
-        assertThat(cleaningNeeded, is(false));
-
+    @After
+    public void tearDown() throws Exception {
+	data = null;
     }
 
     @Test
     public void testCheckInNeedsCleaning01() throws Exception {
-        LocalDate checkIn = LocalDate.of(2014, 04, 21);
-        LocalDate checkOut = LocalDate.of(2014, 04, 24);
-        data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
-        boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkIn , TestUtils.TEST_ROOM_NAME, data, null);
-        assertThat(cleaningNeeded, is(false));
-
-    }
-
-    @Test
-    public void testStayOverCleaning01() throws Exception {
-        LocalDate checkIn = LocalDate.of(2014, 04, 21);
-        LocalDate checkOut = LocalDate.of(2014, 04, 24);
-        data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
-        boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkIn.plusDays(1) , TestUtils.TEST_ROOM_NAME, data, null);
-        assertThat(cleaningNeeded, is(false));
+	final LocalDate checkIn = LocalDate.of(2014, 04, 21);
+	final LocalDate checkOut = LocalDate.of(2014, 04, 24);
+	data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
+	final boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkIn, TestUtils.TEST_ROOM_NAME, data,
+		null);
+	assertThat(cleaningNeeded, is(false));
 
     }
 
     @Test
     public void testCheckOutNeedsCleaning01() throws Exception {
-        LocalDate checkIn = LocalDate.of(2014, 04, 21);
-        LocalDate checkOut = LocalDate.of(2014, 04, 24);
-        data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
-        boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkOut , TestUtils.TEST_ROOM_NAME, data, null);
-        assertThat(cleaningNeeded, is(true));
+	final LocalDate checkIn = LocalDate.of(2014, 04, 21);
+	final LocalDate checkOut = LocalDate.of(2014, 04, 24);
+	data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
+	final boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkOut, TestUtils.TEST_ROOM_NAME, data,
+		null);
+	assertThat(cleaningNeeded, is(true));
+
+    }
+
+    @Test
+    public void testEmptyData01() throws Exception {
+	final boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(LocalDate.now(),
+		TestUtils.TEST_ROOM_NAME, data, null);
+	assertThat(cleaningNeeded, is(false));
+
+    }
+
+    @Test
+    public void testStayOverCleaning01() throws Exception {
+	final LocalDate checkIn = LocalDate.of(2014, 04, 21);
+	final LocalDate checkOut = LocalDate.of(2014, 04, 24);
+	data.addBooking(TestUtils.getTestBooking(checkIn, checkOut));
+	final boolean cleaningNeeded = CleaningNeededCalculator.cleaningNeeded(checkIn.plusDays(1),
+		TestUtils.TEST_ROOM_NAME, data, null);
+	assertThat(cleaningNeeded, is(false));
 
     }
 }

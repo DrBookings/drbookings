@@ -20,22 +20,22 @@
 
 package com.github.drbookings.model.data;
 
+import java.util.Collection;
+
 import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.Collection;
-
 public class BookingMapFactory {
 
-    public static Multimap<BookingBean, BookingEntry> buildMap(Collection<? extends BookingEntry> entries) {
+    public static Multimap<BookingBean, BookingEntry> buildMap(final Collection<? extends BookingEntry> entries) {
 
-        Multimap<BookingBean, BookingEntry> result = ArrayListMultimap.create();
+	final Multimap<BookingBean, BookingEntry> result = ArrayListMultimap.create();
 
-        for (BookingEntry be : entries) {
-            result.put(be.getElement(), be);
-        }
+	for (final BookingEntry be : entries) {
+	    result.put(be.getElement(), be);
+	}
 
-        return result;
+	return result;
     }
 }

@@ -20,9 +20,9 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.BookingEntry;
-
 import java.util.function.Predicate;
+
+import com.github.drbookings.model.BookingEntry;
 
 public class NightCountFilter implements Predicate<BookingEntry> {
 

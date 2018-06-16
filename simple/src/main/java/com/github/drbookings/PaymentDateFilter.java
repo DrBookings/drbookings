@@ -20,26 +20,27 @@
 
 package com.github.drbookings;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.BookingEntry;
-import com.google.common.collect.Range;
-
 import java.time.LocalDate;
 import java.util.function.Predicate;
 
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.data.BookingBean;
+import com.google.common.collect.Range;
+
 public class PaymentDateFilter implements Predicate<BookingEntry> {
 
-	private final Range<LocalDate> dates;
+    private final Range<LocalDate> dates;
 
-	public PaymentDateFilter(final Range<LocalDate> dates) {
-		this.dates = dates;
-	}
+    public PaymentDateFilter(final Range<LocalDate> dates) {
+	this.dates = dates;
+    }
 
-	@Override
-	public boolean test(final BookingEntry be) {
-        final BookingBean t = be.getElement();
-		return t.isSplitBooking() || (t.getDateOfPayment() != null && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
-				&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1)));
-	}
+    @Override
+    public boolean test(final BookingEntry be) {
+	final BookingBean t = be.getElement();
+	return t.isSplitBooking()
+		|| ((t.getDateOfPayment() != null) && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
+			&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1)));
+    }
 
 }

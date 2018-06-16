@@ -27,14 +27,17 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class ModelConfiguration {
 
-    @Override
-    public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + (isNettoIncludesCleaning() ? 1231 : 1237);
-	result = prime * result + getNightCounting().hashCode();
-	return result;
+    public static enum NightCounting {
+	DAY_BEFORE, DAY_AFTER
     }
+
+    public static final NightCounting DEFAULT_NIGHT_COUNTING = NightCounting.DAY_BEFORE;
+
+    public static final boolean DEFAULT_NETTO_INCLUDES_CLEANING = true;
+
+    private final BooleanProperty nettoIncludesCleaning = new SimpleBooleanProperty(DEFAULT_NETTO_INCLUDES_CLEANING);
+
+    private final ObjectProperty<NightCounting> nightCounting = new SimpleObjectProperty<>(DEFAULT_NIGHT_COUNTING);
 
     @Override
     public boolean equals(final Object obj) {
@@ -57,20 +60,17 @@ public class ModelConfiguration {
 	return true;
     }
 
-    public static enum NightCounting {
-	DAY_BEFORE, DAY_AFTER
-    }
-
-    public static final NightCounting DEFAULT_NIGHT_COUNTING = NightCounting.DAY_BEFORE;
-
-    public static final boolean DEFAULT_NETTO_INCLUDES_CLEANING = true;
-
-    private final BooleanProperty nettoIncludesCleaning = new SimpleBooleanProperty(DEFAULT_NETTO_INCLUDES_CLEANING);
-
-    private final ObjectProperty<NightCounting> nightCounting = new SimpleObjectProperty<>(DEFAULT_NIGHT_COUNTING);
-
     public NightCounting getNightCounting() {
 	return this.nightCountingProperty().get();
+    }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = (prime * result) + (isNettoIncludesCleaning() ? 1231 : 1237);
+	result = (prime * result) + getNightCounting().hashCode();
+	return result;
     }
 
     public boolean isNettoIncludesCleaning() {

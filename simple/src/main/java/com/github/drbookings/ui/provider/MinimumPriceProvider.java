@@ -34,43 +34,43 @@ import javafx.beans.property.SimpleFloatProperty;
 
 public class MinimumPriceProvider {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(MinimumPriceProvider.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(MinimumPriceProvider.class);
 
-	private final FloatProperty minimumPrice = new SimpleFloatProperty();
+    private final FloatProperty minimumPrice = new SimpleFloatProperty();
 
-	private final OccupancyRateProvider occupancyRateProvider = new OccupancyRateProvider();
+    private final OccupancyRateProvider occupancyRateProvider = new OccupancyRateProvider();
 
-	private final ReferenceIncomeProvider referenceIncomeProvider = new ReferenceIncomeProvider();
+    private final ReferenceIncomeProvider referenceIncomeProvider = new ReferenceIncomeProvider();
 
-	public MinimumPriceProvider() {
-		bindProperties();
-	}
+    public MinimumPriceProvider() {
+	bindProperties();
+    }
 
-	private void bindProperties() {
-		minimumPrice.bind(Bindings.createObjectBinding(calculateMinimumPrice(),
-				referenceIncomeProvider.referenceIncomeProperty(), occupancyRateProvider.occupancyRateProperty(),
-				RoomBeanSelectionManager.getInstance().selectionProperty()));
-	}
+    private void bindProperties() {
+	minimumPrice.bind(Bindings.createObjectBinding(calculateMinimumPrice(),
+		referenceIncomeProvider.referenceIncomeProperty(), occupancyRateProvider.occupancyRateProperty(),
+		RoomBeanSelectionManager.getInstance().selectionProperty()));
+    }
 
-	private Callable<Number> calculateMinimumPrice() {
-		return () -> {
-			return new MinimumPriceCalulcator(referenceIncomeProvider.get())
-					.apply(RoomBeanSelectionManager.getInstance().getSelection());
+    private Callable<Number> calculateMinimumPrice() {
+	return () -> {
+	    return new MinimumPriceCalulcator(referenceIncomeProvider.get())
+		    .apply(RoomBeanSelectionManager.getInstance().getSelection());
 
-		};
-	}
+	};
+    }
 
-	public final float getMinimumPrice() {
-		return this.minimumPriceProperty().get();
-	}
+    public final float getMinimumPrice() {
+	return this.minimumPriceProperty().get();
+    }
 
-	public OccupancyRateProvider getOccupancyRateProvider() {
-		return occupancyRateProvider;
-	}
+    public OccupancyRateProvider getOccupancyRateProvider() {
+	return occupancyRateProvider;
+    }
 
-	public final FloatProperty minimumPriceProperty() {
-		return this.minimumPrice;
-	}
+    public final FloatProperty minimumPriceProperty() {
+	return this.minimumPrice;
+    }
 
 }

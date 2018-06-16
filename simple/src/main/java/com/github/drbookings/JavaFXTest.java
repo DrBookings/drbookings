@@ -31,6 +31,10 @@ import javafx.stage.Stage;
 
 public class JavaFXTest extends Application {
 
+    public static void main(final String[] args) {
+	launch(args);
+    }
+
     @Override
     public void start(final Stage primaryStage) {
 
@@ -51,9 +55,5 @@ public class JavaFXTest extends Application {
 	primaryStage.setTitle("Hello World!");
 	primaryStage.setScene(scene);
 	primaryStage.show();
-    }
-
-    public static void main(final String[] args) {
-	launch(args);
     }
 }

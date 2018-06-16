@@ -24,37 +24,39 @@ import com.github.drbookings.model.data.BookingBean;
 
 public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 
-	public DefaultNetEarningsCalculator() {
+    public DefaultNetEarningsCalculator() {
 
-	}
+    }
 
-	@Override
+    @Override
     public Number apply(final BookingBean booking) {
-		double result = booking.getGrossEarnings();
-		result -= (booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent() / 100.0;
-		result -= booking.getServiceFee();
-		// if (booking.getCleaning() != null) {
-		// result -= booking.getCleaning().getCleaningCosts();
-		// }
-		return result;
-	}
+	double result = booking.getGrossEarnings();
+	result -= ((booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent()) / 100.0;
+	result -= booking.getServiceFee();
+	// if (booking.getCleaning() != null) {
+	// result -= booking.getCleaning().getCleaningCosts();
+	// }
+	return result;
+    }
 
     /**
-     * Returns the earnings for this booking entry. That is, the booking earnings per night. All earnings from all
-     * booking entries from the same booking are always the same.
+     * Returns the earnings for this booking entry. That is, the booking earnings
+     * per night. All earnings from all booking entries from the same booking are
+     * always the same.
      *
-     * @param booking the {@link BookingEntry} to calculate net earnings for
+     * @param booking
+     *            the {@link BookingEntry} to calculate net earnings for
      * @return net earnings for given booking entry
      */
     @Override
     public Number apply(final BookingEntry booking) {
-        final double numberOfNights = booking.getElement().getNumberOfNights();
-        // if (booking.getElement().getGuest().getName().contains("Peter")) {
-        // System.err.println(apply(booking.getElement()) + " " + numberOfNights
-        // + " "
-        // + apply(booking.getElement()).doubleValue() / numberOfNights);
-        // }
-        return apply(booking.getElement()).doubleValue() / numberOfNights;
+	final double numberOfNights = booking.getElement().getNumberOfNights();
+	// if (booking.getElement().getGuest().getName().contains("Peter")) {
+	// System.err.println(apply(booking.getElement()) + " " + numberOfNights
+	// + " "
+	// + apply(booking.getElement()).doubleValue() / numberOfNights);
+	// }
+	return apply(booking.getElement()).doubleValue() / numberOfNights;
     }
 
 }

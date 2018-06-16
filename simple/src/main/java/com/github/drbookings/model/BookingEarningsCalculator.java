@@ -20,56 +20,62 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.DrBookingsApplication;
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.money.Monetary;
-import javax.money.MonetaryAmount;
-import javax.money.MonetaryAmountFactory;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+import javax.money.MonetaryAmountFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.drbookings.DrBookingsApplication;
+import com.github.drbookings.model.data.BookingBean;
+import com.google.common.collect.Range;
+
 public class BookingEarningsCalculator extends EarningsCalculator {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingEarningsCalculator.class);
 
-
-    public BookingEarningsCalculator filterToDateRange(Range<LocalDate> dateRange) {
-        super.filterToDateRange(dateRange);
-        return this;
-    }
-
-    public BookingEarningsCalculator filterForPaymentDone(boolean paymentDone) {
-        super.filterForPaymentDone(paymentDone);
-        return this;
-    }
-
-    public BookingEarningsCalculator filterForNetEarnings(boolean netEarnigns) {
-        super.filterForNetEarnings(netEarnigns);
-        return this;
-    }
-
-
+    @Override
     public float calculateEarnings(Collection<? extends BookingBean> bookings) {
-        if (isPaymentDone()) {
-            bookings = bookings.stream().filter(b -> b.isPaymentDone()).collect(Collectors.toCollection(LinkedHashSet::new));
-        }
-        if (getDateRange() != null) {
-            bookings = bookings.stream().filter(b -> getDateRange().contains(b.getCheckOut())).collect(Collectors.toCollection(LinkedHashSet::new));
-        }
-        MonetaryAmountFactory<?> moneyFactory = Monetary.getDefaultAmountFactory().setCurrency(DrBookingsApplication.DEFAULT_CURRENCY.getCurrencyCode());
-        MonetaryAmount result = moneyFactory.setNumber(0).create();
-        for (BookingBean b : bookings) {
-            result = result.add(moneyFactory.setNumber(b.getEarnings(isNetEarnings())).create());
-        }
+	if (isPaymentDone()) {
+	    bookings = bookings.stream().filter(b -> b.isPaymentDone())
+		    .collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+	if (getDateRange() != null) {
+	    bookings = bookings.stream().filter(b -> getDateRange().contains(b.getCheckOut()))
+		    .collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+	final MonetaryAmountFactory<?> moneyFactory = Monetary.getDefaultAmountFactory()
+		.setCurrency(DrBookingsApplication.DEFAULT_CURRENCY.getCurrencyCode());
+	MonetaryAmount result = moneyFactory.setNumber(0).create();
+	for (final BookingBean b : bookings) {
+	    result = result.add(moneyFactory.setNumber(b.getEarnings(isNetEarnings())).create());
+	}
 
-        return result.getNumber().floatValue();
+	return result.getNumber().floatValue();
     }
 
+    @Override
+    public BookingEarningsCalculator filterForNetEarnings(final boolean netEarnigns) {
+	super.filterForNetEarnings(netEarnigns);
+	return this;
+    }
+
+    @Override
+    public BookingEarningsCalculator filterForPaymentDone(final boolean paymentDone) {
+	super.filterForPaymentDone(paymentDone);
+	return this;
+    }
+
+    @Override
+    public BookingEarningsCalculator filterToDateRange(final Range<LocalDate> dateRange) {
+	super.filterToDateRange(dateRange);
+	return this;
+    }
 
 }

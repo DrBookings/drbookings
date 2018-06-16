@@ -22,26 +22,25 @@ package com.github.drbookings.model.exception;
 
 public class AlreadyBusyException extends Exception {
 
-
     private static final long serialVersionUID = -837122429261175610L;
 
     public AlreadyBusyException() {
     }
 
-    public AlreadyBusyException(String message) {
-        super(message);
+    public AlreadyBusyException(final String message) {
+	super(message);
     }
 
-    public AlreadyBusyException(String message, Throwable cause) {
-        super(message, cause);
+    public AlreadyBusyException(final String message, final Throwable cause) {
+	super(message, cause);
     }
 
-    public AlreadyBusyException(Throwable cause) {
-        super(cause);
+    public AlreadyBusyException(final String message, final Throwable cause, final boolean enableSuppression,
+	    final boolean writableStackTrace) {
+	super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public AlreadyBusyException(String message, Throwable cause, boolean enableSuppression,
-        boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public AlreadyBusyException(final Throwable cause) {
+	super(cause);
     }
 }

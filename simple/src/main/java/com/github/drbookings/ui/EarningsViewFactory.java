@@ -20,12 +20,13 @@
 
 package com.github.drbookings.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.controller.EarningsViewController;
 import com.github.drbookings.ui.dialogs.AbstractViewFactory;
 import com.github.drbookings.ui.dialogs.ViewFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EarningsViewFactory extends AbstractViewFactory implements ViewFactory {
 
@@ -34,16 +35,16 @@ public class EarningsViewFactory extends AbstractViewFactory implements ViewFact
     private final MainManager manager;
 
     public EarningsViewFactory(final MainManager manager) {
-        this.manager = manager;
-        setFxml("/fxml/EarningsView.fxml");
-        setTitle("Earnings");
-        setHeight(600);
-        setWidth(520);
+	this.manager = manager;
+	setFxml("/fxml/EarningsView.fxml");
+	setTitle("Earnings");
+	setHeight(600);
+	setWidth(520);
     }
 
     @Override
     protected void visitController(final Object controller) {
-        final EarningsViewController c = (EarningsViewController) controller;
-        c.setManager(manager);
+	final EarningsViewController c = (EarningsViewController) controller;
+	c.setManager(manager);
     }
 }

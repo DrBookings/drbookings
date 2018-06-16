@@ -20,63 +20,65 @@
 
 package com.github.drbookings.model;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.settings.SettingsManager;
-
-import java.time.LocalDate;
-import java.util.*;
 
 public class NightlyRateView {
 
     final Map<BookingOrigin, Map<LocalDate, Collection<Number>>> data = new LinkedHashMap<>();
     private double binSize = 1;
 
-    public NightlyRateView(final Collection<? extends BookingEntry> bookingEntries) {
-        addAll(bookingEntries);
-    }
+    private BinType binType;
 
     public NightlyRateView() {
 
     }
 
-    @Override
-    public String toString() {
-        return "NightlyRateView{" +
-                "data=" + data +
-                '}';
-    }
-
-    public Map<BookingOrigin, Map<LocalDate, Collection<Number>>> getData() {
-        return Collections.unmodifiableMap(data);
-    }
-
-    public NightlyRateView addAll(final Collection<? extends BookingEntry> bookingEntries) {
-        bookingEntries.forEach(c -> add(c));
-        return this;
+    public NightlyRateView(final Collection<? extends BookingEntry> bookingEntries) {
+	addAll(bookingEntries);
     }
 
     public NightlyRateView add(final BookingEntry b) {
-        Map<LocalDate, Collection<Number>> innerMap = data.get(b.getBookingOrigin());
-        if (innerMap == null) {
-            innerMap = new LinkedHashMap<>();
-            data.put(b.getBookingOrigin(), innerMap);
-        }
-        Collection<Number> values = innerMap.get(b.getDate());
-        if (values == null) {
-            values = new ArrayList<>();
-        }
-        values.add(b.getEarnings(SettingsManager.getInstance().isShowNetEarnings()));
-        innerMap.put(b.getDate(), values);
-        return this;
+	Map<LocalDate, Collection<Number>> innerMap = data.get(b.getBookingOrigin());
+	if (innerMap == null) {
+	    innerMap = new LinkedHashMap<>();
+	    data.put(b.getBookingOrigin(), innerMap);
+	}
+	Collection<Number> values = innerMap.get(b.getDate());
+	if (values == null) {
+	    values = new ArrayList<>();
+	}
+	values.add(b.getEarnings(SettingsManager.getInstance().isShowNetEarnings()));
+	innerMap.put(b.getDate(), values);
+	return this;
+    }
+
+    public NightlyRateView addAll(final Collection<? extends BookingEntry> bookingEntries) {
+	bookingEntries.forEach(c -> add(c));
+	return this;
+    }
+
+    public Map<BookingOrigin, Map<LocalDate, Collection<Number>>> getData() {
+	return Collections.unmodifiableMap(data);
     }
 
     public void setBinSize(final double binSize) {
-        this.binSize = binSize;
+	this.binSize = binSize;
     }
 
-    private BinType binType;
-
     public void setBinType(final BinType selectedItem) {
-        binType = binType;
+	binType = binType;
+    }
+
+    @Override
+    public String toString() {
+	return "NightlyRateView{" + "data=" + data + '}';
     }
 }

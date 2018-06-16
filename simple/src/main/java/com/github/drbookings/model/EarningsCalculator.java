@@ -20,56 +20,57 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.github.drbookings.model.data.BookingBean;
+import com.google.common.collect.Range;
+
 public class EarningsCalculator {
 
-    private Range<LocalDate> dateRange;
-
-    public float calculateEarnings(BookingBean... bookings) {
-        return calculateEarnings(Arrays.asList(bookings));
-    }
-
     public static final boolean DEFAULT_PAYMENT_DONE = true;
+
     public static final boolean DEFAULT_NET_EARNINGS = true;
 
-    public float calculateEarnings(Collection<? extends BookingBean> bookings) {
-        return 0;
-    }
+    private Range<LocalDate> dateRange;
     private boolean paymentDone = DEFAULT_PAYMENT_DONE;
+
     private boolean netEarnings = DEFAULT_NET_EARNINGS;
 
-    public EarningsCalculator filterToDateRange(Range<LocalDate> dateRange) {
-        this.dateRange = dateRange;
-        return this;
+    public float calculateEarnings(final BookingBean... bookings) {
+	return calculateEarnings(Arrays.asList(bookings));
+    }
+
+    public float calculateEarnings(final Collection<? extends BookingBean> bookings) {
+	return 0;
+    }
+
+    public EarningsCalculator filterForNetEarnings(final boolean netEarnigns) {
+	this.netEarnings = netEarnigns;
+	return this;
+    }
+
+    public EarningsCalculator filterForPaymentDone(final boolean paymentDone) {
+	this.paymentDone = paymentDone;
+	return this;
+    }
+
+    public EarningsCalculator filterToDateRange(final Range<LocalDate> dateRange) {
+	this.dateRange = dateRange;
+	return this;
     }
 
     public Range<LocalDate> getDateRange() {
-        return dateRange;
-    }
-
-    public boolean isPaymentDone() {
-        return paymentDone;
+	return dateRange;
     }
 
     public boolean isNetEarnings() {
-        return netEarnings;
+	return netEarnings;
     }
 
-    public EarningsCalculator filterForNetEarnings(boolean netEarnigns) {
-        this.netEarnings = netEarnigns;
-        return this;
+    public boolean isPaymentDone() {
+	return paymentDone;
     }
-
-    public EarningsCalculator filterForPaymentDone(boolean paymentDone) {
-        this.paymentDone = paymentDone;
-        return this;
-    }
-
 
 }

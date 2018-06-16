@@ -20,16 +20,17 @@
 
 package com.github.drbookings.model.data;
 
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.ui.CleaningEntry;
-
 import java.time.LocalDate;
 import java.util.Objects;
+
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.ui.CleaningEntry;
 
 /**
  * A manifestation of some element of type {@code E} at a certain date.
  *
- * @param <E> the type of element
+ * @param <E>
+ *            the type of element
  * @see CleaningEntry
  * @see BookingEntry
  */
@@ -40,42 +41,44 @@ public class DateEntry<E> implements Comparable<DateEntry<E>> {
     private final E e;
 
     public DateEntry(final LocalDate date, final E element) {
-        super();
-        this.date = date;
-        this.e = element;
+	super();
+	this.date = date;
+	this.e = element;
     }
 
     @Override
     public int compareTo(final DateEntry<E> o) {
-        return getDate().compareTo(o.getDate());
-    }
-
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public E getElement() {
-        return e;
+	return getDate().compareTo(o.getDate());
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DateEntry<?> dateEntry = (DateEntry<?>) o;
-        return Objects.equals(getDate(), dateEntry.getDate()) &&
-            Objects.equals(e, dateEntry.e);
+    public boolean equals(final Object o) {
+	if (this == o) {
+	    return true;
+	}
+	if ((o == null) || (getClass() != o.getClass())) {
+	    return false;
+	}
+	final DateEntry<?> dateEntry = (DateEntry<?>) o;
+	return Objects.equals(getDate(), dateEntry.getDate()) && Objects.equals(e, dateEntry.e);
+    }
+
+    public LocalDate getDate() {
+	return date;
+    }
+
+    public E getElement() {
+	return e;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDate(), e);
+	return Objects.hash(getDate(), e);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":"+e.toString();
+	return getClass().getSimpleName() + ":" + e.toString();
     }
 
 }

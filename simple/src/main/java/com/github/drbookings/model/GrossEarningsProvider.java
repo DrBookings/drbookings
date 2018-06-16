@@ -30,8 +30,8 @@ import javafx.beans.property.ReadOnlyProperty;
  */
 public interface GrossEarningsProvider extends PaymentProvider, EarningsProvider {
 
-	float getGrossEarnings();
+    float getGrossEarnings();
 
-	ReadOnlyProperty<Number> grossEarningsProperty();
+    ReadOnlyProperty<Number> grossEarningsProperty();
 
 }

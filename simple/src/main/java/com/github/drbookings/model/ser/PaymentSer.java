@@ -20,39 +20,41 @@
 
 package com.github.drbookings.model.ser;
 
-import com.github.drbookings.model.Payment;
-import com.github.drbookings.ser.LocalDateAdapter;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.github.drbookings.model.Payment;
+import com.github.drbookings.ser.LocalDateAdapter;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class PaymentSer {
+    public static List<PaymentSer> transform(final List<Payment> payments) {
+	final List<PaymentSer> result = new ArrayList<>(payments.size());
+
+	for (final Payment p : payments) {
+	    result.add(transform(p));
+	}
+
+	return result;
+    }
+
+    public static PaymentSer transform(final Payment payment) {
+	final PaymentSer result = new PaymentSer();
+	result.amount = payment.getAmount().getNumber().floatValue();
+	result.date = payment.getDate();
+	return result;
+    }
+
     @XmlAttribute
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     public LocalDate date;
+
     @XmlAttribute
     public float amount;
-
-    public static PaymentSer transform(Payment payment) {
-        PaymentSer result = new PaymentSer();
-        result.amount = payment.getAmount().getNumber().floatValue();
-        result.date = payment.getDate();
-        return result;
-    }
-
-    public static List<PaymentSer> transform(List<Payment> payments) {
-        List<PaymentSer> result = new ArrayList<>(payments.size());
-
-        for (Payment p : payments) {
-            result.add(transform(p));
-        }
-
-        return result;
-    }
 }

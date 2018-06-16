@@ -24,7 +24,7 @@ import com.github.drbookings.model.data.Room;
 
 public class RoomProvider extends NamedProvider<Room> {
 
-    public RoomProvider(){
+    public RoomProvider() {
 
     }
 

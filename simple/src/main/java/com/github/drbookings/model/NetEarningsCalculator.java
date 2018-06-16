@@ -26,6 +26,6 @@ public interface NetEarningsCalculator {
 
     Number apply(BookingBean booking);
 
-	Number apply(BookingEntry booking);
+    Number apply(BookingEntry booking);
 
 }

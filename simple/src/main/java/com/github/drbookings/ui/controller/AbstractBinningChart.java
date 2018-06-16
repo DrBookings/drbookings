@@ -35,44 +35,44 @@ import javafx.scene.chart.XYChart.Series;
 
 public abstract class AbstractBinningChart<T> {
 
-	public final static int DEFAULT_BIN_SIZE = 1;
-	protected final List<T> bin = new ArrayList<>();
-	private final DoubleProperty binSize = new SimpleDoubleProperty(DEFAULT_BIN_SIZE);
-	protected final Set<String> categories = new LinkedHashSet<>();
+    public final static int DEFAULT_BIN_SIZE = 1;
+    protected final List<T> bin = new ArrayList<>();
+    private final DoubleProperty binSize = new SimpleDoubleProperty(DEFAULT_BIN_SIZE);
+    protected final Set<String> categories = new LinkedHashSet<>();
 
-	private XYChart<String, Number> chart;
+    private XYChart<String, Number> chart;
 
-	public XYChart<String, Number> getChart() {
-		return chart;
-	}
+    Map<String, Series<String, Number>> mapSeries = new HashMap<>();
 
-	public void setChart(final XYChart<String, Number> chart) {
-		this.chart = chart;
-	}
+    private CategoryAxis xAxis;
 
-	public CategoryAxis getxAxis() {
-		return xAxis;
-	}
+    public final DoubleProperty binSizeProperty() {
+	return this.binSize;
+    }
 
-	public void setxAxis(final CategoryAxis xAxis) {
-		this.xAxis = xAxis;
-	}
+    protected abstract void flushBin();
 
-	Map<String, Series<String, Number>> mapSeries = new HashMap<>();
+    public final int getBinSize() {
+	return (int) this.binSizeProperty().get();
+    }
 
-	private CategoryAxis xAxis;
+    public XYChart<String, Number> getChart() {
+	return chart;
+    }
 
-	public final DoubleProperty binSizeProperty() {
-		return this.binSize;
-	}
+    public CategoryAxis getxAxis() {
+	return xAxis;
+    }
 
-	protected abstract void flushBin();
+    public final void setBinSize(final int binSize) {
+	this.binSizeProperty().set(binSize);
+    }
 
-	public final int getBinSize() {
-		return (int) this.binSizeProperty().get();
-	}
+    public void setChart(final XYChart<String, Number> chart) {
+	this.chart = chart;
+    }
 
-	public final void setBinSize(final int binSize) {
-		this.binSizeProperty().set(binSize);
-	}
+    public void setxAxis(final CategoryAxis xAxis) {
+	this.xAxis = xAxis;
+    }
 }

@@ -21,6 +21,10 @@ public class RoomBeanTest {
     public static void tearDownAfterClass() throws Exception {
     }
 
+    private RoomBean r;
+
+    private DrBookingsDataImpl data;
+
     @Before
     public void setUp() throws Exception {
 	data = new DrBookingsDataImpl();
@@ -32,10 +36,6 @@ public class RoomBeanTest {
 	r = null;
 	data = null;
     }
-
-    private RoomBean r;
-
-    private DrBookingsDataImpl data;
 
     @Test
     public void test00() {

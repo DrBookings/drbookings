@@ -40,10 +40,34 @@ public class SimpleTest {
 	dailyEarningsProperty().bind(Bindings.createObjectBinding(calculateDailyEarinings(), allEarningsProperty()));
     }
 
+    public DoubleProperty allEarningsProperty() {
+	return this.allEarnings;
+    }
+
     private Callable<Number> calculateDailyEarinings() {
 	return () -> {
 	    return getAllEarnings() / 4;
 	};
+    }
+
+    public DoubleProperty dailyEarningsProperty() {
+	return this.dailyEarnings;
+    }
+
+    public double getAllEarnings() {
+	return this.allEarningsProperty().get();
+    }
+
+    public double getDailyEarnings() {
+	return this.dailyEarningsProperty().get();
+    }
+
+    public void setAllEarnings(final double allEarnings) {
+	this.allEarningsProperty().set(allEarnings);
+    }
+
+    public void setDailyEarnings(final double dailyEarnings) {
+	this.dailyEarningsProperty().set(dailyEarnings);
     }
 
     @Test
@@ -52,30 +76,6 @@ public class SimpleTest {
 	t.setAllEarnings(40);
 	assertEquals(10, t.getDailyEarnings(), 0);
 
-    }
-
-    public DoubleProperty allEarningsProperty() {
-	return this.allEarnings;
-    }
-
-    public double getAllEarnings() {
-	return this.allEarningsProperty().get();
-    }
-
-    public void setAllEarnings(final double allEarnings) {
-	this.allEarningsProperty().set(allEarnings);
-    }
-
-    public DoubleProperty dailyEarningsProperty() {
-	return this.dailyEarnings;
-    }
-
-    public double getDailyEarnings() {
-	return this.dailyEarningsProperty().get();
-    }
-
-    public void setDailyEarnings(final double dailyEarnings) {
-	this.dailyEarningsProperty().set(dailyEarnings);
     }
 
 }

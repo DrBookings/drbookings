@@ -25,13 +25,15 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.drbookings.model.data.DrBookingsDataImpl;
 import java.time.LocalDate;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.github.drbookings.model.data.DrBookingsDataImpl;
 
 public class UnifiedDataAccessTest {
 
@@ -43,29 +45,28 @@ public class UnifiedDataAccessTest {
     public static void tearDownAfterClass() {
     }
 
-    @Before
-    public void setUp() throws Exception {
-        data = new DrBookingsDataImpl();
-        da = new UnifiedDataAccess(LocalDate.now(), data);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        da = null;
-        data = null;
-    }
-
     private DrBookingsDataImpl data;
 
     private UnifiedDataAccess da;
 
+    @Before
+    public void setUp() throws Exception {
+	data = new DrBookingsDataImpl();
+	da = new UnifiedDataAccess(LocalDate.now(), data);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+	da = null;
+	data = null;
+    }
 
     @Test
     public void test01() throws Exception {
-        da.init();
-        assertThat(da.getCleaningEntries(), is(not(nullValue())));
-        assertThat(da.getRoomEntries(), is(not(nullValue())));
-        assertThat(da.getBookingEntries(), is(not(nullValue())));
+	da.init();
+	assertThat(da.getCleaningEntries(), is(not(nullValue())));
+	assertThat(da.getRoomEntries(), is(not(nullValue())));
+	assertThat(da.getBookingEntries(), is(not(nullValue())));
 
     }
 }

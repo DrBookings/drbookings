@@ -20,21 +20,22 @@
 
 package com.github.drbookings.ui.concurrent;
 
+import java.util.Collection;
+
 import com.github.drbookings.concurrent.BookingExportCallable;
 import com.github.drbookings.model.data.BookingBean;
-import javafx.concurrent.Task;
 
-import java.util.Collection;
+import javafx.concurrent.Task;
 
 public class BookingExportTask extends Task<Void> {
     private final Collection<? extends BookingBean> bookings;
 
-    public BookingExportTask(Collection<? extends BookingBean> bookings) {
-        this.bookings = bookings;
+    public BookingExportTask(final Collection<? extends BookingBean> bookings) {
+	this.bookings = bookings;
     }
 
     @Override
     protected Void call() throws Exception {
-        return new BookingExportCallable(bookings).call();
+	return new BookingExportCallable(bookings).call();
     }
 }

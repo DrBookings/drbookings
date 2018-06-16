@@ -121,6 +121,11 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
 	};
     }
 
+    @Override
+    public BookingOrigin getBookingOrigin() {
+	return getElement().getBookingOrigin();
+    }
+
     /**
      * Returns the earnings for this booking entry. That is, the booking earnings
      * per night. All earnings from all booking entries from the same booking are
@@ -173,6 +178,22 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
     }
 
     @Override
+    public boolean isPaymentDone() {
+	return getElement().isPaymentDone();
+    }
+
+    @Override
+    public boolean isPaymentOverdue() {
+	final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
+
+	return isPaymentDone() && lastMonth;
+    }
+
+    public boolean isStay() {
+	return !isCheckIn() && !isCheckOut();
+    }
+
+    @Override
     public FloatProperty netEarningsProperty() {
 	return netEarnings;
     }
@@ -192,26 +213,5 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
     @Override
     public String toString() {
 	return "BookingEntry{" + "date=" + getDate() + ", element=" + getElement() + '}';
-    }
-
-    @Override
-    public BookingOrigin getBookingOrigin() {
-	return getElement().getBookingOrigin();
-    }
-
-    @Override
-    public boolean isPaymentDone() {
-	return getElement().isPaymentDone();
-    }
-
-    @Override
-    public boolean isPaymentOverdue() {
-	final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
-
-	return isPaymentDone() && lastMonth;
-    }
-
-    public boolean isStay() {
-	return !isCheckIn() && !isCheckOut();
     }
 }

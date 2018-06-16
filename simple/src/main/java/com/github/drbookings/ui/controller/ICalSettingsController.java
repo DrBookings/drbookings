@@ -91,6 +91,28 @@ public class ICalSettingsController implements Initializable {
     @FXML
     private TextField ourRoomName8;
 
+    @FXML
+    private void handleSave(final ActionEvent event) {
+	final Map<String, String> map = new LinkedHashMap<>();
+	map.put(vendorRoomName1.getText().trim(), ourRoomName1.getText().trim());
+	map.put(vendorRoomName2.getText().trim(), ourRoomName2.getText().trim());
+	map.put(vendorRoomName3.getText().trim(), ourRoomName3.getText().trim());
+	map.put(vendorRoomName4.getText().trim(), ourRoomName4.getText().trim());
+	map.put(vendorRoomName5.getText().trim(), ourRoomName5.getText().trim());
+	map.put(vendorRoomName6.getText().trim(), ourRoomName6.getText().trim());
+	map.put(vendorRoomName7.getText().trim(), ourRoomName7.getText().trim());
+	map.put(vendorRoomName8.getText().trim(), ourRoomName8.getText().trim());
+	try {
+	    SettingsManager.getInstance().setRoomNameMapping(map);
+	    ((Stage) vendorRoomName1.getScene().getWindow()).close();
+	} catch (final IOException e) {
+	    if (logger.isErrorEnabled()) {
+		logger.error(e.getLocalizedMessage(), e);
+	    }
+	}
+
+    }
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 	try {
@@ -135,27 +157,5 @@ public class ICalSettingsController implements Initializable {
 		logger.error(e.getLocalizedMessage(), e);
 	    }
 	}
-    }
-
-    @FXML
-    private void handleSave(final ActionEvent event) {
-	final Map<String, String> map = new LinkedHashMap<>();
-	map.put(vendorRoomName1.getText().trim(), ourRoomName1.getText().trim());
-	map.put(vendorRoomName2.getText().trim(), ourRoomName2.getText().trim());
-	map.put(vendorRoomName3.getText().trim(), ourRoomName3.getText().trim());
-	map.put(vendorRoomName4.getText().trim(), ourRoomName4.getText().trim());
-	map.put(vendorRoomName5.getText().trim(), ourRoomName5.getText().trim());
-	map.put(vendorRoomName6.getText().trim(), ourRoomName6.getText().trim());
-	map.put(vendorRoomName7.getText().trim(), ourRoomName7.getText().trim());
-	map.put(vendorRoomName8.getText().trim(), ourRoomName8.getText().trim());
-	try {
-	    SettingsManager.getInstance().setRoomNameMapping(map);
-	    ((Stage) vendorRoomName1.getScene().getWindow()).close();
-	} catch (final IOException e) {
-	    if (logger.isErrorEnabled()) {
-		logger.error(e.getLocalizedMessage(), e);
-	    }
-	}
-
     }
 }

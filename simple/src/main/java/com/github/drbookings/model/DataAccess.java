@@ -24,16 +24,16 @@ import com.github.drbookings.model.data.DrBookingsDataImpl;
 
 public class DataAccess {
 
-    public DataAccess(DrBookingsDataImpl data) {
-        this.data = data;
-    }
-
     protected final DrBookingsDataImpl data;
 
-    public DataAccess init(){
-        // nothing per default
+    public DataAccess(final DrBookingsDataImpl data) {
+	this.data = data;
+    }
 
-        return this;
+    public DataAccess init() {
+	// nothing per default
+
+	return this;
     }
 
 }

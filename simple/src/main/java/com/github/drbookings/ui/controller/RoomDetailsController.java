@@ -52,22 +52,6 @@ import javafx.util.Duration;
 public class RoomDetailsController implements Initializable {
 
     private final static Logger logger = LoggerFactory.getLogger(RoomDetailsController.class);
-    @FXML
-    private Label bookings;
-    @FXML
-    private Button buttonSave;
-    @FXML
-    private TextField cleaningName;
-    @FXML
-    private Label cleaningBooking;
-    @FXML
-    private Label guestNames;
-
-    private MainController controller;
-
-    private RoomBean room;
-
-    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> updateUIRooms(c.getList()));
 
     private static String buildBookingsLabelString(final RoomBean rb) {
 	return "Room: " + rb.getName() + ", " + rb.getDate().toString();
@@ -91,6 +75,25 @@ public class RoomDetailsController implements Initializable {
 	}
     }
 
+    @FXML
+    private Label bookings;
+    @FXML
+    private Button buttonSave;
+    @FXML
+    private TextField cleaningName;
+
+    @FXML
+    private Label cleaningBooking;
+
+    @FXML
+    private Label guestNames;
+
+    private MainController controller;
+
+    private RoomBean room;
+
+    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> updateUIRooms(c.getList()));
+
     private String buildTooltipText(final List<BookingEntry> bookings) {
 	final StringBuilder sb = new StringBuilder();
 	for (final Iterator<BookingEntry> it = bookings.iterator(); it.hasNext();) {
@@ -113,12 +116,16 @@ public class RoomDetailsController implements Initializable {
 	return room.getFilteredBookingEntry().toList();
     }
 
+    private LocalDate getDate() {
+	return room.getDate();
+    }
+
     public MainController getManager() {
 	return controller;
     }
 
-    public void setManager(final MainController manager) {
-	this.controller = manager;
+    private RoomBean getRoom() {
+	return room;
     }
 
     @FXML
@@ -135,6 +142,10 @@ public class RoomDetailsController implements Initializable {
 	updateUIRooms(RoomBeanSelectionManager.getInstance().getSelection());
 	RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
 
+    }
+
+    public void setManager(final MainController manager) {
+	this.controller = manager;
     }
 
     private void showBookingDetails() {
@@ -157,19 +168,11 @@ public class RoomDetailsController implements Initializable {
     }
 
     private void updateModelCleaning() {
-	if (cleaningName.getText() != null && cleaningName.getText().trim().length() > 0) {
+	if ((cleaningName.getText() != null) && (cleaningName.getText().trim().length() > 0)) {
 	    room.getData().setCleaning(cleaningName.getText().trim(), getDate(), getRoom().getName());
 	} else {
 	    room.getData().removeCleaning(getDate(), getRoom().getName());
 	}
-    }
-
-    private RoomBean getRoom() {
-	return room;
-    }
-
-    private LocalDate getDate() {
-	return room.getDate();
     }
 
     private void updateUIRooms(final List<? extends RoomBean> list) {

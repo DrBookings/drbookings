@@ -20,11 +20,22 @@
 
 package com.github.drbookings.ui.controller;
 
-import com.github.drbookings.model.exception.OverbookingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
+
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -33,95 +44,87 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ModifyBookingController implements Initializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(ModifyBookingController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModifyBookingController.class);
 
-	public MainManager getManager() {
-		return manager;
-	}
+    @FXML
+    private CheckBox splitBooking;
 
-	public void setManager(final MainManager manager) {
-		this.manager = manager;
-	}
+    @FXML
+    private DatePicker datePickerCheckIn;
 
-	@FXML
-	private CheckBox splitBooking;
+    @FXML
+    private DatePicker datePickerCheckOut;
 
-	@FXML
-	private DatePicker datePickerCheckIn;
+    @FXML
+    private DatePicker dateOfPayment;
 
-	@FXML
-	private DatePicker datePickerCheckOut;
+    @FXML
+    private Label summaryLabel;
 
-	@FXML
-	private DatePicker dateOfPayment;
-
-	@FXML
-	private Label summaryLabel;
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
-		update(RoomBeanSelectionManager.getInstance().getSelection());
-	}
-
-	private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
+    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
 
     private BookingBean booking;
 
-	private MainManager manager;
+    private MainManager manager;
 
-	private void update(final List<? extends RoomBean> rooms) {
-        final List<BookingBean> bookings = new ArrayList<>(rooms.stream()
-				.flatMap(r -> r.getBookingEntry().toList().stream().map(b -> b.getElement())).collect(Collectors.toSet()));
-		Collections.sort(bookings);
-		if (!bookings.isEmpty()) {
-			update(bookings.get(0));
-		} else {
-			clearAll();
-		}
+    private void clearAll() {
+	datePickerCheckIn.setValue(null);
+	datePickerCheckOut.setValue(null);
+	dateOfPayment.setValue(null);
+
+    }
+
+    public MainManager getManager() {
+	return manager;
+    }
+
+    @FXML
+    void handleButtonSaveChanges(final ActionEvent event) {
+	booking.setDateOfPayment(dateOfPayment.getValue());
+	System.err.println(splitBooking.isSelected());
+	booking.setSplitBooking(splitBooking.isSelected());
+	try {
+	    manager.modifyBooking(booking, datePickerCheckIn.getValue(), datePickerCheckOut.getValue());
+	} catch (final OverbookingException e) {
+	    if (logger.isErrorEnabled()) {
+		logger.error(e.getLocalizedMessage(), e);
+	    }
 	}
+    }
+
+    @Override
+    public void initialize(final URL location, final ResourceBundle resources) {
+	RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
+	update(RoomBeanSelectionManager.getInstance().getSelection());
+    }
+
+    public void setManager(final MainManager manager) {
+	this.manager = manager;
+    }
 
     private void update(final BookingBean booking) {
 
-		this.booking = booking;
-		System.err.println(booking.isSplitBooking());
-		splitBooking.setSelected(booking.isSplitBooking());
-		summaryLabel.setText(booking.getGuest().toString());
-		datePickerCheckIn.setValue(booking.getCheckIn());
-		datePickerCheckOut.setValue(booking.getCheckOut());
-		dateOfPayment.setValue(booking.getDateOfPayment());
-	}
+	this.booking = booking;
+	System.err.println(booking.isSplitBooking());
+	splitBooking.setSelected(booking.isSplitBooking());
+	summaryLabel.setText(booking.getGuest().toString());
+	datePickerCheckIn.setValue(booking.getCheckIn());
+	datePickerCheckOut.setValue(booking.getCheckOut());
+	dateOfPayment.setValue(booking.getDateOfPayment());
+    }
 
-	private void clearAll() {
-		datePickerCheckIn.setValue(null);
-		datePickerCheckOut.setValue(null);
-		dateOfPayment.setValue(null);
-
+    private void update(final List<? extends RoomBean> rooms) {
+	final List<BookingBean> bookings = new ArrayList<>(
+		rooms.stream().flatMap(r -> r.getBookingEntry().toList().stream().map(b -> b.getElement()))
+			.collect(Collectors.toSet()));
+	Collections.sort(bookings);
+	if (!bookings.isEmpty()) {
+	    update(bookings.get(0));
+	} else {
+	    clearAll();
 	}
-
-	@FXML
-	void handleButtonSaveChanges(final ActionEvent event) {
-		booking.setDateOfPayment(dateOfPayment.getValue());
-		System.err.println(splitBooking.isSelected());
-		booking.setSplitBooking(splitBooking.isSelected());
-		try {
-			manager.modifyBooking(booking, datePickerCheckIn.getValue(), datePickerCheckOut.getValue());
-		} catch (final OverbookingException e) {
-			if (logger.isErrorEnabled()) {
-				logger.error(e.getLocalizedMessage(), e);
-			}
-		}
-	}
+    }
 }
