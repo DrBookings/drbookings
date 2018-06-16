@@ -18,22 +18,23 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings.ser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
+import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.DrBookingsDataImpl;
-import java.time.LocalDate;
+import java.io.File;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class UnifiedDataAccessTest {
+public class XMLStorageTest {
+
+    public static final String DATA_FILE = File.separator +
+        "test" + File.separator + "resources" + File.separator + XMLStorage.class
+            .getSimpleName();
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -46,26 +47,27 @@ public class UnifiedDataAccessTest {
     @Before
     public void setUp() throws Exception {
         data = new DrBookingsDataImpl();
-        da = new UnifiedDataAccess(LocalDate.now(), data);
+        storage = new XMLStorage();
     }
 
     @After
     public void tearDown() throws Exception {
-        da = null;
+        storage = null;
         data = null;
+
     }
 
     private DrBookingsDataImpl data;
 
-    private UnifiedDataAccess da;
-
+    private XMLStorage storage;
 
     @Test
-    public void test01() throws Exception {
-        da.init();
-        assertThat(da.getCleaningEntries(), is(not(nullValue())));
-        assertThat(da.getRoomEntries(), is(not(nullValue())));
-        assertThat(da.getBookingEntries(), is(not(nullValue())));
-
+    public void testLoad01() throws Exception {
+        DataStore store = storage.load(new File(
+            "test" + File.separator + "resources" + File.separator + "bookings.xml"));
+        List<BookingBean> bookings = DataStore.transform(store.getBookingsSer());
+        for (BookingBean bb : bookings) {
+            data.addBooking(bb);
+        }
     }
 }

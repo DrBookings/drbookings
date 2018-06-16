@@ -88,7 +88,8 @@ public class BookingDetailsController implements Initializable {
     private VBox content;
     private MainManager manager;
     private ModifyBookingDialogFactory modifyBookingDialogFactory;
-    private final ListChangeListener<RoomBean> roomListener = c -> Platform.runLater(() -> update(c.getList()));
+    private final ListChangeListener<RoomBean> roomListener = c -> Platform
+        .runLater(() -> update(c.getList()));
 
     private static void addDates(final HBox content, final BookingBean be) {
         final TextFlow checkIn = LocalDates.getDateText(be.getCheckIn());
@@ -103,7 +104,8 @@ public class BookingDetailsController implements Initializable {
     }
 
     private static void addName(final HBox content, final BookingBean be) {
-        final Label label = new Label(be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
+        final Label label = new Label(
+            be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
         label.setWrapText(true);
         content.getChildren().add(label);
         HBox.setHgrow(label, Priority.ALWAYS);
@@ -158,7 +160,8 @@ public class BookingDetailsController implements Initializable {
         final Text t0 = new Text("Net Earnings: \t");
         final Text netEarnings = new Text(String.format("%3.2f", be.getNetEarnings()));
         final Text t1 = new Text("€ total \t");
-        final Text netEarningsDay = new Text(String.format("%3.2f", be.getNetEarnings() / be.getNumberOfNights()));
+        final Text netEarningsDay = new Text(
+            String.format("%3.2f", be.getNetEarnings() / be.getNumberOfNights()));
         final Text t2 = new Text("€ /night");
         tf.getChildren().addAll(t0, netEarnings, t1, netEarningsDay, t2);
         box.getChildren().addAll(tf);
@@ -241,13 +244,13 @@ public class BookingDetailsController implements Initializable {
         grossEarningsExpression.setPrefWidth(prefTextInputFieldWidth * 1.5);
         booking2GrossEarnings.put(be, grossEarningsExpression);
         final Text grossEarnings = new Text(decimalFormat.format(be.getGrossEarnings()));
-        final TextFlow tf = new TextFlow(new Text("Gross Earnings: "), grossEarningsExpression, new Text(" = "),
+        final TextFlow tf = new TextFlow(new Text("Gross Earnings: "), grossEarningsExpression,
+            new Text(" = "),
             grossEarnings, new Text("€"));
         box.getChildren().addAll(tf);
         if (be.getGrossEarnings() <= 0) {
             box.getStyleClass().addAll("warning", "warning-bg");
         }
-
 
         final HBox box2 = new HBox();
         box2.setSpacing(boxSpacing);
@@ -281,7 +284,8 @@ public class BookingDetailsController implements Initializable {
         Bindings.bindBidirectional(cleaningFeesTextField.textProperty(), be.cleaningFeesProperty(),
             new NumberStringConverter(decimalFormat));
         cleaningFeesTextField.setPrefWidth(prefTextInputFieldWidth);
-        final TextFlow cleaningFeesTextFlow = new TextFlow(new Text("Cleaning Fees: "), cleaningFeesTextField,
+        final TextFlow cleaningFeesTextFlow = new TextFlow(new Text("Cleaning Fees: "),
+            cleaningFeesTextField,
             new Text(" €"));
         box.getChildren().add(cleaningFeesTextFlow);
 
@@ -311,13 +315,15 @@ public class BookingDetailsController implements Initializable {
         Bindings.bindBidirectional(serviceFeesTextField.textProperty(), be.serviceFeeProperty(),
             new NumberStringConverter(decimalFormat));
         serviceFeesTextField.setPrefWidth(prefTextInputFieldWidth);
-        final TextFlow serviceFeesAbsTextFlow = new TextFlow(new Text("Service Fees: "), serviceFeesTextField,
+        final TextFlow serviceFeesAbsTextFlow = new TextFlow(new Text("Service Fees: "),
+            serviceFeesTextField,
             new Text(" €"));
         box.getChildren().add(serviceFeesAbsTextFlow);
 
         // add service fees percent
         final TextField serviceFeesPercentTextField = new TextField();
-        Bindings.bindBidirectional(serviceFeesPercentTextField.textProperty(), be.serviceFeesPercentProperty(),
+        Bindings.bindBidirectional(serviceFeesPercentTextField.textProperty(),
+            be.serviceFeesPercentProperty(),
             new NumberStringConverter(decimalFormat));
         serviceFeesPercentTextField.setPrefWidth(prefTextInputFieldWidth);
         final TextFlow serviceFeesPercentTextFlow = new TextFlow(new Text("Service Fees: "),
@@ -373,7 +379,6 @@ public class BookingDetailsController implements Initializable {
         });
         box2.getChildren().addAll(newPayment, addNewPaymentButton);
 
-
         content.getChildren().addAll(box, box2);
 
     }
@@ -419,7 +424,8 @@ public class BookingDetailsController implements Initializable {
         for (final Entry<BookingBean, TextInputControl> en : booking2CheckOutNote.entrySet()) {
             en.getKey().setCheckOutNote(en.getValue().getText());
         }
-        for (final Entry<BookingBean, TextInputControl> en : booking2SpecialRequestNote.entrySet()) {
+        for (final Entry<BookingBean, TextInputControl> en : booking2SpecialRequestNote
+            .entrySet()) {
             en.getKey().setSpecialRequestNote(en.getValue().getText());
         }
         for (final Entry<BookingBean, TextInputControl> en : booking2GrossEarnings.entrySet()) {
@@ -444,7 +450,7 @@ public class BookingDetailsController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         RoomBeanSelectionManager.getInstance().selectionProperty().addListener(roomListener);
         SettingsManager.getInstance().cleaningFeesProperty().addListener((observable, oldValue,
-                                                                          newValue) -> update(RoomBeanSelectionManager.getInstance().getSelection()));
+            newValue) -> update(RoomBeanSelectionManager.getInstance().getSelection()));
         update(RoomBeanSelectionManager.getInstance().getSelection());
 
     }
@@ -452,7 +458,8 @@ public class BookingDetailsController implements Initializable {
     private void update(final Collection<? extends RoomBean> rooms) {
         clearAll();
         final List<BookingBean> bookings = new ArrayList<>(
-            rooms.stream().flatMap(r -> r.getFilteredBookingEntries().stream().map(b -> b.getElement()))
+            rooms.stream()
+                .flatMap(r -> r.getFilteredBookingEntry().toStream().map(b -> b.getElement()))
                 .collect(Collectors.toSet()));
         Collections.sort(bookings);
         for (final Iterator<BookingBean> it = bookings.iterator(); it.hasNext(); ) {

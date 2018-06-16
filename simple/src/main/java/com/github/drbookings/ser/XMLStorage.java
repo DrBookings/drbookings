@@ -20,6 +20,7 @@
 
 package com.github.drbookings.ser;
 
+import com.github.drbookings.model.data.DrBookingsDataImpl;
 import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.io.Backup;
 import com.github.drbookings.model.data.BookingBean;
@@ -110,6 +111,19 @@ public class XMLStorage {
 			logger.debug("Saving state successful");
 		}
 	}
+
+    protected void doSave(final DrBookingsDataImpl data, final File file) {
+        Backup.make(file);
+        try {
+            save(buildDataStore(data.getBookings()), file);
+        } catch (final Exception e1) {
+            logger.error(e1.getLocalizedMessage(), e1);
+            return;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Saving state successful");
+        }
+    }
 
     public static DataStore buildDataStore(final Collection<? extends BookingBean> bookings) {
         final DataStore ds = new DataStore();

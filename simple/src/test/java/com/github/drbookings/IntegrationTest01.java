@@ -18,54 +18,48 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import com.github.drbookings.model.data.DrBookingsDataImpl;
-import java.time.LocalDate;
+import com.github.drbookings.ser.DataStore;
+import com.github.drbookings.ser.XMLStorage;
+import com.github.drbookings.ui.controller.MainController;
+import java.io.File;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-public class UnifiedDataAccessTest {
-
-    @BeforeClass
-    public static void setUpBeforeClass() {
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() {
-    }
+@Category(IntegrationTest.class)
+public class IntegrationTest01 {
 
     @Before
     public void setUp() throws Exception {
-        data = new DrBookingsDataImpl();
-        da = new UnifiedDataAccess(LocalDate.now(), data);
+        mainController = new MainController();
     }
 
     @After
     public void tearDown() throws Exception {
-        da = null;
-        data = null;
+        mainController = null;
     }
 
-    private DrBookingsDataImpl data;
-
-    private UnifiedDataAccess da;
+    private MainController mainController;
 
 
     @Test
     public void test01() throws Exception {
-        da.init();
-        assertThat(da.getCleaningEntries(), is(not(nullValue())));
-        assertThat(da.getRoomEntries(), is(not(nullValue())));
-        assertThat(da.getBookingEntries(), is(not(nullValue())));
+        DataStore data = new XMLStorage()
+            .load(new File("test/resources/test-bookings/2-bookings-1-cleaing/booking-export.xml"));
+        data.load(mainController.getManager());
+        // 21 -> 27
+        assertThat(mainController.getManager().getBookingEntryPairs().size(), is(7));
+        assertThat(mainController.getManager().getBookingEntries().size(), is(8));
+        assertThat(mainController.getManager().getCleaningEntries().size(), is(1));
+
 
     }
+
 }

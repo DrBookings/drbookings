@@ -20,7 +20,7 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.DrBookingsData;
+import com.github.drbookings.model.data.DrBookingsDataImpl;
 import com.github.drbookings.ui.CleaningEntry;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,9 +33,9 @@ public class UnifiedDataAccess extends DataAccess {
 
     protected List<CleaningEntry> cleaningEntries;
 
-    protected List<BookingEntry> bookingEntries;
+    protected List<BookingEntryPair> bookingEntries;
 
-    public UnifiedDataAccess( LocalDate date,DrBookingsData data) {
+    public UnifiedDataAccess(LocalDate date, DrBookingsDataImpl data) {
         super(data);
         this.date = date;
     }
@@ -54,12 +54,12 @@ public class UnifiedDataAccess extends DataAccess {
 
         roomEntries = data.getRoomEntries(date);
         cleaningEntries = data.getCleaningEntries(date);
-        bookingEntries = data.getBookingEntries(date);
+        bookingEntries = data.getBookingEntryPairs(date);
 
         return this;
     }
 
-    public List<BookingEntry> getBookingEntries() {
+    public List<BookingEntryPair> getBookingEntries() {
         return bookingEntries;
     }
 }

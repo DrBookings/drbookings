@@ -20,10 +20,12 @@
 
 package com.github.drbookings.ser;
 
-import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.model.Payment;
 import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.BookingBeanFactory;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.exception.AlreadyBusyException;
+import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
 import com.github.drbookings.model.ser.PaymentSer;
@@ -37,7 +39,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @XmlRootElement
 public class DataStore {
@@ -60,7 +61,7 @@ public class DataStore {
 //        if (c.getBooking() != null) {
 //            b.bookingId = c.getBooking().getId();
 //        }
-        System.err.println("Removed cleaning");
+//        System.err.println("Removed cleaning");
         return b;
     }
 
@@ -90,6 +91,37 @@ public class DataStore {
         return result;
     }
 
+    public static List<BookingBean> transform(Collection<? extends BookingBeanSer> sers) {
+        final List<BookingBean> bookingsToAdd = new ArrayList<>();
+        for (final BookingBeanSer bb : sers) {
+            try {
+                final BookingBean b = new BookingBeanFactory()
+                    .createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+                        bb.roomName, bb.source);
+                // b.setGrossEarnings(bb.grossEarnings);
+                b.setGrossEarningsExpression(bb.grossEarningsExpression);
+                b.setWelcomeMailSend(bb.welcomeMailSend);
+                b.setCheckInNote(bb.checkInNote);
+                b.setPaymentDone(bb.paymentDone);
+                b.setSpecialRequestNote(bb.specialRequestNote);
+                b.setCheckOutNote(bb.checkOutNote);
+                b.setExternalId(bb.externalId);
+                b.setCalendarIds(bb.calendarIds);
+                b.setCleaningFees(bb.cleaningFees);
+                b.setServiceFeesPercent(bb.serviceFeePercent);
+                b.setDateOfPayment(bb.dateOfPayment);
+                b.setSplitBooking(bb.splitBooking);
+                b.setPayments(Payment.transform(bb.paymentsSoFar));
+                bookingsToAdd.add(b);
+            } catch (final Exception e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error(e.getLocalizedMessage(), e);
+                }
+            }
+        }
+        return bookingsToAdd;
+    }
+
     public DataStore setBookingSer(final Collection<? extends BookingBeanSer> bookings) {
         this.bookings.clear();
         this.bookings.addAll(bookings);
@@ -113,8 +145,9 @@ public class DataStore {
         for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
             .sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
             try {
-                final BookingBean b = manager.createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
-                    bb.roomName, bb.source);
+                final BookingBean b = manager
+                    .createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
+                        bb.roomName, bb.source);
                 // b.setGrossEarnings(bb.grossEarnings);
                 b.setGrossEarningsExpression(bb.grossEarningsExpression);
                 b.setWelcomeMailSend(bb.welcomeMailSend);
@@ -151,12 +184,14 @@ public class DataStore {
         }
 
         for (final CleaningBeanSer cb : getCleaningsSer()) {
+            try {
+                CleaningEntry ce = manager.addCleaning(cb.name, cb.date, cb.room);
+                ce.setCalendarIds(cb.calendarIds);
+                ce.setCleaningCosts(cb.cleaningCosts);
+            } catch (AlreadyBusyException e) {
+                e.printStackTrace();
+            }
 
-            CleaningEntry ce = manager.addCleaning(cb.date, cb.name, cb.room);
-            ce.setCalendarIds(cb.calendarIds);
-            ce.setCleaningCosts(cb.cleaningCosts);
-
-            final Optional<BookingBean> b = manager.getBooking(cb.bookingId);
 //            if (b.isPresent()) {
 //               ce.bookingProperty().set(b.get());
 //            } else {
@@ -164,7 +199,7 @@ public class DataStore {
 //                    logger.warn("Cannot link " + ce + " to booking, failed to find booking for ID " + cb.bookingId);
 //                }
 //            }
-            System.err.println("Removed cleaning");
+//            System.err.println("Removed cleaning");
         }
     }
 }

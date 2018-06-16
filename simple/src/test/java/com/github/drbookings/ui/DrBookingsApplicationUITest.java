@@ -18,21 +18,25 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings;
-
-import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-import org.junit.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.testfx.framework.junit.ApplicationTest;
-
-import java.io.File;
-import java.nio.file.Files;
+package com.github.drbookings.ui;
 
 import static org.hamcrest.Matchers.not;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.hasText;
+
+import com.github.drbookings.DrBookingsApplication;
+import com.github.drbookings.UITests;
+import java.io.File;
+import java.nio.file.Files;
+import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.testfx.framework.junit.ApplicationTest;
 
 
 @Category(UITests.class)

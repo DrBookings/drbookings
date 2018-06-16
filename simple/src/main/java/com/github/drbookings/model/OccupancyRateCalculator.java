@@ -22,17 +22,23 @@ package com.github.drbookings.model;
 
 import java.util.Collection;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.github.drbookings.ui.beans.RoomBean;
 
+/**
+ * Calculates the occupancy rate of given rooms. Does not consider filtered
+ * entries and check-out entries.
+ *
+ * @author Alexander Kerner
+ *
+ */
 public class OccupancyRateCalculator implements Function<Collection<? extends RoomBean>, Number> {
 
     @Override
     public Number apply(final Collection<? extends RoomBean> rooms) {
 	final double cntRooms = rooms.size();
-	final double cntBusyRooms = rooms.stream().filter(r -> !r.getFilteredBookingEntries().stream()
-		.filter(b -> !b.isCheckOut()).collect(Collectors.toList()).isEmpty()).count();
+	final double cntBusyRooms = rooms.stream().filter(e -> e.getBookingEntry() != null)
+		.flatMap(r -> r.getFilteredBookingEntry().toList().stream()).filter(e -> !e.isCheckOut()).count();
 	return (float) (cntBusyRooms / cntRooms);
     }
 

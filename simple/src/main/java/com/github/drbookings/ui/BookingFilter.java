@@ -20,11 +20,10 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.BookingEntry;
-
+import com.github.drbookings.model.BookingEntryPair;
 import java.util.function.Predicate;
 
-public class BookingFilter implements Predicate<BookingEntry> {
+public class BookingFilter implements Predicate<BookingEntryPair> {
 
     private String filterString;
 
@@ -41,20 +40,26 @@ public class BookingFilter implements Predicate<BookingEntry> {
     }
 
     @Override
-    public boolean test(final BookingEntry t) {
+    public boolean test(final BookingEntryPair t) {
 	if (filterString == null || filterString.length() < 1) {
 	    return true;
 	}
-	boolean result = t.getElement().getGuest().getName().toLowerCase().contains(filterString.toLowerCase());
+	boolean result = testGuestNames(t);
 	if (!result) {
-	    result = t.getDate() != null
-		    && t.getDate().getMonth().toString().toLowerCase().contains(filterString.toLowerCase());
+	    result = testBookingOrigin(t);
+//	    result = t.getDate() != null
+//		    && t.getDate().getMonth().toString().toLowerCase().contains(filterString.toLowerCase());
 
 	}
-	if (!result) {
-	    result = t.getElement().getBookingOrigin().getName().toLowerCase().contains(filterString.toLowerCase());
-	}
 	return result;
+    }
+
+    private boolean testBookingOrigin(BookingEntryPair t) {
+        return t.bookingOriginNamesView().contains(filterString);
+    }
+
+    private boolean testGuestNames(BookingEntryPair t) {
+        return t.guestNameView().contains(filterString);
     }
 
 }

@@ -20,10 +20,10 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.model.data.Room;
 import com.github.drbookings.ui.beans.DateBean;
 import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.controller.CellContentController;
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.TableCell;
@@ -32,8 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBean>, TableCell<DateBean, DateBean>> {
 
@@ -84,7 +82,7 @@ public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBea
 					setStyle("");
 					setGraphic(null);
 				} else {
-					setGraphic(buildCellContentFast(item.getRoom(new Room(id))));
+					setGraphic(buildCellContentFast(item.getRoom(id)));
 					setStyle("-fx-padding: 0 0 0 0;");
 				}
 			}

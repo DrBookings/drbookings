@@ -84,7 +84,7 @@ public class ModifyBookingController implements Initializable {
 
 	private void update(final List<? extends RoomBean> rooms) {
         final List<BookingBean> bookings = new ArrayList<>(rooms.stream()
-				.flatMap(r -> r.getBookingEntries().stream().map(b -> b.getElement())).collect(Collectors.toSet()));
+				.flatMap(r -> r.getBookingEntry().toList().stream().map(b -> b.getElement())).collect(Collectors.toSet()));
 		Collections.sort(bookings);
 		if (!bookings.isEmpty()) {
 			update(bookings.get(0));

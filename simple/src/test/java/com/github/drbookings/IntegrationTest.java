@@ -18,22 +18,11 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings;
 
-import com.github.drbookings.model.data.DrBookingsDataImpl;
-
-public class DataAccess {
-
-    public DataAccess(DrBookingsDataImpl data) {
-        this.data = data;
-    }
-
-    protected final DrBookingsDataImpl data;
-
-    public DataAccess init(){
-        // nothing per default
-
-        return this;
-    }
+/**
+ * JUnit category marker.
+ */
+public interface IntegrationTest {
 
 }

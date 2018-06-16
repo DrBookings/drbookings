@@ -20,19 +20,6 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingOrigin;
-import com.github.drbookings.model.data.DateRoomEntry;
-import com.github.drbookings.model.settings.SettingsManager;
-import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.util.Callback;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -41,30 +28,44 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import com.github.drbookings.TemporalQueries;
+import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.model.data.BookingOrigin;
+import com.github.drbookings.model.data.DateRoomEntry;
+import com.github.drbookings.model.settings.SettingsManager;
+
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.util.Callback;
+
 public class BookingEntry extends DateRoomEntry<BookingBean>
-    implements NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
+	implements NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
 
     public static List<BookingEntry> checkInView(final Collection<? extends BookingEntry> bookings) {
-        return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
+	return bookings.stream().filter(b -> b.isCheckIn()).collect(Collectors.toList());
     }
 
     public static List<BookingEntry> checkOutView(final Collection<? extends BookingEntry> bookings) {
-        return bookings.stream().filter(b -> b.isCheckOut()).collect(Collectors.toList());
+	return bookings.stream().filter(b -> b.isCheckOut()).collect(Collectors.toList());
     }
 
     public static Callback<BookingEntry, Observable[]> extractor() {
-        return param -> new Observable[]{param.netEarningsProperty(), param.getElement().paymentDoneProperty(),
-            param.getElement().welcomeMailSendProperty()};
+	return param -> new Observable[] { param.netEarningsProperty(), param.getElement().paymentDoneProperty(),
+		param.getElement().welcomeMailSendProperty() };
     }
 
     public static Set<String> guestNameView(final Collection<? extends BookingEntry> bookings) {
-        return bookings.stream().map(b -> b.getElement().getGuest().getName())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+	return bookings.stream().map(b -> b.getElement().getGuest().getName())
+		.collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static Set<String> originView(final List<BookingEntry> bookings) {
-        return bookings.stream().map(b -> b.getElement().getBookingOrigin().getName())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+	return bookings.stream().map(b -> b.getElement().getBookingOrigin().getName())
+		.collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -85,138 +86,132 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
     /**
      * Creates a new {@code BookingEntry} for given date and from given parent.
      *
-     * @param date    Date of this {@code BookingEntry}
-     * @param booking parent for this {@code BookingEntry}
+     * @param date
+     *            Date of this {@code BookingEntry}
+     * @param booking
+     *            parent for this {@code BookingEntry}
      */
     public BookingEntry(final LocalDate date, final BookingBean booking) {
-        super(date, booking.getRoom(), booking);
-        grossEarningsProperty().bind(Bindings.createObjectBinding(calculateGrossEarnings(),
-            getElement().grossEarningsProperty(), SettingsManager.getInstance().showNetEarningsProperty()));
-        netEarningsProperty()
-            .bind(Bindings.createObjectBinding(calculateNetEarnings(), getElement().netEarningsProperty()));
+	super(date, booking.getRoom(), booking);
+	grossEarningsProperty().bind(Bindings.createObjectBinding(calculateGrossEarnings(),
+		getElement().grossEarningsProperty(), SettingsManager.getInstance().showNetEarningsProperty()));
+	netEarningsProperty()
+		.bind(Bindings.createObjectBinding(calculateNetEarnings(), getElement().netEarningsProperty()));
     }
 
     private Callable<Number> calculateGrossEarnings() {
-        return () -> {
-            // TODO hard-coded check-out
-            if (isCheckOut()) {
-                return 0;
-            }
-
-            final double result = getElement().getGrossEarnings() / getElement().getNumberOfNights();
-
-
-            return result;
-        };
+	return () -> {
+	    if (isCheckOut()) {
+		return 0;
+	    }
+	    final double result = getElement().getGrossEarnings() / getElement().getNumberOfNights();
+	    return result;
+	};
     }
-
 
     private Callable<Number> calculateNetEarnings() {
 
-        return () -> {
-            // TODO hard-coded check-out
-            if (isCheckOut()) {
-                return 0;
-            }
-            final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
-            final Number result = c.apply(this);
-            // if (getElement().getGuest().getName().contains("Jennifer")
-            // || getElement().getGuest().getName().contains("Andres")) {
-            // System.err.println(result);
-            // }
-            return result;
-        };
+	return () -> {
+	    if (isCheckOut()) {
+		return 0;
+	    }
+	    final NetEarningsCalculator c = new DefaultNetEarningsCalculator();
+	    final Number result = c.apply(this);
+	    return result;
+	};
     }
 
     /**
-     * Returns the earnings for this booking entry. That is, the booking earnings per night. All earnings from all
-     * booking entries from the same booking are always the same.
+     * Returns the earnings for this booking entry. That is, the booking earnings
+     * per night. All earnings from all booking entries from the same booking are
+     * always the same.
      *
-     * @param netEarnings if {@code true}, net earnings will be returned; gross earnings otherwise
+     * @param netEarnings
+     *            if {@code true}, net earnings will be returned; gross earnings
+     *            otherwise
      * @return the earnings for this booking entry
      * @see NetEarningsCalculator
      */
     @Override
     public float getEarnings(final boolean netEarnings) {
-        if (netEarnings) {
-            return getNetEarnings();
-        }
-        return getGrossEarnings();
+	if (netEarnings) {
+	    return getNetEarnings();
+	}
+	return getGrossEarnings();
     }
 
     @Override
     public float getGrossEarnings() {
-        return grossEarningsProperty().get();
+	return grossEarningsProperty().get();
     }
 
     public String getGrossEarningsString() {
-        return grossEarningsStringProperty().get();
+	return grossEarningsStringProperty().get();
     }
 
     @Override
     public float getNetEarnings() {
-        return netEarningsProperty().get();
+	return netEarningsProperty().get();
 
     }
 
     @Override
     public FloatProperty grossEarningsProperty() {
-        return grossEarnings;
+	return grossEarnings;
     }
 
     public StringProperty grossEarningsStringProperty() {
-        return grossEarningsString;
+	return grossEarningsString;
     }
 
     public boolean isCheckIn() {
-        return getDate().equals(getElement().getCheckIn());
+	return getDate().equals(getElement().getCheckIn());
     }
 
     public boolean isCheckOut() {
-        return getDate().equals(getElement().getCheckOut());
+	return getDate().equals(getElement().getCheckOut());
     }
 
     @Override
     public FloatProperty netEarningsProperty() {
-        return netEarnings;
+	return netEarnings;
     }
 
     public void setGrossEarnings(final float grossEarnings) {
-        grossEarningsProperty().set(grossEarnings);
+	grossEarningsProperty().set(grossEarnings);
     }
 
     public void setGrossEarningsString(final String grossEarningsString) {
-        grossEarningsStringProperty().set(grossEarningsString);
+	grossEarningsStringProperty().set(grossEarningsString);
     }
 
     public void setNetEarnings(final float netEarnings) {
-        netEarningsProperty().set(netEarnings);
+	netEarningsProperty().set(netEarnings);
     }
 
     @Override
     public String toString() {
-        return "BookingEntry{" +
-            "date=" + getDate() +
-            ", element=" + getElement() +
-            '}';
+	return "BookingEntry{" + "date=" + getDate() + ", element=" + getElement() + '}';
     }
 
     @Override
     public BookingOrigin getBookingOrigin() {
-        return getElement().getBookingOrigin();
+	return getElement().getBookingOrigin();
     }
 
     @Override
     public boolean isPaymentDone() {
-        return getElement().isPaymentDone();
+	return getElement().isPaymentDone();
     }
 
     @Override
     public boolean isPaymentOverdue() {
-        final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
+	final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
 
-        return isPaymentDone() && lastMonth;
+	return isPaymentDone() && lastMonth;
     }
 
-
+    public boolean isStay() {
+	return !isCheckIn() && !isCheckOut();
+    }
 }

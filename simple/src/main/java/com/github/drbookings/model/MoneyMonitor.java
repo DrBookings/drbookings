@@ -75,7 +75,7 @@ public class MoneyMonitor {
 	}
 
 	private void calculateDateToEarnings(final ObservableList<? extends RoomBean> list) {
-		final List<BookingEntry> selectedBookings = list.stream().flatMap(r -> r.getFilteredBookingEntries().stream())
+		final List<BookingEntry> selectedBookings = list.stream().flatMap(r -> r.getFilteredBookingEntry().toList().stream())
 				.collect(Collectors.toList());
 
 		dayToNetEarnings.clear();

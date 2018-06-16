@@ -43,7 +43,7 @@ public class CleaningNeededCalculatorTest {
 
     @Before
     public void setUp() throws Exception {
-        data = new DrBookingsData();
+        data = new DrBookingsDataImpl();
     }
 
     @After
@@ -51,7 +51,7 @@ public class CleaningNeededCalculatorTest {
         data = null;
     }
 
-    private DrBookingsData data;
+    private DrBookingsDataImpl data;
 
     private CleaningNeededCalculator cc;
 

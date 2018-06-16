@@ -20,7 +20,7 @@
 
 package com.github.drbookings.model.data;
 
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.BookingEntryPair;
 import com.github.drbookings.ui.CleaningEntry;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -29,12 +29,12 @@ import java.util.concurrent.Callable;
 public class CleaningNeededCalculator implements Callable<Boolean> {
 
     public static final LocalDate DEFAULT_TIME_OUT_DATE = LocalDate.now();
-    private final DrBookingsData data;
+    private final DrBookingsDataImpl data;
     private final LocalDate date;
     private final String roomName;
     private LocalDate timeOutDate = DEFAULT_TIME_OUT_DATE;
 
-    public CleaningNeededCalculator(LocalDate date, String roomName, DrBookingsData data) {
+    public CleaningNeededCalculator(LocalDate date, String roomName, DrBookingsDataImpl data) {
         this.data = data;
         this.date = date;
         this.roomName = roomName;
@@ -44,7 +44,7 @@ public class CleaningNeededCalculator implements Callable<Boolean> {
         return date.isBefore(timeOutDate);
     }
 
-    public static boolean cleaningNeeded(LocalDate date, String roomName, DrBookingsData data,
+    public static boolean cleaningNeeded(LocalDate date, String roomName, DrBookingsDataImpl data,
         LocalDate timeOutDate) {
 
         if (data.getBookingEntries().isEmpty()) {
@@ -76,11 +76,11 @@ public class CleaningNeededCalculator implements Callable<Boolean> {
                     // cleaning found
                     return false;
                 }
-                Optional<BookingEntry> beo2 = data.getBookingEntry(roomName, dateToCheck);
+                Optional<BookingEntryPair> beo2 = data.getBookingEntryPair(roomName, dateToCheck);
                 if (beo2.isPresent()) {
                     // booking found
                     // consider only check-outs
-                    if (beo2.get().isCheckOut()) {
+                    if (beo2.get().hasCheckOut()) {
                         return true;
                     } else {
                         // a non-check-out booking entry

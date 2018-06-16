@@ -241,7 +241,7 @@ public class MainController implements Initializable {
                     if (rb.isEmpty()) {
                         continue;
                     }
-                    final BookingBean booking = rb.getFilteredBookingEntries().get(0).getElement();
+                    final BookingBean booking = rb.getFilteredBookingEntry().toList().get(0).getElement();
                     if (logger.isDebugEnabled()) {
                         logger.debug("Deleting " + booking);
                     }
@@ -994,8 +994,8 @@ public class MainController implements Initializable {
     private void updateStatusLabelFX() {
 
         final ObservableList<RoomBean> selectedRooms = RoomBeanSelectionManager.getInstance().selectionProperty();
-        final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntries().stream())
-                .filter(new BookingFilter(guestNameFilterInput.getText())).collect(Collectors.toList());
+        final List<BookingEntry> selectedBookings = selectedRooms.stream().flatMap(r -> r.getBookingEntry().toList().stream())
+                .collect(Collectors.toList());
         Range<LocalDate> selectedRange = DateBeanSelectionManager.getInstance().getSelectedDateRange();
         if(selectedRange == null){
 

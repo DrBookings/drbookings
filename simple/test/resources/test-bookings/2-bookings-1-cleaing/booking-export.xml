@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataStore>
+    <bookings>
+        <booking bookingId="4438bb16-fa92-4e0e-8853-b80aaff0beae" calendarIds="reoti935igq9s5jfg8ontkjik8 009f9qrr9i450jd8b2eo8j97nc kapv5ci4pdt0pgkcbtcq8fkt1g 2ans2v2gk9d1retaoj37o63rgo rvttuemo3qpkplgkdbucf43ds8 isbl2dtaishf28h52ej9gkou4o frnq6ade1ndanaub4d6ml3r1pc" checkInDate="2018-04-23" checkInNote="1500" checkOutDate="2018-04-27" cleaningFees="60.0" grossEarningsExpression="229.2" guestName="Víctor Moreno" paymentDone="false" splitBooking="false" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" specialRequestNote="Print-out of 'Good-to-know'. Very nice guest." welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="e00f051a-1ac3-4534-b2dc-f2fccb2a45ee" calendarIds="61mnr1m2rqqdtgqspd13fd4b20 4rm4np7q9hm8r74n62tc8po4jc" checkInDate="2018-04-21" checkOutDate="2018-04-23" cleaningFees="60.0" grossEarningsExpression="141.0" guestName="Trystan" paymentDone="false" splitBooking="false" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+    </bookings>
+
+<cleanings>
+<cleaning calendarIds="" cleaningCosts="25.0" date="2018-04-23" name="Alona" bookingId="e00f051a-1ac3-4534-b2dc-f2fccb2a45ee" room="3"/>
+    </cleanings>
+</dataStore>

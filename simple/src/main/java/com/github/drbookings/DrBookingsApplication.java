@@ -49,6 +49,9 @@ import java.util.Currency;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * @author Alexander Kerner
+ */
 public class DrBookingsApplication extends Application {
 
     public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
@@ -74,8 +77,9 @@ public class DrBookingsApplication extends Application {
                     final File file = SettingsManager.getInstance().getDataFile();
                     fileChooser.setInitialDirectory(file.getParentFile());
                     fileChooser.getExtensionFilters().addAll(
-                            new FileChooser.ExtensionFilter("Dr.BookingBean BookingBean Data", Arrays.asList("*.xml")),
-                            new FileChooser.ExtensionFilter("All Files", "*"));
+                        new FileChooser.ExtensionFilter("Dr.BookingBean BookingBean Data",
+                            Arrays.asList("*.xml")),
+                        new FileChooser.ExtensionFilter("All Files", "*"));
                     fileChooser.setTitle("Select File");
                     fileChooser.setInitialFileName(file.getName());
                     final File file2 = fileChooser.showSaveDialog(((Stage) event.getSource()));
@@ -99,10 +103,10 @@ public class DrBookingsApplication extends Application {
 
     void exit() {
         Platform.exit();
-
     }
 
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM.yyyy");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+        .ofPattern("E\tdd.MM.yyyy");
 
     private final static Logger logger = LoggerFactory.getLogger(DrBookingsApplication.class);
 
@@ -141,27 +145,32 @@ public class DrBookingsApplication extends Application {
         InputStream input = null;
         try {
             try {
-                input = new FileInputStream(System.getProperty("user.home") + File.separator + CONFIG_FILE_PATH);
+                input = new FileInputStream(
+                    System.getProperty("user.home") + File.separator + CONFIG_FILE_PATH);
                 if (logger.isInfoEnabled()) {
-                    logger.info("Reading properties from " + System.getProperty("user.home") + File.separator
-                            + CONFIG_FILE_PATH);
+                    logger.info("Reading properties from " + System.getProperty("user.home")
+                        + File.separator
+                        + CONFIG_FILE_PATH);
                 }
                 prop.load(input);
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to read properties from " + System.getProperty("user.home") + File.separator
-                            + CONFIG_FILE_PATH);
+                    logger.debug("Failed to read properties from " + System.getProperty("user.home")
+                        + File.separator
+                        + CONFIG_FILE_PATH);
                 }
             }
             try {
-                SettingsManager.getInstance().setDataFile(new File(prop.getProperty(DATA_FILE_KEY)));
+                SettingsManager.getInstance()
+                    .setDataFile(new File(prop.getProperty(DATA_FILE_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + DATA_FILE_KEY + ", " + ex.toString());
                 }
             }
             try {
-                final Number n = Scripting.evaluateExpression(prop.getProperty(ADDITIONAL_COSTS_KEY));
+                final Number n = Scripting
+                    .evaluateExpression(prop.getProperty(ADDITIONAL_COSTS_KEY));
                 SettingsManager.getInstance().setAdditionalCosts(n.floatValue());
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
@@ -170,14 +179,16 @@ public class DrBookingsApplication extends Application {
             }
             try {
                 SettingsManager.getInstance().setReferenceColdRentLongTerm(
-                        Float.parseFloat(prop.getProperty(REFERENCE_COLD_RENT_LONGTERM_KEY)));
+                    Float.parseFloat(prop.getProperty(REFERENCE_COLD_RENT_LONGTERM_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to parse " + REFERENCE_COLD_RENT_LONGTERM_KEY + ", " + ex.toString());
+                    logger.debug("Failed to parse " + REFERENCE_COLD_RENT_LONGTERM_KEY + ", " + ex
+                        .toString());
                 }
             }
             try {
-                SettingsManager.getInstance().setNumberOfRooms(Integer.parseInt(prop.getProperty(NUMBER_OF_ROOMS_KEY)));
+                SettingsManager.getInstance()
+                    .setNumberOfRooms(Integer.parseInt(prop.getProperty(NUMBER_OF_ROOMS_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + NUMBER_OF_ROOMS_KEY + ", " + ex.toString());
@@ -185,14 +196,17 @@ public class DrBookingsApplication extends Application {
             }
             try {
                 SettingsManager.getInstance()
-                        .setWorkHoursPerMonth(Float.parseFloat(prop.getProperty(WORK_HOURS_PER_MONTH_KEY)));
+                    .setWorkHoursPerMonth(
+                        Float.parseFloat(prop.getProperty(WORK_HOURS_PER_MONTH_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex.toString());
+                    logger.debug(
+                        "Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex.toString());
                 }
             }
             try {
-                SettingsManager.getInstance().setRoomNamePrefix(prop.getProperty(ROOM_NAME_PREFIX_KEY));
+                SettingsManager.getInstance()
+                    .setRoomNamePrefix(prop.getProperty(ROOM_NAME_PREFIX_KEY));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + ROOM_NAME_PREFIX_KEY + ", " + ex.toString());
@@ -200,28 +214,32 @@ public class DrBookingsApplication extends Application {
             }
             try {
                 SettingsManager.getInstance()
-                        .setShowNetEarnings(Boolean.parseBoolean(prop.getProperty(SHOW_NET_EARNINGS_KEY)));
+                    .setShowNetEarnings(
+                        Boolean.parseBoolean(prop.getProperty(SHOW_NET_EARNINGS_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + SHOW_NET_EARNINGS_KEY + ", " + ex.toString());
                 }
             }
             try {
-                SettingsManager.getInstance().setCleaningFees(Float.parseFloat(prop.getProperty(CLEANING_FEES_KEY)));
+                SettingsManager.getInstance()
+                    .setCleaningFees(Float.parseFloat(prop.getProperty(CLEANING_FEES_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + CLEANING_FEES_KEY + ", " + ex.toString());
                 }
             }
             try {
-                SettingsManager.getInstance().setCleaningCosts(Float.parseFloat(prop.getProperty(CLEANING_COSTS_KEY)));
+                SettingsManager.getInstance()
+                    .setCleaningCosts(Float.parseFloat(prop.getProperty(CLEANING_COSTS_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + CLEANING_COSTS_KEY + ", " + ex.toString());
                 }
             }
             try {
-                SettingsManager.getInstance().setServiceFees(Float.parseFloat(prop.getProperty(SERVICE_FEES_KEY)));
+                SettingsManager.getInstance()
+                    .setServiceFees(Float.parseFloat(prop.getProperty(SERVICE_FEES_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Failed to parse " + SERVICE_FEES_KEY + ", " + ex.toString());
@@ -229,18 +247,22 @@ public class DrBookingsApplication extends Application {
             }
             try {
                 SettingsManager.getInstance()
-                        .setServiceFeesPercent(Float.parseFloat(prop.getProperty(SERVICE_FEES_PERCENT_KEY)));
+                    .setServiceFeesPercent(
+                        Float.parseFloat(prop.getProperty(SERVICE_FEES_PERCENT_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex.toString());
+                    logger.debug(
+                        "Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex.toString());
                 }
             }
             try {
                 SettingsManager.getInstance()
-                        .setEarningsPayoutPercent(Float.parseFloat(prop.getProperty(EARNINGS_PAYOUT_PERCENT_KEY)));
+                    .setEarningsPayoutPercent(
+                        Float.parseFloat(prop.getProperty(EARNINGS_PAYOUT_PERCENT_KEY)));
             } catch (final Exception ex) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to parse " + EARNINGS_PAYOUT_PERCENT_KEY + ", " + ex.toString());
+                    logger.debug(
+                        "Failed to parse " + EARNINGS_PAYOUT_PERCENT_KEY + ", " + ex.toString());
                 }
             }
         } finally {
@@ -253,7 +275,8 @@ public class DrBookingsApplication extends Application {
     @Override
     public void start(final Stage stage) throws Exception {
         if (logger.isInfoEnabled()) {
-            logger.info("Application version " + getClass().getPackage().getImplementationVersion());
+            logger
+                .info("Application version " + getClass().getPackage().getImplementationVersion());
         }
         readProperties();
         startGUI(stage);

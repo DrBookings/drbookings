@@ -23,13 +23,6 @@ package com.github.drbookings.ui.controller;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.CleaningEntry;
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +37,18 @@ import javafx.scene.input.ClipboardContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
+/**
+ * @author Alexander Kerner
+ */
 public class CleaningPlanController implements Initializable {
 
     private final static Logger logger = LoggerFactory.getLogger(CleaningPlanController.class);
@@ -113,17 +118,17 @@ public class CleaningPlanController implements Initializable {
         this.manager = manager;
         content.itemsProperty()
             .bind(
-                Bindings.createObjectBinding(updateTable(), manager.cleaningEntriesListProperty()));
+                Bindings.createObjectBinding(updateTable(), manager.cleaningsChangedProperty()));
         content.sort();
     }
 
     private Callable<ObservableList<CleaningEntry>> updateTable() {
         return () -> FXCollections
-            .observableArrayList(manager.cleaningEntriesListProperty()
-                .filtered(e -> e.getDate()
+            .observableArrayList(manager.getCleaningEntries().stream()
+                .filter(e -> e.getDate()
                     .isAfter(LocalDate.now()
                         .minusDays(SettingsManager.getInstance().getCleaningPlanLookBehind())))
-                .sorted());
+                .sorted().collect(Collectors.toList()));
     }
 
 }

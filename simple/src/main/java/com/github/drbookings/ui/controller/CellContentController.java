@@ -20,11 +20,20 @@
 
 package com.github.drbookings.ui.controller;
 
-import com.github.drbookings.model.data.Guest;
-import com.github.drbookings.model.data.manager.MainManager;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.BookingEntryPair;
+import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.Styles;
 import com.github.drbookings.ui.beans.RoomBean;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -32,13 +41,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class CellContentController implements Initializable {
 
@@ -54,176 +56,150 @@ public class CellContentController implements Initializable {
     private VBox cellContainer;
 
     private static Node buildEntryCheckIn(final BookingEntry e) {
-        final Label l = getNewLabel(e.getElement().getGuest().getName());
-        if (e.getElement().isSplitBooking()) {
-            Optional<BookingEntry> next = MainManager.getInstance().getBefore(e);
-            if (next.isPresent()) {
-                BookingEntry be = next.get();
-                if (be.getElement().getGuest().equals(e.getElement().getGuest())) {
-                    // do not apply label for the same guest
-                    return l;
-                }
-            }
-        }
-        l.getStyleClass().add("check-in");
-        return l;
+	final Label l = getNewLabel(e.getElement().getGuest().getName());
+	if (e.getElement().isSplitBooking()) {
+	    final Optional<BookingEntryPair> next = MainManager.getInstance().getOneDayBefore(e);
+	    if (next.isPresent()) {
+		if (next.get().hasGuest(e.getElement().getGuest())) {
+		    // do not apply label for the same guest
+		    return l;
+		}
+	    }
+	}
+	l.getStyleClass().add("check-in");
+	return l;
     }
 
     private static Node buildEntryCheckOut(final BookingEntry e) {
-        final Label l = getNewLabel(e.getElement().getGuest().getName());
-        if (e.getElement().isSplitBooking()) {
-            Optional<BookingEntry> next = MainManager.getInstance().getAfter(e);
-            if (next.isPresent()) {
-                BookingEntry be = next.get();
-                if (be.getElement().getGuest().equals(e.getElement().getGuest())) {
-                    // do not apply label for the same guest
-                    return l;
-                }
-            }
-        }
-        l.getStyleClass().add("check-out");
-        return l;
+	final Label l = getNewLabel(e.getElement().getGuest().getName());
+	if (e.getElement().isSplitBooking()) {
+	    final Optional<BookingEntryPair> next = MainManager.getInstance().getOneDayAfter(e);
+	    if (next.isPresent()) {
+		if (next.get().hasGuest(e.getElement().getGuest())) {
+		    // do not apply label for the same guest
+		    return l;
+		}
+	    }
+	}
+	l.getStyleClass().add("check-out");
+	return l;
     }
 
     private static Node buildEntryCleaning(final RoomBean rb) {
-        final Label l = getNewLabel("");
-        final String s;
-        if (rb.needsCleaning()) {
-            s = "No Cleaning";
-            if (rb.getDate().isAfter(LocalDate.now().minusDays(7))) {
-                l.getStyleClass().add("cleaning-warning");
-            }
-        } else {
-            s = rb.getCleaningEntry().getElement().getName();
-            l.getStyleClass().add("cleaning");
-        }
-        l.setText(s);
-        return l;
+	final Label l = getNewLabel("");
+	final String s;
+	if (rb.needsCleaning()) {
+	    s = "No Cleaning";
+	    if (rb.getDate().isAfter(LocalDate.now().minusDays(7))) {
+		l.getStyleClass().add("cleaning-warning");
+	    }
+	} else {
+	    s = rb.getCleaningEntry().getElement().getName();
+	    l.getStyleClass().add("cleaning");
+	}
+	l.setText(s);
+	return l;
     }
 
     private static Node buildEntryStay(final BookingEntry booking) {
-        final Label l = getNewLabel(booking.getElement().getGuest().getName());
-        if (!LocalDate.now().equals(booking.getDate()) && !booking.getDate()
-                .equals(booking.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
-            l.getStyleClass().add("entry-stay");
-        }
-        return l;
+	final Label l = getNewLabel(booking.getElement().getGuest().getName());
+	if (!LocalDate.now().equals(booking.getDate()) && !booking.getDate()
+		.equals(booking.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
+	    l.getStyleClass().add("entry-stay");
+	}
+	return l;
 
     }
 
     private static Label getNewLabel(final String text) {
-        final Label l = new Label(text);
-        l.setMaxWidth(Double.POSITIVE_INFINITY);
-        // l.setMaxHeight(Double.POSITIVE_INFINITY);
-        l.setPadding(new Insets(2));
-        l.setAlignment(Pos.CENTER);
-        // VBox.setVgrow(l, Priority.ALWAYS);
-        return l;
+	final Label l = new Label(text);
+	l.setMaxWidth(Double.POSITIVE_INFINITY);
+	// l.setMaxHeight(Double.POSITIVE_INFINITY);
+	l.setPadding(new Insets(2));
+	l.setAlignment(Pos.CENTER);
+	// VBox.setVgrow(l, Priority.ALWAYS);
+	return l;
     }
 
     public VBox getCellContainer() {
-        return cellContainer;
+	return cellContainer;
     }
 
     public void setCellContainer(final VBox cellContainer) {
-        this.cellContainer = cellContainer;
+	this.cellContainer = cellContainer;
     }
 
     public VBox getCleaning() {
-        return cleaning;
+	return cleaning;
     }
 
     public void setCleaning(final VBox cleaning) {
-        this.cleaning = cleaning;
+	this.cleaning = cleaning;
     }
 
     public VBox getGuestNames0() {
-        return guestNames0;
+	return guestNames0;
     }
 
     public void setGuestNames0(final VBox guestNamesCheckIn) {
-        this.guestNames0 = guestNamesCheckIn;
+	this.guestNames0 = guestNamesCheckIn;
     }
 
     public VBox getGuestNames1() {
-        return guestNames1;
+	return guestNames1;
     }
 
     public void setGuestNames1(final VBox guestNamesCheckOut) {
-        this.guestNames1 = guestNamesCheckOut;
+	this.guestNames1 = guestNamesCheckOut;
     }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        // VBox.setVgrow(guestNames0, Priority.ALWAYS);
-        // VBox.setVgrow(guestNames1, Priority.ALWAYS);
-        // VBox.setVgrow(cleaning, Priority.ALWAYS);
+	// VBox.setVgrow(guestNames0, Priority.ALWAYS);
+	// VBox.setVgrow(guestNames1, Priority.ALWAYS);
+	// VBox.setVgrow(cleaning, Priority.ALWAYS);
     }
 
     public void setData(final RoomBean rb) {
-        if (rb == null) {
-            return;
-        }
+	if (rb == null) {
+	    return;
+	}
 
-        Set<Guest> guestsAdded = new LinkedHashSet<>();
-        BookingEntry last = null;
-        boolean cleaningToAdd = true;
-        for (final BookingEntry bb : rb.getFilteredBookingEntries().stream()
-                .sorted(Comparator.comparing(BookingEntry::isCheckIn)).collect(Collectors.toList())) {
+	final BookingEntryPair bep = rb.getFilteredBookingEntry();
 
-            if (bb.getElement().isSplitBooking() && guestsAdded.contains(bb.getElement().getGuest())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Skipping duplicate entry " + bb);
-                }
-                last = bb;
+	if (bep == null) {
+	    return;
+	}
 
-                continue;
-            }
+	if (bep.hasCheckOut()) {
+	    cellContainer.getChildren().add(buildEntryCheckOut(bep.getCheckOut()));
+	    cellContainer.setAlignment(Pos.TOP_CENTER);
+	}
+	if (rb.hasCleaning()) {
+	    cellContainer.getChildren().add(buildEntryCleaning(rb));
+	}
+	if (bep.hasCheckIn()) {
+	    cellContainer.getChildren().add(buildEntryCheckIn(bep.getCheckIn()));
+	    cellContainer.setAlignment(Pos.BOTTOM_CENTER);
+	}
+	if (bep.hasStay()) {
+	    cellContainer.getChildren().add(buildEntryStay(bep.getStay()));
+	    cellContainer.setAlignment(Pos.CENTER);
+	}
 
-            if (bb.isCheckOut()) {
-                cellContainer.getChildren().add(buildEntryCheckOut(bb));
-                cellContainer.setAlignment(Pos.TOP_CENTER);
-            }
-            if (cleaningToAdd && rb.getCleaningEntry() != null) {
-                cellContainer.getChildren().add(buildEntryCleaning(rb));
-                cleaningToAdd = false;
-            }
-            if (bb.isCheckIn()) {
-                cellContainer.getChildren().add(buildEntryCheckIn(bb));
-                cellContainer.setAlignment(Pos.BOTTOM_CENTER);
-            }
-            if (!bb.isCheckIn() && !bb.isCheckOut()) {
-                cellContainer.getChildren().add(buildEntryStay(bb));
-                cellContainer.setAlignment(Pos.CENTER);
-            }
-            last = bb;
-            guestsAdded.add(bb.getElement().getGuest());
-        }
-
-        if(rb.getFilteredBookingEntries().isEmpty() && rb.getCleaningEntry() != null)
-            cellContainer.getChildren().add(buildEntryCleaning(rb));
-
-        // if (guestNames0.getChildren().isEmpty()) {
-        // guestNames0.getChildren().add(getNewLabel(null));
-        // }
-
-        // if (guestNames1.getChildren().isEmpty()) {
-        // guestNames1.getChildren().add(getNewLabel(null));
-        // }
-
-        if (rb.isWarning()) {
-            if (rb.hasCheckIn()) {
-                cellContainer.getStyleClass().add("warning-box-top");
-            } else if (rb.hasCheckOut()) {
-                // cellContainer.getStyleClass().add("warning-box-bottom");
-            } else {
-                cellContainer.getStyleClass().add("warning-box-middle");
-            }
-        }
-        if (last != null && (!last.isCheckOut() || last.getElement().isSplitBooking())) {
-            cellContainer.getStyleClass()
-                    .add(Styles.getBackgroundStyleSource(last.getElement().getBookingOrigin().getName()));
-        }
+	if (rb.isWarning()) {
+	    if (rb.hasCheckIn()) {
+		cellContainer.getStyleClass().add("warning-box-top");
+	    } else if (rb.hasCheckOut()) {
+		// cellContainer.getStyleClass().add("warning-box-bottom");
+	    } else {
+		cellContainer.getStyleClass().add("warning-box-middle");
+	    }
+	}
+	if (bep != null) {
+	    final BookingEntry entry = bep.getLast();
+	    cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(entry.getBookingOrigin().getName()));
+	}
     }
 
 }

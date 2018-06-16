@@ -98,7 +98,7 @@ public class AddBookingController implements Initializable {
 		final boolean valid = validateInput();
 		if (valid) {
 			try {
-                final BookingBean b = getManager().createBooking(datePickerCheckIn.getValue(),
+                final BookingBean b = getManager().createBooking(null,datePickerCheckIn.getValue(),
 						datePickerCheckOut.getValue(), textFieldGuestName.getText().trim(),
 						comboBoxRoom.getSelectionModel().getSelectedItem(), textFieldSource.getText().trim());
 				b.setGrossEarningsExpression(getGrossEarnings() + "");

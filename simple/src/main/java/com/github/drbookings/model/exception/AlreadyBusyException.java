@@ -23,6 +23,7 @@ package com.github.drbookings.model.exception;
 public class AlreadyBusyException extends Exception {
 
 
+    private static final long serialVersionUID = -837122429261175610L;
 
     public AlreadyBusyException() {
     }
