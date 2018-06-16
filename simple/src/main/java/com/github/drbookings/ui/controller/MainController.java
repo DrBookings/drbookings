@@ -122,6 +122,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+/**
+ * Controller for the main window.
+ *
+ * @author Alexander Kerner
+ *
+ */
 public class MainController implements Initializable {
 
     private class ClearGoogleCalendarService extends DrBookingService<Void> {
@@ -281,16 +287,16 @@ public class MainController implements Initializable {
     private Button buttonAddBooking;
     @FXML
     private Button buttonGoHome;
-    @FXML
-    private Button buttonSelectCurrentMonth;
-    @FXML
-    private Button buttonSelectLastMonth;
-    @FXML
-    private Button buttonSelectLastThreeMonth;
-    @FXML
-    private Button buttonSelectNextMonth;
-    @FXML
-    private Button buttonSelectPrevMonth;
+    // @FXML
+    // private Button buttonSelectCurrentMonth;
+    // @FXML
+    // private Button buttonSelectLastMonth;
+    // @FXML
+    // private Button buttonSelectLastThreeMonth;
+    // @FXML
+    // private Button buttonSelectNextMonth;
+    // @FXML
+    // private Button buttonSelectPrevMonth;
     @FXML
     private Button clearFilterButton;
     private EarningsChartFactory earningsChartFactory;
@@ -348,7 +354,7 @@ public class MainController implements Initializable {
 		@Override
 		protected void updateItem(final LocalDate item, final boolean empty) {
 		    super.updateItem(item, empty);
-		    if ((item == null) || empty) {
+		    if (item == null || empty) {
 			setText(null);
 			setStyle("");
 		    } else {
@@ -371,7 +377,7 @@ public class MainController implements Initializable {
 		@Override
 		protected void updateItem(final Number item, final boolean empty) {
 		    super.updateItem(item, empty);
-		    if ((item == null) || empty) {
+		    if (item == null || empty) {
 			setText(null);
 		    } else {
 			setText(decimalFormat.format(item));
@@ -515,7 +521,7 @@ public class MainController implements Initializable {
 		protected void updateItem(final DateBean item, final boolean empty) {
 		    super.updateItem(item, empty);
 		    getStyleClass().removeAll("now", "end-of-month");
-		    if (empty || (item == null)) {
+		    if (empty || item == null) {
 
 		    } else {
 			if (item.getDate().isEqual(LocalDate.now())) {
@@ -550,7 +556,7 @@ public class MainController implements Initializable {
 	    logger.debug("Selected date: " + selectedDate);
 	}
 	LocalDate selectedDate2;
-	if ((selectedDate == null) || selectedDate.isEmpty()) {
+	if (selectedDate == null || selectedDate.isEmpty()) {
 	    selectedDate2 = LocalDate.now();
 	} else {
 	    selectedDate2 = selectedDate.get(0).getDate();
@@ -756,7 +762,7 @@ public class MainController implements Initializable {
 
 	tableView.getSelectionModel().getSelectedCells().addListener(getCellSelectionListener());
 	tableView.setOnMousePressed(event -> {
-	    if (event.isPrimaryButtonDown() && (event.getClickCount() == 2)) {
+	    if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
 		handleTableSelectEvent(event);
 	    }
 	});
@@ -938,8 +944,8 @@ public class MainController implements Initializable {
 	    col1.setCellFactory(new StudioCellFactory("" + i));
 	    tableView.getColumns().add(col1);
 	}
-	addOccupancyRateColumn();
-	addEarningsColumn();
+	// addOccupancyRateColumn();
+	// addEarningsColumn();
     }
 
     private void setWorking(final boolean working) {
@@ -964,11 +970,11 @@ public class MainController implements Initializable {
 	}
 	buttonAddBooking.setDisable(working);
 	buttonGoHome.setDisable(working);
-	buttonSelectCurrentMonth.setDisable(working);
-	buttonSelectLastMonth.setDisable(working);
-	buttonSelectLastThreeMonth.setDisable(working);
-	buttonSelectPrevMonth.setDisable(working);
-	buttonSelectNextMonth.setDisable(working);
+	// buttonSelectCurrentMonth.setDisable(working);
+	// buttonSelectLastMonth.setDisable(working);
+	// buttonSelectLastThreeMonth.setDisable(working);
+	// buttonSelectPrevMonth.setDisable(working);
+	// buttonSelectNextMonth.setDisable(working);
 	clearFilterButton.setDisable(working);
 
 	filterBookingsLabel.setDisable(working);
@@ -1031,8 +1037,8 @@ public class MainController implements Initializable {
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
 	    stage.initModality(Modality.WINDOW_MODAL);
-	    stage.setX((windowStage.getX() + (windowStage.getWidth() / 2)) - (stage.getWidth() / 2));
-	    stage.setY(((windowStage.getY() + windowStage.getHeight()) / 2) - (stage.getHeight() / 2));
+	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
+	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
 	    stage.show();
 	} catch (final IOException e) {
 	    logger.error(e.getLocalizedMessage(), e);
@@ -1148,8 +1154,8 @@ public class MainController implements Initializable {
 	    stage.setWidth(600);
 	    stage.setHeight(400);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
-	    stage.setX((windowStage.getX() + (windowStage.getWidth() / 2)) - (stage.getWidth() / 2));
-	    stage.setY(((windowStage.getY() + windowStage.getHeight()) / 2) - (stage.getHeight() / 2));
+	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
+	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
 	    final UpcomingController c = loader.getController();
 	    c.setManager(getManager());
 	    stage.show();

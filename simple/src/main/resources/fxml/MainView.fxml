@@ -108,21 +108,21 @@
                         <Button fx:id="buttonGoHome" HBox.hgrow="always" maxWidth="Infinity"
                                 onAction="#handleButtonGoHome"
                                 text="Scroll to Today"/>
-                        <Button fx:id="buttonSelectCurrentMonth" HBox.hgrow="always" maxWidth="Infinity"
-                                onAction="#handleButtonSelectCurrentMonth"
-                                text="Current Month"/>
-                        <Button fx:id="buttonSelectLastMonth" HBox.hgrow="always" maxWidth="Infinity"
-                                onAction="#handleButtonSelectLastMonth"
-                                text="Last Month"/>
-                        <Button fx:id="buttonSelectLastThreeMonth" HBox.hgrow="always" maxWidth="Infinity"
-                                onAction="#handleButtonSelectLastThreeMonth"
-                                text="Last 3 Months"/>
-                        <Button fx:id="buttonSelectPrevMonth" HBox.hgrow="always" maxWidth="Infinity"
-                                onAction="#handleButtonSelectPrevMonth"
-                                text="One Month Back"/>
-                        <Button fx:id="buttonSelectNextMonth" HBox.hgrow="always" maxWidth="Infinity"
-                                onAction="#handleButtonSelectNextMonth"
-                                text="One Month Forward"/>
+<!--                         <Button fx:id="buttonSelectCurrentMonth" HBox.hgrow="always" maxWidth="Infinity" -->
+<!--                                 onAction="#handleButtonSelectCurrentMonth" -->
+<!--                                 text="Current Month"/> -->
+<!--                         <Button fx:id="buttonSelectLastMonth" HBox.hgrow="always" maxWidth="Infinity" -->
+<!--                                 onAction="#handleButtonSelectLastMonth" -->
+<!--                                 text="Last Month"/> -->
+<!--                         <Button fx:id="buttonSelectLastThreeMonth" HBox.hgrow="always" maxWidth="Infinity" -->
+<!--                                 onAction="#handleButtonSelectLastThreeMonth" -->
+<!--                                 text="Last 3 Months"/> -->
+<!--                         <Button fx:id="buttonSelectPrevMonth" HBox.hgrow="always" maxWidth="Infinity" -->
+<!--                                 onAction="#handleButtonSelectPrevMonth" -->
+<!--                                 text="One Month Back"/> -->
+<!--                         <Button fx:id="buttonSelectNextMonth" HBox.hgrow="always" maxWidth="Infinity" -->
+<!--                                 onAction="#handleButtonSelectNextMonth" -->
+<!--                                 text="One Month Forward"/> -->
                     </children>
                 </HBox>
             </children>
