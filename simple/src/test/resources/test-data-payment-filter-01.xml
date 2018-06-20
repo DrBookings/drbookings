@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataStore>
+    <bookings>
+        <booking bookingId="d0e6fbf4-2104-4b74-b1f7-4067bc82ed84" calendarIds="1v8oreqsjo2fus2h8nh4fqqbac srqnguvdkvmim9ube36vusbcfk ra90i1jcpdfc3d26l5c2b2dr88 eup0tdqjjdtq6eqhtieo6mfer4 o18cejhavetsfdk3c7g5t7j3ms kfpgat5qokd8sdr7rj9161sfs8 vm56imih2e67ahmahkegbn9k48" checkInDate="2018-01-27" checkOutDate="2018-05-31" cleaningFees="50.0" dateOfPayment="2018-03-03" grossEarningsExpression="5432.09" guestName="ttnvfjm" paymentDone="true" splitBooking="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" welcomeMailSend="true">
+            <Payments>
+                <paymentsSoFar date="2018-02-02" amount="1366.87"/>
+                <paymentsSoFar date="2018-02-28" amount="1211.82"/>
+                <paymentsSoFar date="2018-03-31" amount="1342.78"/>
+                <paymentsSoFar date="2018-04-30" amount="1299.42"/>
+                <paymentsSoFar date="2018-05-28" amount="173.79"/>
+                <paymentsSoFar date="2018-05-29" amount="37.41"/>
+            </Payments>
+        </booking>
+    </bookings>
+    <cleanings/>
+</dataStore>

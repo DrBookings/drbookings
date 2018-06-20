@@ -30,6 +30,11 @@ import javax.money.MonetaryAmount;
 
 import com.github.drbookings.model.ser.PaymentSer;
 
+/**
+ *
+ * @author Alexander Kerner
+ *
+ */
 public class Payment {
 
     public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");

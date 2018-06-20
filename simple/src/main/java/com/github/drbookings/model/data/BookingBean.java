@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.Scripting;
-import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.EarningsProvider;
@@ -112,7 +111,9 @@ public class BookingBean extends IDed
     private final BooleanProperty welcomeMailSend = new SimpleBooleanProperty(false);
     private final BooleanProperty paymentDone = new SimpleBooleanProperty(false);
     private final DoubleProperty paymentSoFar = new SimpleDoubleProperty();
-    @Deprecated
+    /**
+     * A (manual) flag to indicate that this booking is part of a previous one.
+     */
     private final BooleanProperty splitBooking = new SimpleBooleanProperty(false);
     @Deprecated
     private final ObjectProperty<LocalDate> dateOfPayment = new SimpleObjectProperty<>(null);
@@ -163,7 +164,7 @@ public class BookingBean extends IDed
 		cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(),
 		SettingsManager.getInstance().showNetEarningsProperty()));
 	paymentDoneProperty().addListener((c, o, n) -> {
-	    if (n && (getDateOfPayment() == null)) {
+	    if (n && getDateOfPayment() == null) {
 		setDateOfPayment(LocalDate.now());
 	    } else if (!n) {
 		setDateOfPayment(null);
@@ -179,7 +180,7 @@ public class BookingBean extends IDed
 	});
 	paymentSoFar.bind(Bindings.createObjectBinding(calculatePaymentSoFar(), payments));
 	paymentSoFar.addListener((o, ov, nv) -> {
-	    if ((nv != null) && (nv.floatValue() > 0)) {
+	    if (nv != null && nv.floatValue() > 0) {
 		setPaymentDone(true);
 	    }
 	});
@@ -351,13 +352,6 @@ public class BookingBean extends IDed
     @Override
     public boolean isPaymentDone() {
 	return paymentDoneProperty().get();
-    }
-
-    @Override
-    public boolean isPaymentOverdue() {
-	final boolean lastMonth = getCheckIn().query(TemporalQueries::isPreviousMonthOrEarlier);
-
-	return !isPaymentDone() && lastMonth;
     }
 
     public final boolean isSplitBooking() {

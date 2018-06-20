@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.DateRoomEntry;
@@ -180,13 +179,6 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
     @Override
     public boolean isPaymentDone() {
 	return getElement().isPaymentDone();
-    }
-
-    @Override
-    public boolean isPaymentOverdue() {
-	final boolean lastMonth = getDate().query(TemporalQueries::isPreviousMonthOrEarlier);
-
-	return isPaymentDone() && lastMonth;
     }
 
     public boolean isStay() {

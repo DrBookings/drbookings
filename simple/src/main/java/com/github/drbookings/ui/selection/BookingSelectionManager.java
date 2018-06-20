@@ -53,7 +53,8 @@ public class BookingSelectionManager {
     }
 
     private static ObservableList<BookingEntry> transform(final Collection<? extends RoomBean> rooms) {
-	return rooms.stream().flatMap(r -> r.getFilteredBookingEntry().toStream())
+	return rooms.stream().filter(r -> r.getBookingEntry() != null)
+		.flatMap(r -> r.getFilteredBookingEntry().toStream())
 		.collect(Collectors.toCollection(() -> FXCollections.observableArrayList(BookingEntry.extractor())));
     }
 

@@ -34,7 +34,7 @@ public class Anonymiser {
 
     public static void main(final String[] args) throws Exception {
 
-	final File file = new File("test/resources/bookings.xml");
+	final File file = new File("src/test/resources/test-data-2018-05.xml");
 	new BackupCreator().makeBackup(file);
 
 	final DataStore ds = new XMLStorage().load(file);

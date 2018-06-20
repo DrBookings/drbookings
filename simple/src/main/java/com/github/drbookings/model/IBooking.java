@@ -30,6 +30,11 @@ public interface IBooking {
 
     float getNetEarnings();
 
-    boolean isPaymentOverdue();
+    /**
+     * A (manual) flag if this booking has been payed.
+     * 
+     * @return
+     */
+    boolean isPaymentDone();
 
 }

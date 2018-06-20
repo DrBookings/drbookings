@@ -1186,7 +1186,8 @@ public class MainController implements Initializable {
     private void updateStatusLabelFX() {
 
 	final ObservableList<RoomBean> selectedRooms = RoomBeanSelectionManager.getInstance().selectionProperty();
-	final List<BookingEntry> selectedBookings = selectedRooms.stream()
+
+	final List<BookingEntry> selectedBookings = selectedRooms.stream().filter(r -> r.getBookingEntry() != null)
 		.flatMap(r -> r.getBookingEntry().toList().stream()).collect(Collectors.toList());
 	final Range<LocalDate> selectedRange = DateBeanSelectionManager.getInstance().getSelectedDateRange();
 	if (selectedRange == null) {
