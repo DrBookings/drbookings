@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.drbookings.data.numbers.NightsCounter;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.Bookings;
 import com.github.drbookings.ser.DataStore;
@@ -33,7 +32,7 @@ public class SimplePaymentFilterTest {
     public void setUp() throws Exception {
 	final XMLStorage storage = new XMLStorage();
 	final DataStore store = storage.load(new File("src" + File.separator + "test" + File.separator + "resources"
-		+ File.separator + "test-data-payment-filter-01.xml"));
+		+ File.separator + "test-data-2018-05-payment-filter-01.xml"));
 	bbo = Bookings.toEntries(DataStore.transform(store.getBookingsSer()));
     }
 
@@ -47,9 +46,16 @@ public class SimplePaymentFilterTest {
     @Test
     public void test01() throws Exception {
 
-	final long cnt = NightsCounter
-		.countNights(bbo.stream().filter(new SimplePaymentFilter(YearMonth.of(2018, 05))));
-	assertThat(cnt, is(30l));
+	final long cnt = bbo.stream().filter(new SimplePaymentFilter(YearMonth.of(2017, 05))).count();
+	assertThat(cnt, is(0l));
+
+    }
+
+    @Test
+    public void test02() throws Exception {
+
+	final long cnt = bbo.stream().filter(new SimplePaymentFilter(YearMonth.of(2018, 05))).count();
+	assertThat(cnt, is(31l));
 
     }
 
