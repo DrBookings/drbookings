@@ -5,7 +5,13 @@ import java.util.Collection;
 import com.github.drbookings.data.numbers.AbstractFromBookingsProvider;
 import com.github.drbookings.model.IBooking;
 
-public class GrossEarningsProvider extends AbstractFromBookingsProvider {
+/**
+ *
+ * @author Alexander Kerner
+ * @date 2018-06-21
+ *
+ */
+public class GrossEarningsProvider extends AbstractFromBookingsProvider<IBooking> {
 
     public GrossEarningsProvider(final Collection<? extends IBooking> bookings) {
 	super(bookings);

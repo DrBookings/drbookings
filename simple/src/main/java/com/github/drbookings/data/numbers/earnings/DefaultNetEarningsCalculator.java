@@ -26,6 +26,12 @@ import com.github.drbookings.data.numbers.DefaultServiceFeesCalculator;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingBean;
 
+/**
+ *
+ * @author Alexander Kerner
+ * @date 2018-06-21
+ *
+ */
 public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
 
     public DefaultNetEarningsCalculator() {

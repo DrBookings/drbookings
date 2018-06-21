@@ -52,6 +52,7 @@ import javafx.beans.property.FloatProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -158,8 +159,7 @@ public class BookingBean extends IDed
 	// if (logger.isDebugEnabled()) {
 	// logger.debug("Binding on " + Thread.currentThread().getName());
 	// }
-	grossEarningsProperty()
-		.bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
+	grossEarnings.bind(Bindings.createObjectBinding(evaluateExpression(), grossEarningsExpressionProperty()));
 	netEarningsProperty().bind(Bindings.createObjectBinding(calculateNetEarnings(), grossEarningsProperty(),
 		cleaningFeesProperty(), serviceFeeProperty(), serviceFeesPercentProperty(),
 		SettingsManager.getInstance().showNetEarningsProperty()));
@@ -345,7 +345,7 @@ public class BookingBean extends IDed
     }
 
     @Override
-    public FloatProperty grossEarningsProperty() {
+    public ReadOnlyFloatProperty grossEarningsProperty() {
 	return grossEarnings;
     }
 
@@ -411,14 +411,6 @@ public class BookingBean extends IDed
 
     public void setExternalId(final String externalId) {
 	this.externalId = externalId;
-    }
-
-    public void setGrossEarnings(final float grossEarnings) {
-	grossEarningsProperty().set(grossEarnings);
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("Gross Earnings changed to " + getGrossEarnings());
-	// }
-
     }
 
     public void setGrossEarningsExpression(final String expression) {

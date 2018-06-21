@@ -5,11 +5,11 @@ import java.util.concurrent.Callable;
 
 import com.github.drbookings.model.IBooking;
 
-public abstract class AbstractFromBookingsProvider implements Callable<Number> {
+public abstract class AbstractFromBookingsProvider<T extends IBooking> implements Callable<Number> {
 
-    protected final Collection<? extends IBooking> bookings;
+    protected final Collection<? extends T> bookings;
 
-    public AbstractFromBookingsProvider(final Collection<? extends IBooking> bookings) {
+    public AbstractFromBookingsProvider(final Collection<? extends T> bookings) {
 	this.bookings = bookings;
     }
 

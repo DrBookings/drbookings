@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.DateRange;
 import com.github.drbookings.model.BookingEntry;
+import com.google.common.collect.Range;
 
 public class Bookings {
 
@@ -41,7 +42,7 @@ public class Bookings {
     }
 
     public static double getServiceFeePercentAmount(final BookingBean booking) {
-	return ((booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent()) / 100.0;
+	return (booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent() / 100.0;
     }
 
     public static List<BookingEntry> toEntries(final BookingBean... bookings) {
@@ -56,6 +57,18 @@ public class Bookings {
 	    }
 	}
 	return result;
+    }
+
+    public static Range<LocalDate> getDateRange(final Collection<BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate firstCheckIn = bookings.stream().map(BookingBean::getCheckIn).min((d1, d2) -> d1.compareTo(d2))
+		.get();
+	final LocalDate lastCheckOut = bookings.stream().map(BookingBean::getCheckOut).max((d1, d2) -> d1.compareTo(d2))
+		.get();
+
+	return Range.closed(firstCheckIn, lastCheckOut);
     }
 
     // public static long countCleanings(final Collection<? extends BookingBean>

@@ -77,6 +77,10 @@ public class BookingsByOrigin<T extends IBooking> {
 		.collect(Collectors.toList());
     }
 
+    public Collection<T> getByOrigin(final BookingOrigin origin) {
+	return bookingEntries.stream().filter(b -> origin.equals(b.getBookingOrigin())).collect(Collectors.toList());
+    }
+
     public Map<BookingOrigin, Collection<T>> getMap() {
 	final Map<BookingOrigin, Collection<T>> result = new LinkedHashMap<>();
 	for (final T be : bookingEntries) {

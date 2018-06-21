@@ -16,7 +16,7 @@ public interface NumberSupplier {
 
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
-    public static final int DEFAULT_SCALE = 8;
+    public static final int DEFAULT_SCALE = 5;
 
     BigDecimal apply(BookingBean booking);
 

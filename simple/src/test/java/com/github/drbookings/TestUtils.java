@@ -42,6 +42,11 @@ public class TestUtils {
 	return new BookingBean(getTestGuest(), getTestRoom(), getTestBookingOrigin(), checkIn, checkOut);
     }
 
+    public static BookingBean getTestBooking(final LocalDate checkIn, final LocalDate checkOut,
+	    final BookingOrigin origin) {
+	return new BookingBean(getTestGuest(), getTestRoom(), origin, checkIn, checkOut);
+    }
+
     public static BookingBean getTestBooking(final String id) {
 	return getTestBooking(id, LocalDate.now(), LocalDate.now().plusDays(1));
     }

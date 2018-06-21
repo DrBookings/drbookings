@@ -20,28 +20,14 @@
 
 package com.github.drbookings.model.data;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class Named extends IDed {
-
-    private final StringProperty name = new SimpleStringProperty();
 
     public Named(final String name) {
 	super(name);
-	setName(name);
     }
 
     public String getName() {
-	return nameProperty().get();
-    }
-
-    public StringProperty nameProperty() {
-	return name;
-    }
-
-    public void setName(final String name) {
-	nameProperty().set(name);
+	return super.getId();
     }
 
     @Override
