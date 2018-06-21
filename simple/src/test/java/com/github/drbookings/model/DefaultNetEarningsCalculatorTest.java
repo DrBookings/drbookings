@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.drbookings.TestUtils;
+import com.github.drbookings.data.numbers.earnings.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.ui.CleaningEntry;
 

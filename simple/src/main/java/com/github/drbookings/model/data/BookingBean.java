@@ -34,12 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.Scripting;
+import com.github.drbookings.data.numbers.earnings.DefaultNetEarningsCalculator;
+import com.github.drbookings.data.numbers.earnings.NetEarningsCalculator;
 import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.DefaultNetEarningsCalculator;
 import com.github.drbookings.model.EarningsProvider;
 import com.github.drbookings.model.GrossEarningsProvider;
 import com.github.drbookings.model.IBooking;
-import com.github.drbookings.model.NetEarningsCalculator;
 import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.model.Payment;
 import com.github.drbookings.model.settings.SettingsManager;

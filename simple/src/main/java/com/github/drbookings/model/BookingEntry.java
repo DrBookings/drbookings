@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import com.github.drbookings.data.numbers.earnings.DefaultNetEarningsCalculator;
+import com.github.drbookings.data.numbers.earnings.NetEarningsCalculator;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.DateRoomEntry;
@@ -69,6 +71,9 @@ public class BookingEntry extends DateRoomEntry<BookingBean>
 
     /**
      * Gross earnings for this particular day.
+     *
+     * @see <a href=
+     *      "https://github.com/DrBookings/drbookings/wiki/Terminology">Wiki</a>
      */
     private final FloatProperty grossEarnings = new SimpleFloatProperty();
 

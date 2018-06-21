@@ -18,8 +18,12 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings.data.numbers.earnings;
 
+import java.math.BigDecimal;
+
+import com.github.drbookings.data.numbers.DefaultServiceFeesCalculator;
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingBean;
 
 public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
@@ -29,14 +33,10 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
     }
 
     @Override
-    public Number apply(final BookingBean booking) {
-	double result = booking.getGrossEarnings();
-	result -= ((booking.getGrossEarnings() - booking.getCleaningFees()) * booking.getServiceFeesPercent()) / 100.0;
-	result -= booking.getServiceFee();
-	// if (booking.getCleaning() != null) {
-	// result -= booking.getCleaning().getCleaningCosts();
-	// }
-	return result;
+    public BigDecimal apply(final BookingBean booking) {
+	final BigDecimal gross = BigDecimal.valueOf(booking.getGrossEarnings());
+	final BigDecimal serviceFees = new DefaultServiceFeesCalculator().apply(booking);
+	return gross.subtract(serviceFees);
     }
 
     /**
@@ -49,14 +49,8 @@ public class DefaultNetEarningsCalculator implements NetEarningsCalculator {
      * @return net earnings for given booking entry
      */
     @Override
-    public Number apply(final BookingEntry booking) {
-	final double numberOfNights = booking.getElement().getNumberOfNights();
-	// if (booking.getElement().getGuest().getName().contains("Peter")) {
-	// System.err.println(apply(booking.getElement()) + " " + numberOfNights
-	// + " "
-	// + apply(booking.getElement()).doubleValue() / numberOfNights);
-	// }
-	return apply(booking.getElement()).doubleValue() / numberOfNights;
+    public BigDecimal apply(final BookingEntry booking) {
+	return NetEarningsCalculator.super.apply(booking);
     }
 
 }

@@ -18,14 +18,21 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings.data.numbers.earnings;
 
-import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.data.numbers.NumberSupplier;
 
-public interface NetEarningsCalculator {
-
-    Number apply(BookingBean booking);
-
-    Number apply(BookingEntry booking);
+/**
+ * Net-earnings do not consider cleaning costs, since a booking does not have a
+ * reference to it's cleaning. <a
+ * href=https://en.wikipedia.org/wiki/KISS_principle>KISS</a>.
+ *
+ *
+ *
+ * @author Alexander Kerner
+ * @date 2018-06-21
+ *
+ */
+public interface NetEarningsCalculator extends NumberSupplier {
 
 }

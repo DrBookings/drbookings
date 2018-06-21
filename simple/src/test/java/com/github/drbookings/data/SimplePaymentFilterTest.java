@@ -46,6 +46,7 @@ public class SimplePaymentFilterTest {
     @Test
     public void test01() throws Exception {
 
+	// wrong date
 	final long cnt = bbo.stream().filter(new SimplePaymentFilter(YearMonth.of(2017, 05))).count();
 	assertThat(cnt, is(0l));
 
