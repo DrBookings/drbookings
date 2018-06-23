@@ -14,10 +14,6 @@ import com.github.drbookings.model.data.BookingBean;
  */
 public interface NumberSupplier {
 
-    public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
-
-    public static final int DEFAULT_SCALE = 5;
-
     BigDecimal apply(BookingBean booking);
 
     default BigDecimal apply(final BookingEntry booking) {
@@ -26,11 +22,11 @@ public interface NumberSupplier {
     }
 
     default RoundingMode getRoundingMode() {
-	return DEFAULT_ROUNDING_MODE;
+	return Numbers.DEFAULT_ROUNDING_MODE;
     }
 
     default int getScale() {
-	return DEFAULT_SCALE;
+	return Numbers.DEFAULT_SCALE;
     }
 
 }

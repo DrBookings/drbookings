@@ -86,7 +86,6 @@ public class BookingsByOrigin<T extends IBooking> {
 	for (final T be : bookingEntries) {
 	    final Collection<T> value = result.getOrDefault(be.getBookingOrigin(), new ArrayList<>());
 	    value.add(be);
-	    result.put(be.getBookingOrigin(), value);
 	}
 	return result;
     }
