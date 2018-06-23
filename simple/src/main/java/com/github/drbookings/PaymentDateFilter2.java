@@ -24,24 +24,25 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.function.Predicate;
 
+import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingBean;
 import com.google.common.collect.Range;
 
-public class PaymentDateFilter implements Predicate<BookingBean> {
+public class PaymentDateFilter2 implements Predicate<BookingEntry> {
 
     private final Range<LocalDate> dates;
 
-    public PaymentDateFilter(final Range<LocalDate> dates) {
+    public PaymentDateFilter2(final Range<LocalDate> dates) {
 	this.dates = dates;
     }
 
-    public PaymentDateFilter(final YearMonth of) {
+    public PaymentDateFilter2(final YearMonth of) {
 	this.dates = Range.closed(of.atDay(01), of.atEndOfMonth());
     }
 
     @Override
-    public boolean test(final BookingBean be) {
-	final BookingBean t = be;
+    public boolean test(final BookingEntry be) {
+	final BookingBean t = be.getElement();
 	return t.isSplitBooking()
 		|| t.getDateOfPayment() != null && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
 			&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1));

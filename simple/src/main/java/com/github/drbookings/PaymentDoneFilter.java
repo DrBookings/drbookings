@@ -18,34 +18,37 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model;
+package com.github.drbookings;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.model.Payment;
+import com.github.drbookings.model.Payments;
+import com.github.drbookings.model.data.BookingBean;
 import com.google.common.collect.Range;
 
-public class Payments {
+public class PaymentDoneFilter {
 
-    public static Optional<Payment> getLastPayment(final Collection<? extends Payment> payments) {
-	Payment result = null;
-	for (final Payment p : payments) {
-	    if (result == null || result.getDate().isBefore(p.getDate())) {
-		result = p;
-	    }
-	}
-	return Optional.ofNullable(result);
+    private final Range<LocalDate> dates;
+
+    public PaymentDoneFilter(final Range<LocalDate> dates) {
+	this.dates = dates;
     }
 
-    public static List<Payment> getPaymentInRange(final Range<LocalDate> dates,
-	    final Collection<? extends Payment> payments) {
-	final List<Payment> result = payments.stream()
-		.filter(p -> (p.getDate().isBefore(dates.upperEndpoint().plusDays(1))
-			&& p.getDate().isAfter(dates.lowerEndpoint().minusDays(1))))
-		.collect(Collectors.toList());
-	return result;
+    public PaymentDoneFilter(final YearMonth of) {
+	this.dates = Range.closed(of.atDay(01), of.atEndOfMonth());
     }
+
+    public boolean test(final BookingEntry b) {
+	return test(b.getElement());
+    }
+
+    public boolean test(final BookingBean b) {
+	final List<Payment> payedInRange = Payments.getPaymentInRange(dates, b.getPayments());
+	return b.isPaymentDone() && !payedInRange.isEmpty();
+    }
+
 }

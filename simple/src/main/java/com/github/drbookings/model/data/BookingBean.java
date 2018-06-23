@@ -256,6 +256,11 @@ public class BookingBean extends IDed
 	return cleaningFeesProperty().get();
     }
 
+    /**
+     * @deprecated there can be more than one payment date
+     * @return
+     */
+    @Deprecated
     public final LocalDate getDateOfPayment() {
 	return dateOfPaymentProperty().get();
     }
@@ -458,10 +463,30 @@ public class BookingBean extends IDed
 	return splitBooking;
     }
 
+    public String toTSV() {
+	return getFormattedOriginString() + getTSVSeparator() + getCheckIn() + getTSVSeparator() + getCheckOut()
+		+ getTSVSeparator() + getFormattedNumberOfNightsString();
+    }
+
+    public static final String DEFAULT_TSV_SEPARATOR = "\t";
+
+    public String getTSVSeparator() {
+	return DEFAULT_TSV_SEPARATOR;
+    }
+
+    private String getFormattedOriginString() {
+	return String.format("%7s", getBookingOrigin());
+    }
+
+    public String getFormattedNumberOfNightsString() {
+	return String.format("%3d", getNumberOfNights());
+    }
+
     @Override
     public String toString() {
-	return "BookingBean{" + "checkIn=" + checkIn + ",\tcheckOut=" + checkOut + ",\tguest=" + guest + ",\troom="
-		+ room + ",\tbookingOrigin=" + bookingOrigin + ",\tcleaningFees=" + cleaningFees + '}';
+	return "BookingBean{ " + getFormattedOriginString() + ": " + getCheckIn() + " -> " + getCheckOut() + ", nights:"
+		+ getFormattedNumberOfNightsString() + ",\tguest=" + guest + ",\troom=" + room + ",\tcleaningFees="
+		+ cleaningFees + '}';
     }
 
     public BooleanProperty welcomeMailSendProperty() {

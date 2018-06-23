@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.github.drbookings.CleaningDateFilter;
 import com.github.drbookings.FXUtils;
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.PaymentDateFilter;
+import com.github.drbookings.PaymentDateFilter2;
 import com.github.drbookings.TemporalQueries;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingEntries;
@@ -238,7 +238,7 @@ public class StatsViewController implements Initializable {
 	for (final Entry<BookingOrigin, Collection<BookingEntry>> e : bookings.getMap().entrySet()) {
 
 	    final Collection<? extends BookingEntry> bookingsFilteredByPaymentDate = e.getValue().stream()
-		    .filter(new PaymentDateFilter(dateRange)).collect(Collectors.toList());
+		    .filter(new PaymentDateFilter2(dateRange)).collect(Collectors.toList());
 
 	    final Collection<? extends BookingEntry> bookingsFilteredByCleaningDate = e.getValue().stream()
 		    .filter(new CleaningDateFilter(dateRange)).collect(Collectors.toList());
@@ -259,12 +259,12 @@ public class StatsViewController implements Initializable {
 	    if (StringUtils.isBlank(e.getKey().getName())) {
 		percentage = 0;
 	    } else {
-		percentage = (numberOfAllNights / allAllNigths) * 100f;
+		percentage = numberOfAllNights / allAllNigths * 100f;
 	    }
 	    if (logger.isDebugEnabled()) {
 		logger.debug(e.getKey() + " percentage of all nights: " + percentage);
 	    }
-	    final double relativeFixCosts = (totalAdditionalCosts * percentage) / 100;
+	    final double relativeFixCosts = totalAdditionalCosts * percentage / 100;
 	    if (logger.isDebugEnabled()) {
 		logger.debug(e.getKey() + " relative fix costs " + relativeFixCosts);
 	    }
@@ -336,7 +336,7 @@ public class StatsViewController implements Initializable {
 
     private void updateUI(final Collection<? extends BookingEntry> bookings) {
 	data.clear();
-	if ((bookings == null) || bookings.isEmpty()) {
+	if (bookings == null || bookings.isEmpty()) {
 	    return;
 	}
 

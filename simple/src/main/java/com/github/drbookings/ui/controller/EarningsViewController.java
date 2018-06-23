@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.BookingEntryBin;
 import com.github.drbookings.CleaningDateFilter;
-import com.github.drbookings.PaymentDateFilter;
+import com.github.drbookings.PaymentDateFilter2;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingEntries;
 import com.github.drbookings.model.data.manager.MainManager;
@@ -199,7 +199,7 @@ public class EarningsViewController implements Initializable {
 	for (final BookingEntryBin<YearMonth> be : bin.getBins()) {
 
 	    final Collection<? extends BookingEntry> bookingsFilteredByPaymentDate = be.getEntries().stream()
-		    .filter(new PaymentDateFilter(Range.closed(be.getLabel().atDay(1), be.getLabel().atEndOfMonth())))
+		    .filter(new PaymentDateFilter2(Range.closed(be.getLabel().atDay(1), be.getLabel().atEndOfMonth())))
 		    .collect(Collectors.toList());
 
 	    final Collection<? extends BookingEntry> longTermBookings = bookingsFilteredByPaymentDate.stream()
@@ -267,7 +267,7 @@ public class EarningsViewController implements Initializable {
 	// BookingSelectionManager.getInstance().selectionProperty()
 	// .addListener((ListChangeListener<BookingEntry>) c -> doChart(c.getList()));
 	slider.valueProperty().addListener((c, o, n) -> {
-	    if ((o != null) && (n != null)) {
+	    if (o != null && n != null) {
 		final int o2 = o.intValue();
 		final int n2 = n.intValue();
 		if (o2 != n2) {

@@ -38,7 +38,9 @@ public class NightsPercentProvider {
 		.valueOf(countNights(null, bookings.getAllBookings(cheat).stream()));
 	final BigDecimal thisOriginCount = BigDecimal
 		.valueOf(countNights(origin, bookings.getAllBookings(cheat).stream()));
-	return thisOriginCount.divide(totalNightsCount, Numbers.DEFAULT_SCALE, Numbers.DEFAULT_ROUNDING_MODE);
+	final BigDecimal result = thisOriginCount.divide(totalNightsCount, Numbers.DEFAULT_SCALE,
+		Numbers.DEFAULT_ROUNDING_MODE);
+	return result;
     }
 
     public BigDecimal getPercent(final String origin, final boolean cheat) {
