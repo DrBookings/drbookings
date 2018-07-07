@@ -25,19 +25,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.BookingEntryPair;
 import com.github.drbookings.model.RoomEntry;
-import com.github.drbookings.model.data.manager.BookingOriginProvider;
-import com.github.drbookings.model.data.manager.CleaningProvider;
-import com.github.drbookings.model.data.manager.GuestProvider;
-import com.github.drbookings.model.data.manager.RoomProvider;
 import com.github.drbookings.model.exception.AlreadyBusyException;
 import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.ui.CleaningEntry;
@@ -47,100 +40,48 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * @author Alexander Kerner
+ * @deprecated
  */
-public class DrBookingsDataImpl implements DrBookingsData {
+@Deprecated
+public class DrBookingsDataImpl extends DrBookingsDataCore implements DrBookingsData {
 
     private static final Logger logger = LoggerFactory.getLogger(DrBookingsDataImpl.class);
 
-    /**
-     * Use provider to keep name unique.
-     */
-    private final CleaningProvider cleaningProvider;
-    /**
-     * Use provider to keep name unique.
-     */
-    private final GuestProvider guestProvider;
-    /**
-     * Use provider to keep name unique.
-     */
-    private final RoomProvider roomProvider;
-    /**
-     * Use provider to keep name unique.
-     */
-    private final BookingOriginProvider bookingOriginProvider;
-    /**
-     * (Room name, Date) -> Value
-     */
-    private final MultiKeyMap<Object, RoomEntry> roomEntries;
-    /**
-     * (Room name, Date) -> Value
-     */
-    private final MultiKeyMap<Object, CleaningEntry> cleaningEntries;
-    /**
-     * (Room name, Date) -> Value
-     */
-    private final MultiKeyMap<Object, BookingEntryPair> bookingEntries;
-    /**
-     * A dummy property to listen on for cleaning changes. The actual value does not
-     * mean anything. Maybe refactor to UI.
-     */
-    private final BooleanProperty cleaningsChanged;
     /**
      * A dummy property to listen on for booking changes. The actual value does not
      * mean anything. Maybe refactor to UI.
      */
     private final BooleanProperty bookingsChanged;
+    /**
+     * A dummy property to listen on for cleaning changes. The actual value does not
+     * mean anything. Maybe refactor to UI.
+     */
+    private final BooleanProperty cleaningsChanged;
+
+    private final DrBookingsCleaningData cleaningData;
 
     public DrBookingsDataImpl() {
 
-	roomProvider = new RoomProvider();
-	guestProvider = new GuestProvider();
-	cleaningProvider = new CleaningProvider();
-	bookingOriginProvider = new BookingOriginProvider();
-	roomEntries = MultiKeyMap.multiKeyMap(new LinkedMap<>());
-	cleaningEntries = MultiKeyMap.multiKeyMap(new LinkedMap<>());
-	bookingEntries = MultiKeyMap.multiKeyMap(new LinkedMap<>());
 	cleaningsChanged = new SimpleBooleanProperty(false);
 	bookingsChanged = new SimpleBooleanProperty(false);
-    }
-
-    public synchronized List<BookingEntry> addBooking(final BookingBean bb) throws OverbookingException {
-
-	final List<BookingEntry> bes = Bookings.toEntries(bb);
-	// none of those booking entries must be here already
-	for (final BookingEntry be : bes) {
-	    final Room room = be.getRoom();
-	    final LocalDate date = be.getDate();
-	    BookingEntryPair be2 = bookingEntries.get(getBookingEntryMultiKey(room.getName(), date));
-	    if (be2 != null) {
-		be2.addBooking(be);
-	    } else {
-		be2 = new BookingEntryPair(be);
-		final BookingEntryPair oldVal = bookingEntries.put(getBookingEntryMultiKey(room.getName(), date), be2);
-		if (oldVal != null) {
-		    throw new RuntimeException();
-		}
-	    }
-	    notifyBookingsChanged();
-	}
-	return bes;
+	this.cleaningData = new DrBookingsCleaningData();
     }
 
     @Override
-    public synchronized CleaningEntry addCleaning(final String cleaningName, final LocalDate date,
-	    final String roomName) throws AlreadyBusyException {
+    public synchronized List<BookingEntry> addBooking(final BookingBean bb) throws OverbookingException {
+	final List<BookingEntry> result = super.addBooking(bb);
+	notifyBookingsChanged();
+	return result;
+    }
 
-	CleaningEntry cleaningEntry = cleaningEntries.get(getCleaningEntryMultiKey(roomName, date));
-	if (cleaningEntry == null) {
-	    cleaningEntry = createNewCleaningEntry(getOrCreateCleaning(cleaningName, date), date,
-		    getOrCreateRoom(roomName, date));
-	    cleaningEntries.put(getCleaningEntryMultiKey(roomName, date), cleaningEntry);
-	    notifyCleaningsChanged();
-	} else {
-	    throw new AlreadyBusyException(
-		    "There is already a cleaning at " + date + " for " + roomName + ": " + cleaningEntry);
-	}
-	return cleaningEntry;
+    @Override
+    public synchronized CleaningEntry createAndAddCleaning(final String id, final String cleaningName,
+	    final LocalDate date, final String roomName) throws AlreadyBusyException {
+
+	final CleaningEntry result = cleaningData.createAndAddCleaning(id, cleaningName, date,
+		getOrCreateRoom(roomName, date));
+	notifyCleaningsChanged();
+	return result;
     }
 
     public BooleanProperty bookingsChangedProperty() {
@@ -178,44 +119,8 @@ public class DrBookingsDataImpl implements DrBookingsData {
     public void clear() {
 
 	bookingEntries.clear();
-	cleaningEntries.clear();
+	cleaningData.cleaningEntries.clear();
 	roomEntries.clear();
-    }
-
-    @Override
-    public BookingBean createAndAddBooking(final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String source) throws OverbookingException {
-	final BookingBean bb = createBooking(null, checkInDate, checkOutDate, guestName, roomName, source);
-	addBooking(bb);
-	return bb;
-    }
-
-    public synchronized BookingBean createAndAddBooking(final String id, final LocalDate checkInDate,
-	    final LocalDate checkOutDate, final String guestName, final String roomName, final String originName)
-	    throws OverbookingException {
-
-	final BookingBean newBooking = new BookingBeanFactory(guestProvider, roomProvider, bookingOriginProvider)
-		.createBooking(id, checkInDate, checkOutDate, guestName, roomName, originName);
-	addBooking(newBooking);
-	return newBooking;
-    }
-
-    @Override
-    public BookingBean createBooking(final String bookingId, final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String source) {
-
-	final BookingBeanFactory f = new BookingBeanFactory(guestProvider, roomProvider, bookingOriginProvider);
-	return f.createBooking(bookingId, checkInDate, checkOutDate, guestName, roomName, source);
-    }
-
-    protected CleaningEntry createNewCleaningEntry(final Cleaning cleaning, final LocalDate date, final Room room) {
-
-	return new CleaningEntry(getOrCreateRoomEntry(room, date), cleaning);
-    }
-
-    protected RoomEntry createNewRoomEntry(final Room room, final LocalDate date) {
-
-	return new RoomEntry(date, room);
     }
 
     @Override
@@ -237,11 +142,6 @@ public class DrBookingsDataImpl implements DrBookingsData {
 
 	return Collections.unmodifiableList(
 		getBookingEntryPairs().stream().flatMap(e -> e.toList().stream()).collect(Collectors.toList()));
-    }
-
-    protected MultiKey<Object> getBookingEntryMultiKey(final String roomName, final LocalDate date) {
-
-	return new MultiKey<>(roomName, date);
     }
 
     @Override
@@ -279,7 +179,7 @@ public class DrBookingsDataImpl implements DrBookingsData {
     @Override
     public synchronized List<CleaningEntry> getCleaningEntries() {
 
-	return Collections.unmodifiableList(new ArrayList<>(cleaningEntries.values()));
+	return Collections.unmodifiableList(new ArrayList<>(cleaningData.cleaningEntries.values()));
     }
 
     public List<CleaningEntry> getCleaningEntries(final LocalDate date) {
@@ -287,7 +187,8 @@ public class DrBookingsDataImpl implements DrBookingsData {
 	final List<CleaningEntry> result = new ArrayList<>();
 	final Set<String> roomNames = getRoomNames();
 	for (final String roomName : roomNames) {
-	    final CleaningEntry ce = cleaningEntries.get(getCleaningEntryMultiKey(roomName, date));
+	    final CleaningEntry ce = cleaningData.cleaningEntries
+		    .get(cleaningData.getCleaningEntryMultiKey(roomName, date));
 	    if (ce != null) {
 		result.add(ce);
 	    }
@@ -298,12 +199,8 @@ public class DrBookingsDataImpl implements DrBookingsData {
     @Override
     public Optional<CleaningEntry> getCleaningEntry(final String roomName, final LocalDate date) {
 
-	return Optional.ofNullable(cleaningEntries.get(getCleaningEntryMultiKey(roomName, date)));
-    }
-
-    protected MultiKey<Object> getCleaningEntryMultiKey(final String roomName, final LocalDate date) {
-
-	return new MultiKey<>(roomName, date);
+	return Optional
+		.ofNullable(cleaningData.cleaningEntries.get(cleaningData.getCleaningEntryMultiKey(roomName, date)));
     }
 
     public Optional<LocalDate> getFirstBookingDate() {
@@ -385,7 +282,7 @@ public class DrBookingsDataImpl implements DrBookingsData {
 	final LocalDate last = getLastBookingDate().get();
 	Optional<BookingEntryPair> bookingsThatDay = null;
 	while ((date.isBefore(last) || date.equals(last))
-		&& ((bookingsThatDay == null) || !bookingsThatDay.isPresent())) {
+		&& (bookingsThatDay == null || !bookingsThatDay.isPresent())) {
 	    date = date.plusDays(1);
 	    bookingsThatDay = getBookingEntryPair(e.getRoom().getName(), date);
 	}
@@ -419,36 +316,6 @@ public class DrBookingsDataImpl implements DrBookingsData {
 	return getBookingEntryPair(e.getRoom().getName(), minusOneDay);
     }
 
-    public synchronized Cleaning getOrCreateCleaning(final String name, final LocalDate date) {
-
-	final Cleaning room = cleaningProvider.getOrCreateElement(name);
-	return room;
-    }
-
-    public synchronized Room getOrCreateRoom(final String name, final LocalDate date) {
-
-	final Room room = roomProvider.getOrCreateElement(name);
-	return room;
-    }
-
-    public synchronized RoomEntry getOrCreateRoomEntry(final Room room, final LocalDate date) {
-
-	return getOrCreateRoomEntry(room.getName(), date);
-    }
-
-    public synchronized RoomEntry getOrCreateRoomEntry(final String roomName, final LocalDate date) {
-
-	RoomEntry roomEntry = roomEntries.get(getRoomEntryMultiKey(roomName, date));
-	if (roomEntry == null) {
-	    roomEntry = createNewRoomEntry(getOrCreateRoom(roomName, date), date);
-	    final RoomEntry oldVal = roomEntries.put(getRoomEntryMultiKey(roomName, date), roomEntry);
-	    if (oldVal != null) {
-		throw new RuntimeException();
-	    }
-	}
-	return roomEntry;
-    }
-
     public List<RoomEntry> getRoomEntries(final LocalDate date) {
 
 	final List<RoomEntry> result = new ArrayList<>();
@@ -467,11 +334,6 @@ public class DrBookingsDataImpl implements DrBookingsData {
 	return Optional.ofNullable(roomEntries.get(getRoomEntryMultiKey(roomName, date)));
     }
 
-    protected MultiKey<Object> getRoomEntryMultiKey(final String roomName, final LocalDate date) {
-
-	return new MultiKey<>(roomName, date);
-    }
-
     protected Set<String> getRoomNames() {
 
 	return roomEntries.keySet().stream().map(k -> (String) k.getKey(0)).collect(Collectors.toSet());
@@ -479,7 +341,7 @@ public class DrBookingsDataImpl implements DrBookingsData {
 
     public boolean isEmtpy() {
 
-	return bookingEntries.isEmpty() && cleaningEntries.isEmpty();
+	return bookingEntries.isEmpty() && cleaningData.cleaningEntries.isEmpty();
     }
 
     private void notifyBookingsChanged() {
@@ -509,21 +371,23 @@ public class DrBookingsDataImpl implements DrBookingsData {
 
     public void removeCleaning(final CleaningEntry cleaningEntry) {
 
-	cleaningEntries.remove(getCleaningEntryMultiKey(cleaningEntry.getRoom().getName(), cleaningEntry.getDate()));
+	cleaningData.cleaningEntries.remove(
+		cleaningData.getCleaningEntryMultiKey(cleaningEntry.getRoom().getName(), cleaningEntry.getDate()));
     }
 
     @Override
     public void removeCleaning(final LocalDate date, final String roomName) {
-	cleaningEntries.remove(getCleaningEntryMultiKey(roomName, date));
+	cleaningData.cleaningEntries.remove(cleaningData.getCleaningEntryMultiKey(roomName, date));
 
     }
 
     @Override
     public void setCleaning(final String name, final LocalDate date, final String roomName) {
-	final CleaningEntry newCe = createNewCleaningEntry(getOrCreateCleaning(name, date), date,
-		getOrCreateRoom(roomName, date));
-	final CleaningEntry ce = cleaningEntries.put(getCleaningEntryMultiKey(roomName, date), newCe);
-	if ((ce != null) && logger.isInfoEnabled()) {
+	final CleaningEntry newCe = cleaningData.createNewCleaningEntry(null, cleaningData.getOrCreateCleaning(name),
+		date, getOrCreateRoom(roomName, date));
+	final CleaningEntry ce = cleaningData.cleaningEntries.put(cleaningData.getCleaningEntryMultiKey(roomName, date),
+		newCe);
+	if (ce != null && logger.isInfoEnabled()) {
 	    logger.info(ce + " replaced by " + newCe);
 	}
     }

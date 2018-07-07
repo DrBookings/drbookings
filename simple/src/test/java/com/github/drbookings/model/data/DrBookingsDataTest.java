@@ -88,7 +88,7 @@ public class DrBookingsDataTest {
     @Test
     public void testCreateCleaningEntry01() throws Exception {
 
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
 	assertThat(ce, is(not(nullValue())));
 	final Cleaning c = ce.getElement();
 	assertThat(c, is(not(nullValue())));
@@ -99,7 +99,7 @@ public class DrBookingsDataTest {
     @Test
     public void testCreateCleaningEntry02() throws Exception {
 
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
 	final List<CleaningEntry> entries = data.getCleaningEntries();
 	assertThat(entries, is(not(nullValue())));
 	assertThat(entries.size(), is(1));
@@ -110,8 +110,8 @@ public class DrBookingsDataTest {
     @Test(expected = AlreadyBusyException.class)
     public void testCreateCleaningEntry03() throws Exception {
 
-	final CleaningEntry ce = data.addCleaning("testc", LocalDate.now(), "3");
-	final CleaningEntry ce2 = data.addCleaning("testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
+	final CleaningEntry ce2 = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
 
     }
 }

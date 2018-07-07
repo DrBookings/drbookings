@@ -37,8 +37,7 @@ import com.github.drbookings.ui.beans.RoomBean;
 
 /**
  * A container to hold a {@link RoomBean room's} {@link BookingEntry booking
- * entries}. A room has zero, one (stay-over or check-in) or two (check-in,
- * check-out) booking entries.
+ * entries}. A room has zero, one or two booking entries.
  *
  * @author Alexander Kerner
  *
@@ -81,8 +80,8 @@ public class BookingEntryPair {
     }
 
     public void addBooking(final BookingEntry be) throws OverbookingException {
-	checkOverbooking(be);
 	checkConstrains(be);
+	checkOverbooking(be);
 	if (be.isCheckIn()) {
 	    this.checkIn = be;
 	} else if (be.isCheckOut()) {
@@ -193,7 +192,11 @@ public class BookingEntryPair {
 	if (hasCheckOut()) {
 	    return checkOut.getRoom();
 	}
-	return stay.getRoom();
+	if (hasStay()) {
+	    return stay.getRoom();
+	}
+	throw new RuntimeException();
+
     }
 
     public BookingEntry getStay() {
@@ -268,25 +271,25 @@ public class BookingEntryPair {
     }
 
     private void validateDates(final BookingEntry checkIn, final BookingEntry stay, final BookingEntry checkOut) {
-	if ((checkIn != null) && (stay != null) && !checkIn.getDate().equals(stay.getDate())) {
+	if (checkIn != null && stay != null && !checkIn.getDate().equals(stay.getDate())) {
 	    throw new IllegalArgumentException("Dates do not match");
 	}
-	if ((checkOut != null) && (stay != null) && !checkOut.getDate().equals(stay.getDate())) {
+	if (checkOut != null && stay != null && !checkOut.getDate().equals(stay.getDate())) {
 	    throw new IllegalArgumentException("Dates do not match");
 	}
-	if ((checkOut != null) && (checkIn != null) && !checkOut.getDate().equals(checkIn.getDate())) {
+	if (checkOut != null && checkIn != null && !checkOut.getDate().equals(checkIn.getDate())) {
 	    throw new IllegalArgumentException("Dates do not match");
 	}
     }
 
     private void validateRooms(final BookingEntry checkIn, final BookingEntry stay, final BookingEntry checkOut) {
-	if ((checkIn != null) && (stay != null) && !checkIn.getRoom().equals(stay.getRoom())) {
+	if (checkIn != null && stay != null && !checkIn.getRoom().equals(stay.getRoom())) {
 	    throw new IllegalArgumentException("Rooms do not match");
 	}
-	if ((checkOut != null) && (stay != null) && !checkOut.getRoom().equals(stay.getRoom())) {
+	if (checkOut != null && stay != null && !checkOut.getRoom().equals(stay.getRoom())) {
 	    throw new IllegalArgumentException("Rooms do not match");
 	}
-	if ((checkOut != null) && (checkIn != null) && !checkOut.getRoom().equals(checkIn.getRoom())) {
+	if (checkOut != null && checkIn != null && !checkOut.getRoom().equals(checkIn.getRoom())) {
 	    throw new IllegalArgumentException("Rooms do not match");
 	}
     }

@@ -24,12 +24,20 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
+import com.github.drbookings.data.payments.Payments;
+import com.github.drbookings.data.payments.PaymentsCollector;
 import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.Payment;
-import com.github.drbookings.model.Payments;
 import com.github.drbookings.model.data.BookingBean;
 import com.google.common.collect.Range;
 
+/**
+ * @deprecated use {@link PaymentsCollector}
+ * @author Alexander Kerner
+ * @date 2018-06-24
+ *
+ */
+@Deprecated
 public class PaymentDoneFilter {
 
     private final Range<LocalDate> dates;

@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.Scripting;
+import com.github.drbookings.data.PaymentProvider;
 import com.github.drbookings.data.numbers.earnings.DefaultNetEarningsCalculator;
 import com.github.drbookings.data.numbers.earnings.NetEarningsCalculator;
 import com.github.drbookings.model.BookingEntry;
@@ -43,6 +44,7 @@ import com.github.drbookings.model.IBooking;
 import com.github.drbookings.model.NetEarningsProvider;
 import com.github.drbookings.model.Payment;
 import com.github.drbookings.model.settings.SettingsManager;
+import com.google.common.collect.Range;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -76,8 +78,8 @@ import javafx.util.Callback;
  * @ee Guest
  * @see Room
  */
-public class BookingBean extends IDed
-	implements Comparable<BookingBean>, NetEarningsProvider, GrossEarningsProvider, EarningsProvider, IBooking {
+public class BookingBean extends IDedImpl implements Comparable<BookingBean>, NetEarningsProvider,
+	GrossEarningsProvider, EarningsProvider, IBooking, PaymentProvider {
 
     // TODO: rename type to avoid confusions about Model/ UI
 
@@ -317,6 +319,7 @@ public class BookingBean extends IDed
 	return daysElapsed - 1;
     }
 
+    @Override
     public final List<Payment> getPayments() {
 	return payments.get();
     }
@@ -485,11 +488,14 @@ public class BookingBean extends IDed
     @Override
     public String toString() {
 	return "BookingBean{ " + getFormattedOriginString() + ": " + getCheckIn() + " -> " + getCheckOut() + ", nights:"
-		+ getFormattedNumberOfNightsString() + ",\tguest=" + guest + ",\troom=" + room + ",\tcleaningFees="
-		+ cleaningFees + '}';
+		+ getFormattedNumberOfNightsString() + ",\troom=" + room;
     }
 
     public BooleanProperty welcomeMailSendProperty() {
 	return welcomeMailSend;
+    }
+
+    public Range<LocalDate> getDateRange() {
+	return Range.closed(getCheckIn(), getCheckOut());
     }
 }

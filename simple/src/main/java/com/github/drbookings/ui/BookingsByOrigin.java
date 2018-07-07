@@ -84,10 +84,21 @@ public class BookingsByOrigin<T extends IBooking> {
     public Map<BookingOrigin, Collection<T>> getMap() {
 	final Map<BookingOrigin, Collection<T>> result = new LinkedHashMap<>();
 	for (final T be : bookingEntries) {
-	    final Collection<T> value = result.getOrDefault(be.getBookingOrigin(), new ArrayList<>());
+	    final Collection<T> value = result.computeIfAbsent(be.getBookingOrigin(), k -> new ArrayList<>());
 	    value.add(be);
 	}
 	return result;
+    }
+
+    @Override
+    public String toString() {
+	final Map<BookingOrigin, Collection<T>> map = getMap();
+	if (map.isEmpty()) {
+	    return "BO: <empty>";
+	}
+	final String s = "BO:" + map.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue().size())
+		.collect(Collectors.joining("\n"));
+	return s;
     }
 
     public Collection<T> getOtherBookings() {

@@ -28,6 +28,13 @@ import com.github.drbookings.model.BookingEntry;
 import com.github.drbookings.model.data.BookingBean;
 import com.google.common.collect.Range;
 
+/**
+ * @deprecated use {@link PaymentsDoneFilter}
+ * @author Alexander Kerner
+ * @date 2018-06-24
+ *
+ */
+@Deprecated
 public class PaymentDateFilter2 implements Predicate<BookingEntry> {
 
     private final Range<LocalDate> dates;

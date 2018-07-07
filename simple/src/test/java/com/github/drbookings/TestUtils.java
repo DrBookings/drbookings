@@ -21,8 +21,9 @@
 package com.github.drbookings;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
-import com.github.drbookings.model.RoomEntry;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingOrigin;
 import com.github.drbookings.model.data.Cleaning;
@@ -34,8 +35,22 @@ public class TestUtils {
 
     public static final String TEST_ROOM_NAME = "testRoom";
 
+    public static List<CleaningEntry> getCleanings2018Mai() {
+	final List<CleaningEntry> cleanings = Arrays.asList(
+		new CleaningEntry(LocalDate.of(2018, 05, 07), "1", "Hanife", 50),
+		new CleaningEntry(LocalDate.of(2018, 05, 07), "3", "Hanife", 50)
+
+	);
+	return cleanings;
+    }
+
     public static BookingBean getTestBooking() {
 	return getTestBooking(LocalDate.now(), LocalDate.now().plusDays(1));
+    }
+
+    public static BookingBean getTestBooking(final LocalDate checkIn, final LocalDate checkOut,
+	    final String originName) {
+	return new BookingBean(getTestGuest(), getTestRoom(), new BookingOrigin(originName), checkIn, checkOut);
     }
 
     public static BookingBean getTestBooking(final LocalDate checkIn, final LocalDate checkOut) {
@@ -64,7 +79,7 @@ public class TestUtils {
     }
 
     public static CleaningEntry getTestCleaningEntry() {
-	return new CleaningEntry(new RoomEntry(getTestDate(), getTestRoom()), getTestCleaning());
+	return new CleaningEntry(getTestDate(), getTestRoom(), getTestCleaning());
     }
 
     public static LocalDate getTestDate() {

@@ -106,7 +106,7 @@ public class LocalDates {
 
     public static boolean isCurrentMonth(final LocalDate date) {
 	final Month month = LocalDate.now().getMonth();
-	return date.getMonth().equals(month) && (date.getYear() == LocalDate.now().getYear());
+	return date.getMonth().equals(month) && date.getYear() == LocalDate.now().getYear();
     }
 
     public static boolean isLastDayOfMonth(final LocalDate date) {
@@ -115,22 +115,22 @@ public class LocalDates {
 
     public static boolean isLastMonth(final LocalDate date) {
 	final Month month = LocalDate.now().getMonth().minus(1);
-	return date.getMonth().equals(month) && ((date.getYear() == LocalDate.now().getYear())
-		|| (date.getYear() == (LocalDate.now().getYear() - 1)));
+	return date.getMonth().equals(month)
+		&& (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1);
     }
 
     public static boolean isLastThreeMonths(final LocalDate date) {
 	final Month month = LocalDate.now().getMonth().minus(1);
-	if (date.getMonth().equals(month) && ((date.getYear() == LocalDate.now().getYear())
-		|| (date.getYear() == (LocalDate.now().getYear() - 1)))) {
+	if (date.getMonth().equals(month)
+		&& (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1)) {
 	    return true;
 	}
-	if (date.getMonth().equals(month.minus(1)) && ((date.getYear() == LocalDate.now().getYear())
-		|| (date.getYear() == (LocalDate.now().getYear() - 1)))) {
+	if (date.getMonth().equals(month.minus(1))
+		&& (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1)) {
 	    return true;
 	}
-	return date.getMonth().equals(month.minus(2)) && ((date.getYear() == LocalDate.now().getYear())
-		|| (date.getYear() == (LocalDate.now().getYear() - 1)));
+	return date.getMonth().equals(month.minus(2))
+		&& (date.getYear() == LocalDate.now().getYear() || date.getYear() == LocalDate.now().getYear() - 1);
     }
 
     public static boolean isNextMonth(final YearMonth selectedMonth, final LocalDate date) {
@@ -139,5 +139,13 @@ public class LocalDates {
 
     public static boolean isPrevMonth(final YearMonth selectedMonth, final LocalDate date) {
 	return YearMonth.from(date).equals(selectedMonth.minusMonths(1));
+    }
+
+    public static long getNumberOfMonth(final Range<LocalDate> dateRange) {
+	return ChronoUnit.MONTHS.between(dateRange.lowerEndpoint(), dateRange.upperEndpoint()) + 1l;
+    }
+
+    public static Range<LocalDate> toDateRange(final YearMonth month) {
+        return Range.closed(month.atDay(01), month.atEndOfMonth());
     }
 }

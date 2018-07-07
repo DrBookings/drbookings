@@ -22,18 +22,12 @@ package com.github.drbookings.model;
 
 import java.time.LocalDate;
 
-import com.github.drbookings.model.data.DateEntry;
+import com.github.drbookings.model.data.DateEntryImpl;
 import com.github.drbookings.model.data.Room;
 import com.github.drbookings.ui.CleaningEntry;
 
-public class RoomEntry extends DateEntry<Room> {
+public class RoomEntry extends DateEntryImpl<Room> {
 
-    /**
-     * Bi-di relationship owned by {@link CleaningEntry}.
-     * <p>
-     * Date is taken-over by the RoomEntry, therefore it cannot mismatch.
-     * </p>
-     */
     private CleaningEntry cleaning;
 
     public RoomEntry(final LocalDate date, final Room element) {
@@ -45,6 +39,9 @@ public class RoomEntry extends DateEntry<Room> {
     }
 
     public void setCleaning(final CleaningEntry cleaning) {
-	this.cleaning = cleaning;
+	if (getDate().equals(cleaning.getDate())) {
+	    this.cleaning = cleaning;
+	}
+	throw new IllegalArgumentException("Dates do not match");
     }
 }

@@ -20,7 +20,7 @@
 
 package com.github.drbookings.model.data;
 
-public class Guest extends Named {
+public class Guest extends NamedImpl {
 
     public Guest(final String name) {
 	super(name);

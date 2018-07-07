@@ -96,10 +96,10 @@ public class MainManager implements DrBookingsData {
     }
 
     @Override
-    public CleaningEntry addCleaning(final String name, final LocalDate date, final String room)
-	    throws AlreadyBusyException {
+    public CleaningEntry createAndAddCleaning(final String id, final String name, final LocalDate date,
+	    final String room) throws AlreadyBusyException {
 
-	return getData().addCleaning(name, date, room);
+	return getData().createAndAddCleaning(id, name, date, room);
     }
 
     private void addDateBean(final DateBean db) {
@@ -163,12 +163,13 @@ public class MainManager implements DrBookingsData {
 	return data.createAndAddBooking(checkInDate, checkOutDate, guestName, roomName, source);
     }
 
-    @Override
-    public BookingBean createBooking(final String bookingId, final LocalDate checkInDate, final LocalDate checkOutDate,
-	    final String guestName, final String roomName, final String source) {
-
-	return getData().createBooking(bookingId, checkInDate, checkOutDate, guestName, roomName, source);
-    }
+    // public BookingBean createBooking(final String bookingId, final LocalDate
+    // checkInDate, final LocalDate checkOutDate,
+    // final String guestName, final String roomName, final String source) {
+    //
+    // return getData().createBooking(bookingId, checkInDate, checkOutDate,
+    // guestName, roomName, source);
+    // }
 
     private void fillMissing() {
 
@@ -339,5 +340,11 @@ public class MainManager implements DrBookingsData {
     public void setCleaning(final String name, final LocalDate date, final String roomName) {
 	data.setCleaning(name, date, roomName);
 
+    }
+
+    public BookingBean createAndAddBooking(final String bookingId, final LocalDate checkInDate,
+	    final LocalDate checkOutDate, final String guestName, final String roomName, final String source)
+	    throws OverbookingException {
+	return data.createAndAddBooking(bookingId, checkInDate, checkOutDate, guestName, roomName, source);
     }
 }

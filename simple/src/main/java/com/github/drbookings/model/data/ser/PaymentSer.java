@@ -18,10 +18,11 @@
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 
-package com.github.drbookings.model.ser;
+package com.github.drbookings.model.data.ser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,17 +35,18 @@ import com.github.drbookings.ser.LocalDateAdapter;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class PaymentSer {
-    public static List<PaymentSer> transform(final List<Payment> payments) {
+
+    public static List<PaymentSer> build(final Collection<? extends Payment> payments) {
 	final List<PaymentSer> result = new ArrayList<>(payments.size());
 
 	for (final Payment p : payments) {
-	    result.add(transform(p));
+	    result.add(build(p));
 	}
 
 	return result;
     }
 
-    public static PaymentSer transform(final Payment payment) {
+    public static PaymentSer build(final Payment payment) {
 	final PaymentSer result = new PaymentSer();
 	result.amount = payment.getAmount().getNumber().floatValue();
 	result.date = payment.getDate();

@@ -20,6 +20,7 @@
 
 package com.github.drbookings.ser;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,19 +32,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.Payment;
+import com.github.drbookings.model.PaymentImpl;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.BookingBeanFactory;
+import com.github.drbookings.model.data.Cleaning;
+import com.github.drbookings.model.data.Room;
 import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.model.data.ser.PaymentSer;
 import com.github.drbookings.model.exception.AlreadyBusyException;
-import com.github.drbookings.model.exception.OverbookingException;
 import com.github.drbookings.model.ser.BookingBeanSer;
 import com.github.drbookings.model.ser.CleaningBeanSer;
-import com.github.drbookings.model.ser.PaymentSer;
 import com.github.drbookings.ui.CleaningEntry;
 
 @XmlRootElement
-public class DataStore {
+public class DataStore extends DataStoreCore {
 
     private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
 
@@ -69,7 +71,7 @@ public class DataStore {
 	result.calendarIds = bb.getCalendarIds();
 	result.dateOfPayment = bb.getDateOfPayment();
 	result.splitBooking = bb.isSplitBooking();
-	result.paymentsSoFar = PaymentSer.transform(bb.getPayments());
+	result.paymentsSoFar = PaymentSer.build(bb.getPayments());
 	return result;
     }
 
@@ -80,11 +82,33 @@ public class DataStore {
 	b.room = c.getRoom().getName();
 	b.calendarIds = c.getCalendarIds();
 	b.cleaningCosts = c.getCleaningCosts();
+	b.id = c.getId();
 	// if (c.getBooking() != null) {
 	// b.bookingId = c.getBooking().getId();
 	// }
 	// System.err.println("Removed cleaning");
 	return b;
+    }
+
+    public static List<CleaningEntry> transformCleanings(final Collection<? extends CleaningBeanSer> sers) {
+	final List<CleaningEntry> result = new ArrayList<>();
+	for (final CleaningBeanSer cb : sers) {
+	    result.add(transformCleaning(cb));
+	}
+	return result;
+    }
+
+    public static CleaningEntry transformCleaning(final CleaningBeanSer cb) {
+
+	final Cleaning cleaning = new Cleaning(cb.name);
+	final LocalDate date = cb.date;
+	final Room room = new Room(cb.room);
+	final CleaningEntry ce = new CleaningEntry(date, room, cleaning);
+	ce.setCalendarIds(cb.calendarIds);
+	ce.setCleaningCosts(cb.cleaningCosts);
+
+	return ce;
+
     }
 
     public static List<BookingBean> transform(final Collection<? extends BookingBeanSer> sers) {
@@ -106,7 +130,7 @@ public class DataStore {
 		b.setServiceFeesPercent(bb.serviceFeePercent);
 		b.setDateOfPayment(bb.dateOfPayment);
 		b.setSplitBooking(bb.splitBooking);
-		b.setPayments(Payment.transform(bb.paymentsSoFar));
+		b.setPayments(PaymentImpl.build(bb.paymentsSoFar));
 		bookingsToAdd.add(b);
 	    } catch (final Exception e) {
 		if (logger.isErrorEnabled()) {
@@ -117,24 +141,22 @@ public class DataStore {
 	return bookingsToAdd;
     }
 
-    private final List<BookingBeanSer> bookings = new ArrayList<>();
-
-    private final List<CleaningBeanSer> cleanings = new ArrayList<>();
-
     public DataStore() {
 
     }
 
+    @Override
     @XmlElementWrapper(name = "bookings")
     @XmlElement(name = "booking")
     public List<BookingBeanSer> getBookingsSer() {
-	return bookings;
+	return super.getBookingsSer();
     }
 
+    @Override
     @XmlElementWrapper(name = "cleanings")
     @XmlElement(name = "cleaning")
     public List<CleaningBeanSer> getCleaningsSer() {
-	return cleanings;
+	return super.getCleaningsSer();
     }
 
     public void load(final MainManager manager) {
@@ -142,8 +164,8 @@ public class DataStore {
 	for (final BookingBeanSer bb : (Iterable<BookingBeanSer>) () -> getBookingsSer().stream()
 		.sorted((b1, b2) -> b1.checkInDate.compareTo(b2.checkInDate)).iterator()) {
 	    try {
-		final BookingBean b = manager.createBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate, bb.guestName,
-			bb.roomName, bb.source);
+		final BookingBean b = manager.createAndAddBooking(bb.bookingId, bb.checkInDate, bb.checkOutDate,
+			bb.guestName, bb.roomName, bb.source);
 		// b.setGrossEarnings(bb.grossEarnings);
 		b.setGrossEarningsExpression(bb.grossEarningsExpression);
 		b.setWelcomeMailSend(bb.welcomeMailSend);
@@ -157,8 +179,8 @@ public class DataStore {
 		b.setServiceFeesPercent(bb.serviceFeePercent);
 		b.setDateOfPayment(bb.dateOfPayment);
 		b.setSplitBooking(bb.splitBooking);
-		b.setPayments(Payment.transform(bb.paymentsSoFar));
-		bookingsToAdd.add(b);
+		b.setPayments(PaymentImpl.build(bb.paymentsSoFar));
+
 	    } catch (final Exception e) {
 		if (logger.isErrorEnabled()) {
 		    logger.error(e.getLocalizedMessage(), e);
@@ -166,22 +188,13 @@ public class DataStore {
 	    }
 	}
 
-	bookingsToAdd.forEach(b -> {
-	    try {
-		manager.addBooking(b);
-	    } catch (final OverbookingException e) {
-		if (logger.isWarnEnabled()) {
-		    logger.warn(e.getLocalizedMessage());
-		}
-	    }
-	});
 	if (logger.isDebugEnabled()) {
 	    logger.debug(bookingsToAdd.size() + " added");
 	}
 
 	for (final CleaningBeanSer cb : getCleaningsSer()) {
 	    try {
-		final CleaningEntry ce = manager.addCleaning(cb.name, cb.date, cb.room);
+		final CleaningEntry ce = manager.createAndAddCleaning(cb.id, cb.name, cb.date, cb.room);
 		ce.setCalendarIds(cb.calendarIds);
 		ce.setCleaningCosts(cb.cleaningCosts);
 	    } catch (final AlreadyBusyException e) {
@@ -200,9 +213,9 @@ public class DataStore {
 	}
     }
 
+    @Override
     public DataStore setBookingSer(final Collection<? extends BookingBeanSer> bookings) {
-	this.bookings.clear();
-	this.bookings.addAll(bookings);
+	super.setBookingSer(bookings);
 	return this;
     }
 }

@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.DrBookingsApplication;
+import com.github.drbookings.data.payments.Payments;
 import com.github.drbookings.model.data.BookingBean;
 import com.google.common.collect.Range;
 

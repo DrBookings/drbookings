@@ -187,6 +187,13 @@ public class SettingsManager {
 	return this.fixCostsPaymentDay;
     }
 
+    /**
+     * Returns the fix-costs per month per room
+     * 
+     * @return fix-costs per month per room
+     *
+     * @see DrBookingsApplication#ADDITIONAL_COSTS_KEY
+     */
     public final float getAdditionalCosts() {
 	return this.additionalCostsProperty().get();
     }

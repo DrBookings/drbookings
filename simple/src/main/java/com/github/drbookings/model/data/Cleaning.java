@@ -27,7 +27,7 @@ import java.util.Objects;
  *
  * @see com.github.drbookings.ui.CleaningEntry
  */
-public class Cleaning extends Named {
+public class Cleaning extends NamedImpl {
 
     public Cleaning(final String name) {
 	super(name);

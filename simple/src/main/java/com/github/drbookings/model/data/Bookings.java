@@ -21,6 +21,7 @@
 package com.github.drbookings.model.data;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.DateRange;
+import com.github.drbookings.LocalDates;
+import com.github.drbookings.data.numbers.nights.NumberOfNightsCounter;
 import com.github.drbookings.model.BookingEntry;
 import com.google.common.collect.Range;
 
@@ -38,7 +41,70 @@ public class Bookings {
     private static final Logger logger = LoggerFactory.getLogger(Bookings.class);
 
     public static long countNights(final Collection<? extends BookingBean> bookings) {
-	return bookings.stream().filter(b -> !b.isSplitBooking()).mapToLong(b -> b.getNumberOfNights()).sum();
+	return NumberOfNightsCounter.countNights(bookings, toDateRange(bookings));
+    }
+
+    public static Range<LocalDate> toDateRange(final Collection<? extends BookingBean> bookings) {
+	final LocalDate firstCheckIn = getFirstCheckIn(bookings);
+	final LocalDate lastCheckOut = getLastCheckOut(bookings);
+	return Range.closed(firstCheckIn, lastCheckOut);
+    }
+
+    public static LocalDate getFirstCheckIn(final Collection<? extends BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate result = bookings.stream().map(BookingBean::getCheckIn).min((d1, d2) -> d1.compareTo(d2)).get();
+	return result;
+    }
+
+    public static LocalDate getLastCheckOut(final Collection<? extends BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate result = bookings.stream().map(BookingBean::getCheckOut).max((d1, d2) -> d1.compareTo(d2))
+		.get();
+	return result;
+    }
+
+    public static long countNights(final Collection<? extends BookingBean> bookings, final YearMonth month) {
+	return NumberOfNightsCounter.countNights(bookings, LocalDates.toDateRange(month));
+    }
+
+    public static Range<LocalDate> getDateRange(final Collection<? extends BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate firstCheckIn = bookings.stream().map(BookingBean::getCheckIn).min((d1, d2) -> d1.compareTo(d2))
+		.get();
+	final LocalDate lastCheckOut = bookings.stream().map(BookingBean::getCheckOut).max((d1, d2) -> d1.compareTo(d2))
+		.get();
+
+	return Range.closed(firstCheckIn, lastCheckOut);
+    }
+
+    public static Range<LocalDate> getDateRangeCheckIn(final Collection<? extends BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate firstCheckIn = bookings.stream().map(BookingBean::getCheckIn).min((d1, d2) -> d1.compareTo(d2))
+		.get();
+	final LocalDate lastCheckIn = bookings.stream().map(BookingBean::getCheckIn).max((d1, d2) -> d1.compareTo(d2))
+		.get();
+
+	return Range.closed(firstCheckIn, lastCheckIn);
+    }
+
+    public static Range<LocalDate> getDateRangeCheckOut(final Collection<? extends BookingBean> bookings) {
+	if (bookings == null || bookings.isEmpty()) {
+	    throw new IllegalArgumentException();
+	}
+	final LocalDate firstCheckOut = bookings.stream().map(BookingBean::getCheckOut)
+		.min((d1, d2) -> d1.compareTo(d2)).get();
+	final LocalDate lastCheckOut = bookings.stream().map(BookingBean::getCheckOut).max((d1, d2) -> d1.compareTo(d2))
+		.get();
+
+	return Range.closed(firstCheckOut, lastCheckOut);
     }
 
     public static double getServiceFeePercentAmount(final BookingBean booking) {
@@ -57,18 +123,6 @@ public class Bookings {
 	    }
 	}
 	return result;
-    }
-
-    public static Range<LocalDate> getDateRange(final Collection<BookingBean> bookings) {
-	if (bookings == null || bookings.isEmpty()) {
-	    throw new IllegalArgumentException();
-	}
-	final LocalDate firstCheckIn = bookings.stream().map(BookingBean::getCheckIn).min((d1, d2) -> d1.compareTo(d2))
-		.get();
-	final LocalDate lastCheckOut = bookings.stream().map(BookingBean::getCheckOut).max((d1, d2) -> d1.compareTo(d2))
-		.get();
-
-	return Range.closed(firstCheckIn, lastCheckOut);
     }
 
     // public static long countCleanings(final Collection<? extends BookingBean>

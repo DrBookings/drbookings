@@ -104,7 +104,7 @@ public class AddBookingController implements Initializable {
 	final boolean valid = validateInput();
 	if (valid) {
 	    try {
-		final BookingBean b = getManager().createBooking(null, datePickerCheckIn.getValue(),
+		final BookingBean b = getManager().createAndAddBooking(datePickerCheckIn.getValue(),
 			datePickerCheckOut.getValue(), textFieldGuestName.getText().trim(),
 			comboBoxRoom.getSelectionModel().getSelectedItem(), textFieldSource.getText().trim());
 		b.setGrossEarningsExpression(getGrossEarnings() + "");
@@ -123,7 +123,6 @@ public class AddBookingController implements Initializable {
 			logger.debug(e.toString());
 		    }
 		}
-		getManager().addBooking(b);
 
 	    } catch (final OverbookingException e) {
 		if (logger.isDebugEnabled()) {
@@ -227,7 +226,7 @@ public class AddBookingController implements Initializable {
 	    UIUtils.showError("Invalid Input", "Please choose a guest name");
 	    return false;
 	}
-	if ((comboBoxRoom.getSelectionModel().getSelectedItem() == null)
+	if (comboBoxRoom.getSelectionModel().getSelectedItem() == null
 		|| comboBoxRoom.getSelectionModel().getSelectedItem().isEmpty()) {
 	    UIUtils.showError("Invalid Input", "Please choose a room");
 	    return false;

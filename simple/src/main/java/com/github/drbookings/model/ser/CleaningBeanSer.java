@@ -33,6 +33,52 @@ import com.github.drbookings.ser.LocalDateAdapter;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CleaningBeanSer {
 
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (date == null ? 0 : date.hashCode());
+	result = prime * result + (name == null ? 0 : name.hashCode());
+	result = prime * result + (room == null ? 0 : room.hashCode());
+	return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj) {
+	    return true;
+	}
+	if (obj == null) {
+	    return false;
+	}
+	if (!(obj instanceof CleaningBeanSer)) {
+	    return false;
+	}
+	final CleaningBeanSer other = (CleaningBeanSer) obj;
+	if (date == null) {
+	    if (other.date != null) {
+		return false;
+	    }
+	} else if (!date.equals(other.date)) {
+	    return false;
+	}
+	if (name == null) {
+	    if (other.name != null) {
+		return false;
+	    }
+	} else if (!name.equals(other.name)) {
+	    return false;
+	}
+	if (room == null) {
+	    if (other.room != null) {
+		return false;
+	    }
+	} else if (!room.equals(other.room)) {
+	    return false;
+	}
+	return true;
+    }
+
     @XmlAttribute
     public List<String> calendarIds;
 
@@ -45,6 +91,9 @@ public class CleaningBeanSer {
 
     @XmlAttribute
     public String name;
+
+    @XmlAttribute
+    public String id;
 
     /**
      * Optional

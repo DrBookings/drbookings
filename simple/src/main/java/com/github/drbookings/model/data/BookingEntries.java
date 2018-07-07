@@ -102,7 +102,7 @@ public class BookingEntries {
     }
 
     private static long countNightsBookings(final Collection<? extends BookingEntry> bookingBookings) {
-	return bookingBookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
+	return bookingBookings.stream().map(DateEntryImpl::getElement).collect(Collectors.toSet()).stream()
 		.mapToLong(BookingBean::getNumberOfNights).sum();
     }
 
@@ -194,7 +194,7 @@ public class BookingEntries {
 
     public static double getEarningsGeneral(final Collection<? extends BookingEntry> bookings,
 	    final Function<EarningsProvider, Number> earningsProvider) {
-	return bookings.stream().map(DateEntry::getElement).collect(Collectors.toSet()).stream()
+	return bookings.stream().map(DateEntryImpl::getElement).collect(Collectors.toSet()).stream()
 		.filter(BookingBean::isPaymentDone).mapToDouble(b -> earningsProvider.apply(b).doubleValue()).sum();
     }
 

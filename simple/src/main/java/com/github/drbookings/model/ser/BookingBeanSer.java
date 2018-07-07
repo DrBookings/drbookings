@@ -29,10 +29,73 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.github.drbookings.model.data.ser.PaymentSer;
 import com.github.drbookings.ser.LocalDateAdapter;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class BookingBeanSer {
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (checkInDate == null ? 0 : checkInDate.hashCode());
+	result = prime * result + (checkOutDate == null ? 0 : checkOutDate.hashCode());
+	result = prime * result + (guestName == null ? 0 : guestName.hashCode());
+	result = prime * result + (roomName == null ? 0 : roomName.hashCode());
+	result = prime * result + (source == null ? 0 : source.hashCode());
+	return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj) {
+	    return true;
+	}
+	if (obj == null) {
+	    return false;
+	}
+	if (!(obj instanceof BookingBeanSer)) {
+	    return false;
+	}
+	final BookingBeanSer other = (BookingBeanSer) obj;
+	if (checkInDate == null) {
+	    if (other.checkInDate != null) {
+		return false;
+	    }
+	} else if (!checkInDate.equals(other.checkInDate)) {
+	    return false;
+	}
+	if (checkOutDate == null) {
+	    if (other.checkOutDate != null) {
+		return false;
+	    }
+	} else if (!checkOutDate.equals(other.checkOutDate)) {
+	    return false;
+	}
+	if (guestName == null) {
+	    if (other.guestName != null) {
+		return false;
+	    }
+	} else if (!guestName.equals(other.guestName)) {
+	    return false;
+	}
+	if (roomName == null) {
+	    if (other.roomName != null) {
+		return false;
+	    }
+	} else if (!roomName.equals(other.roomName)) {
+	    return false;
+	}
+	if (source == null) {
+	    if (other.source != null) {
+		return false;
+	    }
+	} else if (!source.equals(other.source)) {
+	    return false;
+	}
+	return true;
+    }
 
     @XmlAttribute
     public String bookingId;

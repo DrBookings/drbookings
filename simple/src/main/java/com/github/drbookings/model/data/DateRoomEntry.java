@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import com.github.drbookings.model.RoomEntry;
 
-public class DateRoomEntry<E> extends DateEntry<E> {
+public class DateRoomEntry<E> extends DateEntryImpl<E> {
 
     private final Room room;
 

@@ -58,37 +58,37 @@ public class IDedTest {
 
     @Test
     public void test01() {
-	i = new IDed();
+	i = new IDedImpl();
 	assertNotNull(i.getId());
 	assertFalse(StringUtils.isBlank(i.getId()));
     }
 
     @Test
     public void test02() {
-	i = new IDed("dd");
+	i = new IDedImpl("dd");
 	assertNotNull(i.getId());
 	assertEquals("dd", i.getId());
     }
 
     @Test
     public void testIdentity01() {
-	i = new IDed();
-	j = new IDed();
+	i = new IDedImpl();
+	j = new IDedImpl();
 	assertNotEquals(i.hashCode(), j.hashCode());
 	assertNotEquals(i, j);
     }
 
     @Test
     public void testIdentity02() {
-	i = new IDed("dd");
-	j = new IDed("dd");
+	i = new IDedImpl("dd");
+	j = new IDedImpl("dd");
 	assertEquals(i.hashCode(), j.hashCode());
 	assertEquals(i, j);
     }
 
     @Test
     public void testIdentity03() {
-	i = new IDed();
+	i = new IDedImpl();
 	final Object o = new Object();
 	assertNotEquals(i.hashCode(), o.hashCode());
 	assertNotEquals(i, o);

@@ -117,7 +117,7 @@ public abstract class NamedProvider<T extends Named> {
     public int hashCode() {
 	final int prime = 31;
 	int result = 1;
-	result = (prime * result) + (elements == null ? 0 : elements.hashCode());
+	result = prime * result + (elements == null ? 0 : elements.hashCode());
 	return result;
     }
 

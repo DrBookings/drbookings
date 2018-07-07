@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.Payment;
+import com.github.drbookings.model.PaymentImpl;
 import com.github.drbookings.model.data.BookingBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.model.settings.SettingsManager;
@@ -107,7 +107,7 @@ public class BookingDetailsController implements Initializable {
 	}
 	final double paymentAmount = Double.parseDouble(paymentString);
 	final LocalDate paymentDate = LocalDate.now();
-	final Payment payment = new Payment(paymentDate, paymentAmount);
+	final PaymentImpl payment = new PaymentImpl(paymentDate, paymentAmount);
 	be.getPayments().add(payment);
 
     }

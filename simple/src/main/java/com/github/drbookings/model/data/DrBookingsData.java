@@ -29,7 +29,8 @@ import javafx.beans.property.BooleanProperty;
 
 public interface DrBookingsData {
 
-    CleaningEntry addCleaning(String name, LocalDate date, String roomName) throws AlreadyBusyException;
+    CleaningEntry createAndAddCleaning(String id, String name, LocalDate date, String roomName)
+	    throws AlreadyBusyException;
 
     boolean cleaningNeededFor(String name, LocalDate date);
 
@@ -37,9 +38,6 @@ public interface DrBookingsData {
 
     BookingBean createAndAddBooking(LocalDate checkInDate, LocalDate checkOutDate, String guestName, String roomName,
 	    String source) throws OverbookingException;
-
-    BookingBean createBooking(String bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestName,
-	    String roomName, String source);
 
     Optional<BookingEntryPair> getAfter(BookingEntry e, int numDays);
 

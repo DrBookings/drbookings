@@ -78,7 +78,7 @@ public class AirbnbEarningsCalculatorTest {
 	final BookingBean b = BookingBeanTest.newInstance(LocalDate.of(2018, 01, 27), LocalDate.of(2018, 8, 5));
 	b.setPaymentDone(true);
 	b.setGrossEarningsExpression("8252.86");
-	b.getPayments().add(new Payment(LocalDate.of(2018, 01, 29), 1300));
+	b.getPayments().add(new PaymentImpl(LocalDate.of(2018, 01, 29), 1300));
 	assertThat(b.getNumberOfNights(), is(190));
 	final float result = c.calculateEarnings(b);
 	assertThat(result, is(1300f));
