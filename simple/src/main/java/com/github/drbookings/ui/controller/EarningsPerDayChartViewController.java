@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.model.BinType;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
 
 import javafx.beans.binding.Bindings;

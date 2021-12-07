@@ -20,34 +20,11 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.PaymentImpl;
-import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.*;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.Styles;
-import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.dialogs.ModifyBookingDialogFactory;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
@@ -56,15 +33,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -72,6 +41,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.converter.NumberStringConverter;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class BookingDetailsController implements Initializable {
 
@@ -95,6 +74,7 @@ public class BookingDetailsController implements Initializable {
 
     private static void addName(final HBox content, final BookingBean be) {
 	final Label label = new Label(be.getGuest().getName() + "\n" + be.getBookingOrigin().getName());
+	label.getStyleClass().add("first-line");
 	label.setWrapText(true);
 	content.getChildren().add(label);
 	HBox.setHgrow(label, Priority.ALWAYS);
@@ -102,9 +82,8 @@ public class BookingDetailsController implements Initializable {
     }
 
     static void addNewPayment(final String paymentString, final BookingBean be) {
-	if (StringUtils.isBlank(paymentString)) {
+	if (StringUtils.isBlank(paymentString))
 	    return;
-	}
 	final double paymentAmount = Double.parseDouble(paymentString);
 	final LocalDate paymentDate = LocalDate.now();
 	final PaymentImpl payment = new PaymentImpl(paymentDate, paymentAmount);

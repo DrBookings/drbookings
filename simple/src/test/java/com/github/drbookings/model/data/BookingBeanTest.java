@@ -20,18 +20,18 @@
 
 package com.github.drbookings.model.data;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingOrigin;
+import com.github.drbookings.Guest;
+import com.github.drbookings.Room;
+import org.junit.*;
+
+import java.time.LocalDate;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-
-import java.time.LocalDate;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class BookingBeanTest {
 

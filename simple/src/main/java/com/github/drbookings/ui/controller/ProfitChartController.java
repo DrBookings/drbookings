@@ -20,22 +20,9 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
-import java.util.concurrent.Callable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.beans.DateBean;
+import com.github.drbookings.DateBean;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -46,6 +33,17 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 public class ProfitChartController extends AbstractBinningChart<DateBean> implements Initializable {
 

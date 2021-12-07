@@ -20,25 +20,23 @@
 
 package com.github.drbookings.ui.selection;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.beans.RoomBean;
-
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.RoomBean;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class BookingSelectionManager {
 

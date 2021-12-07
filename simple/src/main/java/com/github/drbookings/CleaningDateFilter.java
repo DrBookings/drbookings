@@ -20,12 +20,10 @@
 
 package com.github.drbookings;
 
+import com.google.common.collect.Range;
+
 import java.time.LocalDate;
 import java.util.function.Predicate;
-
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
 
 public class CleaningDateFilter implements Predicate<BookingEntry> {
 

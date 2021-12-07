@@ -20,12 +20,12 @@
 
 package com.github.drbookings.ui.controller;
 
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingEntryBin;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-
-import com.github.drbookings.BookingEntryBin;
-import com.github.drbookings.model.BookingEntry;
 
 public abstract class BookingEntryBins<T> {
 

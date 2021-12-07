@@ -30,10 +30,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingOrigin;
-import com.github.drbookings.model.data.Guest;
-import com.github.drbookings.model.data.Room;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingOrigin;
+import com.github.drbookings.Guest;
+import com.github.drbookings.Room;
 
 public class NightlyRateViewTest {
 

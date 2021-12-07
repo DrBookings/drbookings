@@ -30,10 +30,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.CleaningEntry;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -112,7 +112,7 @@ public class GoogleCalendarSync {
 	final CalendarListEntry flats = getCalendar();
 	final String prefix = SettingsManager.getInstance().getRoomNamePrefix();
 	final Event event = new EventFactory().newEvent(
-		"Cleaning " + prefix + c.getRoom().getName() + " " + c.getElement().getName(), c.getDate(),
+		"Cleaning " + prefix + c.getBooking().getRoom().getName() + " " + c.getElement().getName(), c.getDate(),
 		"Cleaning event");
 	c.addCalendarId(addEvent(flats.getId(), event));
     }
@@ -201,7 +201,7 @@ public class GoogleCalendarSync {
     }
 
     private static boolean isDrBookingEvent(final Event event) {
-	return (event.getDescription() != null) && (event.getDescription().startsWith("Dr.Bookings")
+	return event.getDescription() != null && (event.getDescription().startsWith("Dr.Bookings")
 		|| event.getDescription().startsWith("drbookings"));
     }
 

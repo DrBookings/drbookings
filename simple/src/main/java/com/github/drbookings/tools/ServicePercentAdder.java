@@ -20,11 +20,11 @@
 
 package com.github.drbookings.tools;
 
-import java.io.File;
-
-import com.github.drbookings.model.ser.BookingBeanSer;
+import com.github.drbookings.ser.BookingBeanSer;
 import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.XMLStorage;
+
+import java.io.File;
 
 public class ServicePercentAdder {
 

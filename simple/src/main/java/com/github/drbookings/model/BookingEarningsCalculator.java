@@ -20,21 +20,20 @@
 
 package com.github.drbookings.model;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.DrBookingsApplication;
+import com.github.drbookings.EarningsCalculator;
+import com.google.common.collect.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.DrBookingsApplication;
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 public class BookingEarningsCalculator extends EarningsCalculator {
 

@@ -20,16 +20,11 @@
 
 package com.github.drbookings;
 
+import com.google.common.collect.Range;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-
-import com.github.drbookings.data.payments.Payments;
-import com.github.drbookings.data.payments.PaymentsCollector;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.Payment;
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
 
 /**
  * @deprecated use {@link PaymentsCollector}
@@ -55,7 +50,7 @@ public class PaymentDoneFilter {
     }
 
     public boolean test(final BookingBean b) {
-	final List<Payment> payedInRange = Payments.getPaymentInRange(dates, b.getPayments());
+	final List<Payment> payedInRange = Payments.getPaymentsInRange(dates, b.getPayments());
 	return b.isPaymentDone() && !payedInRange.isEmpty();
     }
 

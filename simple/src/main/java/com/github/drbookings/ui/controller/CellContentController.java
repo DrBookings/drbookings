@@ -20,20 +20,11 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.BookingEntryPair;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingEntryPair;
+import com.github.drbookings.RoomBean;
 import com.github.drbookings.model.data.manager.MainManager;
 import com.github.drbookings.ui.Styles;
-import com.github.drbookings.ui.beans.RoomBean;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -41,21 +32,27 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class CellContentController implements Initializable {
 
     @SuppressWarnings("unused")
-    private static Logger logger = LoggerFactory.getLogger(CellContentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CellContentController.class);
 
     private static Node buildEntryCheckIn(final BookingEntry e) {
 	final Label l = getNewLabel(e.getElement().getGuest().getName());
 	if (e.getElement().isSplitBooking()) {
 	    final Optional<BookingEntryPair> next = MainManager.getInstance().getOneDayBefore(e);
 	    if (next.isPresent()) {
-		if (next.get().hasGuest(e.getElement().getGuest())) {
+		if (next.get().hasGuest(e.getElement().getGuest()))
 		    // do not apply label for the same guest
 		    return l;
-		}
 	    }
 	}
 	l.getStyleClass().add("check-in");
@@ -67,10 +64,9 @@ public class CellContentController implements Initializable {
 	if (e.getElement().isSplitBooking()) {
 	    final Optional<BookingEntryPair> next = MainManager.getInstance().getOneDayAfter(e);
 	    if (next.isPresent()) {
-		if (next.get().hasGuest(e.getElement().getGuest())) {
+		if (next.get().hasGuest(e.getElement().getGuest()))
 		    // do not apply label for the same guest
 		    return l;
-		}
 	    }
 	}
 	l.getStyleClass().add("check-out");
@@ -78,17 +74,19 @@ public class CellContentController implements Initializable {
     }
 
     private static Node buildEntryCleaning(final RoomBean rb) {
+	// System.err.println(rb.getCleaningEntry());
 	final Label l = getNewLabel("");
 	final String s;
-	if (rb.needsCleaning()) {
+	if (rb.hasCleaning()) {
+	    s = rb.getCleaningEntry().getElement().getName();
+	    l.getStyleClass().add("cleaning");
+	} else if (rb.needsCleaning()) {
 	    s = "No Cleaning";
 	    if (rb.getDate().isAfter(LocalDate.now().minusDays(7))) {
 		l.getStyleClass().add("cleaning-warning");
 	    }
-	} else {
-	    s = rb.getCleaningEntry().getElement().getName();
-	    l.getStyleClass().add("cleaning");
-	}
+	} else
+	    throw new RuntimeException();
 	l.setText(s);
 	return l;
     }
@@ -157,28 +155,24 @@ public class CellContentController implements Initializable {
     }
 
     public void setData(final RoomBean rb) {
-	if (rb == null) {
+	if (rb == null)
 	    return;
-	}
 
 	final BookingEntryPair bep = rb.getFilteredBookingEntry();
 
-	if (bep == null) {
-	    return;
-	}
-
-	if (bep.hasCheckOut()) {
+	if ((bep != null) && bep.hasCheckOut()) {
 	    cellContainer.getChildren().add(buildEntryCheckOut(bep.getCheckOut()));
 	    cellContainer.setAlignment(Pos.TOP_CENTER);
 	}
-	if (rb.hasCleaning()) {
+	if (rb.needsCleaning()
+		|| rb.hasCleaning()/* filter out stay-overs but consider empty rooms with a cleaning */) {
 	    cellContainer.getChildren().add(buildEntryCleaning(rb));
 	}
-	if (bep.hasCheckIn()) {
+	if ((bep != null) && bep.hasCheckIn()) {
 	    cellContainer.getChildren().add(buildEntryCheckIn(bep.getCheckIn()));
 	    cellContainer.setAlignment(Pos.BOTTOM_CENTER);
 	}
-	if (bep.hasStay()) {
+	if ((bep != null) && bep.hasStay()) {
 	    cellContainer.getChildren().add(buildEntryStay(bep.getStay()));
 	    cellContainer.setAlignment(Pos.CENTER);
 	}
@@ -194,7 +188,9 @@ public class CellContentController implements Initializable {
 	}
 	if (bep != null) {
 	    final BookingEntry entry = bep.getLast();
-	    cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(entry.getBookingOrigin().getName()));
+	    if (entry != null) {
+		cellContainer.getStyleClass().add(Styles.getBackgroundStyleSource(entry.getBookingOrigin().getName()));
+	    }
 	}
     }
 

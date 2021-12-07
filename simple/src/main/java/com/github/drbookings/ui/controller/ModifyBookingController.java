@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.data.BookingBean;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.RoomBean;
+import com.github.drbookings.exception.OverbookingException;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.exception.OverbookingException;
-import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.application.Platform;

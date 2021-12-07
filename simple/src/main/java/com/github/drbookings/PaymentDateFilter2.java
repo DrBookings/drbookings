@@ -20,13 +20,11 @@
 
 package com.github.drbookings;
 
+import com.google.common.collect.Range;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.function.Predicate;
-
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
 
 /**
  * @deprecated use {@link PaymentsDoneFilter}

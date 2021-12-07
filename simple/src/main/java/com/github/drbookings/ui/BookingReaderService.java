@@ -20,18 +20,16 @@
 
 package com.github.drbookings.ui;
 
-import java.util.Collection;
-
+import com.github.drbookings.BookingFactory;
+import com.github.drbookings.model.data.manager.MainManager;
+import com.github.drbookings.ser.BookingBeanSer;
+import com.github.drbookings.ser.DataStore;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.BookingFactory;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.ser.BookingBeanSer;
-import com.github.drbookings.ser.DataStore;
-
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import java.util.Collection;
 
 public class BookingReaderService extends Service<Collection<BookingBeanSer>> {
 
@@ -47,7 +45,7 @@ public class BookingReaderService extends Service<Collection<BookingBeanSer>> {
 	    if (logger.isErrorEnabled()) {
 		logger.error(e.getLocalizedMessage(), e);
 	    }
-	    UIUtils.showError(e);
+	    FXUIUtils.showError(e);
 	});
 	setOnSucceeded(e -> {
 	    if (logger.isDebugEnabled()) {
@@ -58,7 +56,7 @@ public class BookingReaderService extends Service<Collection<BookingBeanSer>> {
 		    if (logger.isErrorEnabled()) {
 			logger.error(e1.getLocalizedMessage(), e);
 		    }
-		    UIUtils.showError(e1);
+		    FXUIUtils.showError(e1);
 		}
 	    }
 	});

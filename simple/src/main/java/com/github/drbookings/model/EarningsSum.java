@@ -23,6 +23,8 @@ package com.github.drbookings.model;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.github.drbookings.EarningsProvider;
+
 public class EarningsSum implements Function<Collection<? extends EarningsProvider>, Number> {
 
     private final boolean netEarnings;

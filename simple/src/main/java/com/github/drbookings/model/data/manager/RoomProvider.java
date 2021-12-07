@@ -20,11 +20,12 @@
 
 package com.github.drbookings.model.data.manager;
 
-import com.github.drbookings.model.data.Room;
+import com.github.drbookings.NamedProvider;
+import com.github.drbookings.Room;
 
 public class RoomProvider extends NamedProvider<Room> {
 
-    public RoomProvider() {
+    public RoomProvider(){
 
     }
 

@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.RoomBean;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
 
 import javafx.beans.property.DoubleProperty;

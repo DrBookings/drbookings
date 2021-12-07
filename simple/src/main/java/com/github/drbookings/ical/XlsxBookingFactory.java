@@ -20,13 +20,9 @@
 
 package com.github.drbookings.ical;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.github.drbookings.BookingFactory;
+import com.github.drbookings.excel.FileFormatBookingXLS;
+import com.github.drbookings.ser.BookingBeanSer;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,9 +31,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.BookingFactory;
-import com.github.drbookings.excel.FileFormatBookingXLS;
-import com.github.drbookings.model.ser.BookingBeanSer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class XlsxBookingFactory implements BookingFactory {
 

@@ -20,7 +20,7 @@
 
 package com.github.drbookings.model;
 
-import com.github.drbookings.model.data.DrBookingsDataImpl;
+import com.github.drbookings.DrBookingsDataImpl;
 
 public class DataAccess {
 

@@ -20,17 +20,16 @@
 
 package com.github.drbookings.ui.selection;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.ui.beans.RoomBean;
-
+import com.github.drbookings.RoomBean;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class RoomBeanSelectionManager {
 
@@ -64,6 +63,14 @@ public class RoomBeanSelectionManager {
 	// if (logger.isDebugEnabled()) {
 	// logger.debug("Selection updated: " + data.size());
 	// }
+    }
+
+    public Optional<RoomBean> getFirstSelected() {
+	final List<RoomBean> rooms = selectionProperty();
+	if (rooms.isEmpty()) {
+	    return Optional.empty();
+	}
+	return Optional.of(rooms.get(0));
     }
 
 }

@@ -20,14 +20,13 @@
 
 package com.github.drbookings.model;
 
-import java.util.function.Function;
-
-import com.github.drbookings.ui.beans.DateBean;
-
+import com.github.drbookings.DateBean;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.function.Function;
 
 public class DateBeanBin<T> {
 

@@ -20,20 +20,13 @@
 
 package com.github.drbookings.model;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import com.github.drbookings.DrBookingsDataImpl;
+import org.junit.*;
 
 import java.time.LocalDate;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.github.drbookings.model.data.DrBookingsDataImpl;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnifiedDataAccessTest {
 

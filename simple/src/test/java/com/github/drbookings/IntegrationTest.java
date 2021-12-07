@@ -21,7 +21,11 @@
 package com.github.drbookings;
 
 /**
- * JUnit category marker.
+ * Junit category marker. Tests, that test more than one specific class.
+ *
+ * @author Alexander Kerner
+ * @date 2018-10-27
+ *
  */
 public interface IntegrationTest {
 

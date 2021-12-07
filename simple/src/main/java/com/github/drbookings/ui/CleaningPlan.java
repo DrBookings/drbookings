@@ -20,16 +20,17 @@
 
 package com.github.drbookings.ui;
 
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.SettingsManager;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-
-import com.github.drbookings.model.settings.SettingsManager;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class CleaningPlan {
 
@@ -61,7 +62,7 @@ public class CleaningPlan {
 		    .forEach(e -> {
 			sb.append(myDateFormatter.format(e.getDate()));
 			sb.append("\t");
-			sb.append(e.getRoom());
+			sb.append(e.getBooking().getRoom());
 			sb.append("\n");
 		    });
 	    // Collections.sort(entries);

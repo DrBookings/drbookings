@@ -20,12 +20,17 @@
 
 package com.github.drbookings.ser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DrBookingsDataImpl;
+import com.github.drbookings.exception.OverbookingException;
+import com.github.drbookings.io.Backup;
+import com.github.drbookings.model.data.manager.MainManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,20 +39,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import com.github.drbookings.io.Backup;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.DrBookingsDataImpl;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.exception.OverbookingException;
-import com.github.drbookings.model.ser.BookingBeanSer;
-import com.github.drbookings.ui.CleaningEntry;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class XMLStorage {
 
@@ -67,7 +64,7 @@ public class XMLStorage {
 	    ds.getBookingsSer().add(DataStore.transform(b));
 	}
 	for (final CleaningEntry e : manager.getCleaningEntries()) {
-	    ds.getCleaningsSer().add(DataStore.transform(e));
+	    // ds.getCleaningsSer().add(DataStore.transform(e));
 	}
 	return ds;
     }

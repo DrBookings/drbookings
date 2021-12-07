@@ -20,30 +20,34 @@
 
 package com.github.drbookings.io;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.github.ktools1000.io.BackupCreator;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+
+/**
+ *
+ * @author Alexander Kerner
+ * @deprecated use {@link BackupCreator} instead.
+ */
+@Deprecated
 public class Backup {
 
     private static final Logger logger = LoggerFactory.getLogger(Backup.class);
 
     public static void make(final File file) {
-	if (file.exists() && (file.length() != 0)) {
+	if (file.exists() && (file.length() != 0))
 	    try {
 		final File backupFile = new File(file.getParentFile(), file.getName() + ".bak");
 		FileUtils.copyFile(file, backupFile);
-		if (logger.isInfoEnabled()) {
+		if (logger.isInfoEnabled())
 		    logger.info("Backup created as " + backupFile);
-		}
 	    } catch (final IOException e) {
-		if (logger.isErrorEnabled()) {
+		if (logger.isErrorEnabled())
 		    logger.error(e.getLocalizedMessage(), e);
-		}
 	    }
-	}
     }
 }

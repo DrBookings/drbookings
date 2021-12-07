@@ -20,19 +20,16 @@
 
 package com.github.drbookings.ui;
 
+import com.github.drbookings.*;
+import com.github.drbookings.model.BookingEntryToBooking;
+import com.github.drbookings.ui.provider.OccupancyRateProvider;
+import com.github.drbookings.ui.selection.DateBeanSelectionManager;
+import com.google.common.collect.Range;
+
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.OptionalDouble;
-
-import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.BookingEntryToBooking;
-import com.github.drbookings.model.EarningsProvider;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.provider.OccupancyRateProvider;
-import com.github.drbookings.ui.selection.DateBeanSelectionManager;
-import com.google.common.collect.Range;
 
 public class StatusLabelStringFactory {
 

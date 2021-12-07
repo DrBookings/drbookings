@@ -20,8 +20,7 @@
 
 package com.github.drbookings.ui;
 
-import com.github.drbookings.ui.beans.DateBean;
-
+import com.github.drbookings.DateBean;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;

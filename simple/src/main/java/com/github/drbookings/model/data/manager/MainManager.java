@@ -1,16 +1,20 @@
 /*
  * DrBookings
+ *
  * Copyright (C) 2016 - 2018 Alexander Kerner
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public
- * License along with this program. If not, see
+ * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  */
 package com.github.drbookings.model.data.manager;
@@ -30,18 +34,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingEntryPair;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DateBean;
 import com.github.drbookings.DateRange;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.BookingEntryPair;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.DrBookingsData;
-import com.github.drbookings.model.data.DrBookingsDataImpl;
-import com.github.drbookings.model.data.Room;
-import com.github.drbookings.model.exception.AlreadyBusyException;
-import com.github.drbookings.model.exception.OverbookingException;
-import com.github.drbookings.ui.CleaningEntry;
-import com.github.drbookings.ui.beans.DateBean;
-import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.DrBookingsData;
+import com.github.drbookings.DrBookingsDataImpl;
+import com.github.drbookings.Room;
+import com.github.drbookings.RoomBean;
+import com.github.drbookings.exception.AlreadyBusyException;
+import com.github.drbookings.exception.OverbookingException;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -97,9 +101,9 @@ public class MainManager implements DrBookingsData {
 
     @Override
     public CleaningEntry createAndAddCleaning(final String id, final String name, final LocalDate date,
-	    final String room) throws AlreadyBusyException {
+	    final BookingBean booking, final boolean black) throws AlreadyBusyException {
 
-	return getData().createAndAddCleaning(id, name, date, room);
+	return getData().createAndAddCleaning(id, name, date, booking, black);
     }
 
     private void addDateBean(final DateBean db) {
@@ -246,25 +250,25 @@ public class MainManager implements DrBookingsData {
     }
 
     @Override
-    public Optional<BookingEntry> getFirstBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
+    public BookingEntry getFirstBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
 
 	return data.getFirstBookingEntry(bookingsThatDay);
     }
 
     @Override
-    public Optional<BookingEntry> getFirstBookingEntry(final String roomName, final LocalDate date) {
+    public BookingEntry getFirstBookingEntry(final String roomName, final LocalDate date) {
 
 	return data.getFirstBookingEntry(roomName, date);
     }
 
     @Override
-    public Optional<BookingEntry> getLastBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
+    public BookingEntry getLastBookingEntry(final Optional<BookingEntryPair> bookingsThatDay) {
 
 	return data.getLastBookingEntry(bookingsThatDay);
     }
 
     @Override
-    public Optional<BookingEntry> getLastBookingEntry(final String roomName, final LocalDate date) {
+    public BookingEntry getLastBookingEntry(final String roomName, final LocalDate date) {
 
 	return data.getLastBookingEntry(roomName, date);
     }
@@ -337,8 +341,8 @@ public class MainManager implements DrBookingsData {
     }
 
     @Override
-    public void setCleaning(final String name, final LocalDate date, final String roomName) {
-	data.setCleaning(name, date, roomName);
+    public void setCleaning(final String name, final LocalDate date, final BookingBean booking, final boolean black) {
+	data.setCleaning(name, date, booking, black);
 
     }
 

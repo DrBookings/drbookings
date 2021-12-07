@@ -20,14 +20,14 @@
 
 package com.github.drbookings.ui.controller;
 
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingEntryBin;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.github.drbookings.BookingEntryBin;
-import com.github.drbookings.model.BookingEntry;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class BookingEntryMonthBins extends BookingEntryBins<YearMonth> {
 

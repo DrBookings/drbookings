@@ -36,10 +36,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntryPair;
+import com.github.drbookings.Cleaning;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DrBookingsDataImpl;
 import com.github.drbookings.TestUtils;
-import com.github.drbookings.model.BookingEntryPair;
-import com.github.drbookings.model.exception.AlreadyBusyException;
-import com.github.drbookings.ui.CleaningEntry;
+import com.github.drbookings.exception.AlreadyBusyException;
 
 public class DrBookingsDataImplTest {
 
@@ -105,7 +108,8 @@ public class DrBookingsDataImplTest {
     @Test
     public void testCreateCleaningEntry01() throws Exception {
 
-	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), TestUtils.getTestBooking(),
+		false);
 	assertThat(ce, is(not(nullValue())));
 	final Cleaning c = ce.getElement();
 	assertThat(c, is(not(nullValue())));
@@ -116,7 +120,8 @@ public class DrBookingsDataImplTest {
     @Test
     public void testCreateCleaningEntry02() throws Exception {
 
-	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), TestUtils.getTestBooking(),
+		false);
 	final List<CleaningEntry> entries = data.getCleaningEntries();
 	assertThat(entries, is(not(nullValue())));
 	assertThat(entries.size(), is(1));
@@ -127,8 +132,10 @@ public class DrBookingsDataImplTest {
     @Test(expected = AlreadyBusyException.class)
     public void testCreateCleaningEntry03() throws Exception {
 
-	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
-	final CleaningEntry ce2 = data.createAndAddCleaning(null, "testc", LocalDate.now(), "3");
+	final CleaningEntry ce = data.createAndAddCleaning(null, "testc", LocalDate.now(), TestUtils.getTestBooking(),
+		false);
+	final CleaningEntry ce2 = data.createAndAddCleaning(null, "testc", LocalDate.now(), TestUtils.getTestBooking(),
+		false);
 
     }
 

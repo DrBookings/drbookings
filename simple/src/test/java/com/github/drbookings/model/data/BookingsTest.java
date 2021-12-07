@@ -1,19 +1,36 @@
+/*
+ * DrBookings
+ *
+ * Copyright (C) 2016 - 2018 Alexander Kerner
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-2.0.html>.
+ */
+
 package com.github.drbookings.model.data;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.Bookings;
+import com.github.drbookings.TestUtils;
+import org.junit.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.github.drbookings.TestUtils;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class BookingsTest {
 
@@ -54,7 +71,20 @@ public class BookingsTest {
     @Test
     public void testNumberOfNights04() {
 	final BookingBean bb = TestUtils.getTestBooking(LocalDate.of(2015, 05, 30), LocalDate.of(2015, 06, 02));
-	assertThat(Bookings.countNights(Arrays.asList(bb), YearMonth.of(2015, 05)), is(1L));
+	// nights are 'shifted' by 1 towards check-out. The night counts to the day
+	// before, not the day after.
+	assertThat(Bookings.countNights(Arrays.asList(bb), YearMonth.of(2015, 05)), is(2L));
+    }
+
+    @Test
+    public void testNumberOfNights05() {
+	// one night, check-in on last day of month, check-out on first day of next
+	// month
+	final BookingBean bb = TestUtils.getTestBooking(LocalDate.of(2015, 01, 31), LocalDate.of(2015, 02, 01));
+	// nights are 'shifted' by 1 towards check-out. The night counts to the day
+	// before, not the day after.
+	assertThat(Bookings.countNights(Arrays.asList(bb), YearMonth.of(2015, 01)), is(1L));
+	assertThat(Bookings.countNights(Arrays.asList(bb), YearMonth.of(2015, 02)), is(0L));
     }
 
 }

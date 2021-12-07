@@ -20,17 +20,12 @@
 
 package com.github.drbookings.ser;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.DrBookingsDataImpl;
+import org.junit.*;
+
 import java.io.File;
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.DrBookingsDataImpl;
 
 public class XMLStorageTest {
 

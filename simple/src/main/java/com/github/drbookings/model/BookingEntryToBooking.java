@@ -20,13 +20,14 @@
 
 package com.github.drbookings.model;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntry;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.github.drbookings.model.data.BookingBean;
 
 public class BookingEntryToBooking implements Function<Collection<? extends BookingEntry>, Set<BookingBean>> {
 

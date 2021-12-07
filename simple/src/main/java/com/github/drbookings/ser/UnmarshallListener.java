@@ -20,13 +20,11 @@
 
 package com.github.drbookings.ser;
 
-import javax.xml.bind.Unmarshaller.Listener;
-
-import com.github.drbookings.model.ser.BookingBeanSer;
-
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
+
+import javax.xml.bind.Unmarshaller.Listener;
 
 public class UnmarshallListener extends Listener {
 

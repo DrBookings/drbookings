@@ -22,7 +22,7 @@ package com.github.drbookings.ui;
 
 import java.util.function.Predicate;
 
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.BookingEntry;
 
 public class NightCountFilter implements Predicate<BookingEntry> {
 

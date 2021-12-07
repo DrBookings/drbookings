@@ -31,8 +31,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.OccupancyRateCalculator;
+import com.github.drbookings.RoomBean;
+import com.github.drbookings.SettingsManager;
 
 public class MinimumPriceCalulcator implements Function<Collection<RoomBean>, Number> {
 

@@ -20,23 +20,7 @@
 
 package com.github.drbookings;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.Optional;
-import java.util.Properties;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.settings.SettingsManager;
 import com.github.drbookings.ui.controller.MainController;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -50,6 +34,19 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Currency;
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * @author Alexander Kerner
@@ -100,37 +97,33 @@ public class DrBookingsApplication extends Application {
 
     }
 
-    public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
+    public static final String ADDITIONAL_COSTS_KEY = "fix-costs-permonth-perroom";
 
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM.yyyy");
+    private static final String CLEANING_COSTS_KEY = "default-cleaning-costs";
 
-    private final static Logger logger = LoggerFactory.getLogger(DrBookingsApplication.class);
-
-    public static final String CONFIG_FILE_PATH = "drbookings.properties";
+    private static final String CLEANING_FEES_KEY = "default-cleaning-fees";
 
     public static final String DATA_FILE_KEY = "data-file";
 
-    public static final String ADDITIONAL_COSTS_KEY = "fix-costs-permonth-perroom";
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("E\tdd.MM.yyyy");
 
-    public static final String REFERENCE_COLD_RENT_LONGTERM_KEY = "reference-coldrent-longterm-permonth-perroom";
+    public static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
 
-    public static final String WORK_HOURS_PER_MONTH_KEY = "work-hours-permonth";
+    private static final String EARNINGS_PAYOUT_PERCENT_KEY = "earnings-payout-percent";
+
+    private final static Logger logger = LoggerFactory.getLogger(DrBookingsApplication.class);
 
     public static final String NUMBER_OF_ROOMS_KEY = "number-of-rooms";
 
+    public static final String REFERENCE_COLD_RENT_LONGTERM_KEY = "reference-coldrent-longterm-permonth-perroom";
+
     public static final String ROOM_NAME_PREFIX_KEY = "room-name-prefix";
-
-    public static final String SHOW_NET_EARNINGS_KEY = "show-net-earnings";
-
-    private static final String CLEANING_FEES_KEY = "default-cleaning-fees";
 
     private static final String SERVICE_FEES_KEY = "default-service-fees";
 
     private static final String SERVICE_FEES_PERCENT_KEY = "default-service-fees-percent";
 
-    private static final String EARNINGS_PAYOUT_PERCENT_KEY = "earnings-payout-percent";
-
-    private static final String CLEANING_COSTS_KEY = "default-cleaning-costs";
+    public static final String WORK_HOURS_PER_MONTH_KEY = "work-hours-permonth";
 
     public static void main(final String[] args) {
 	launch(args);
@@ -141,23 +134,24 @@ public class DrBookingsApplication extends Application {
 	InputStream input = null;
 	try {
 	    try {
-		input = new FileInputStream(System.getProperty("user.home") + File.separator + CONFIG_FILE_PATH);
+		input = new FileInputStream(
+			System.getProperty("user.home") + File.separator + SettingsManager.CONFIG_FILE_PATH);
 		if (logger.isInfoEnabled()) {
 		    logger.info("Reading properties from " + System.getProperty("user.home") + File.separator
-			    + CONFIG_FILE_PATH);
+			    + SettingsManager.CONFIG_FILE_PATH);
 		}
 		prop.load(input);
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
 		    logger.debug("Failed to read properties from " + System.getProperty("user.home") + File.separator
-			    + CONFIG_FILE_PATH);
+			    + SettingsManager.CONFIG_FILE_PATH);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setDataFile(new File(prop.getProperty(DATA_FILE_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + DATA_FILE_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + DATA_FILE_KEY + ", " + ex);
 		}
 	    }
 	    try {
@@ -165,7 +159,7 @@ public class DrBookingsApplication extends Application {
 		SettingsManager.getInstance().setAdditionalCosts(n.floatValue());
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + ADDITIONAL_COSTS_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + ADDITIONAL_COSTS_KEY + ", " + ex);
 		}
 	    }
 	    try {
@@ -173,14 +167,14 @@ public class DrBookingsApplication extends Application {
 			Float.parseFloat(prop.getProperty(REFERENCE_COLD_RENT_LONGTERM_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + REFERENCE_COLD_RENT_LONGTERM_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + REFERENCE_COLD_RENT_LONGTERM_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setNumberOfRooms(Integer.parseInt(prop.getProperty(NUMBER_OF_ROOMS_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + NUMBER_OF_ROOMS_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + NUMBER_OF_ROOMS_KEY + ", " + ex);
 		}
 	    }
 	    try {
@@ -188,43 +182,43 @@ public class DrBookingsApplication extends Application {
 			.setWorkHoursPerMonth(Float.parseFloat(prop.getProperty(WORK_HOURS_PER_MONTH_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + WORK_HOURS_PER_MONTH_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setRoomNamePrefix(prop.getProperty(ROOM_NAME_PREFIX_KEY));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + ROOM_NAME_PREFIX_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + ROOM_NAME_PREFIX_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance()
-			.setShowNetEarnings(Boolean.parseBoolean(prop.getProperty(SHOW_NET_EARNINGS_KEY)));
+			.setShowNetEarnings(Boolean.parseBoolean(prop.getProperty(SettingsManager.SHOW_NET_EARNINGS_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + SHOW_NET_EARNINGS_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + SettingsManager.SHOW_NET_EARNINGS_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setCleaningFees(Float.parseFloat(prop.getProperty(CLEANING_FEES_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + CLEANING_FEES_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + CLEANING_FEES_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setCleaningCosts(Float.parseFloat(prop.getProperty(CLEANING_COSTS_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + CLEANING_COSTS_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + CLEANING_COSTS_KEY + ", " + ex);
 		}
 	    }
 	    try {
 		SettingsManager.getInstance().setServiceFees(Float.parseFloat(prop.getProperty(SERVICE_FEES_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + SERVICE_FEES_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + SERVICE_FEES_KEY + ", " + ex);
 		}
 	    }
 	    try {
@@ -232,7 +226,7 @@ public class DrBookingsApplication extends Application {
 			.setServiceFeesPercent(Float.parseFloat(prop.getProperty(SERVICE_FEES_PERCENT_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + SERVICE_FEES_PERCENT_KEY + ", " + ex);
 		}
 	    }
 	    try {
@@ -240,7 +234,7 @@ public class DrBookingsApplication extends Application {
 			.setEarningsPayoutPercent(Float.parseFloat(prop.getProperty(EARNINGS_PAYOUT_PERCENT_KEY)));
 	    } catch (final Exception ex) {
 		if (logger.isDebugEnabled()) {
-		    logger.debug("Failed to parse " + EARNINGS_PAYOUT_PERCENT_KEY + ", " + ex.toString());
+		    logger.debug("Failed to parse " + EARNINGS_PAYOUT_PERCENT_KEY + ", " + ex);
 		}
 	    }
 	} finally {
@@ -248,10 +242,20 @@ public class DrBookingsApplication extends Application {
 	}
     }
 
+    // private CleaningEvents john;
+
     private MainController mainController;
+
+    public DrBookingsApplication() {
+
+    }
 
     void exit() {
 	Platform.exit();
+    }
+
+    public UIData getUIData() {
+	return mainController.getUIData();
     }
 
     @Override
@@ -276,7 +280,8 @@ public class DrBookingsApplication extends Application {
 	stage.setScene(scene);
 	stage.setOnCloseRequest(new CloseRequestEventHandler());
 	stage.show();
-	mainController.readDataFile(SettingsManager.getInstance().getDataFile());
+	// mainController.readDataFile(SettingsManager.getInstance().getDataFile());
+	// john = new CleaningEvents(mainController.getUIData().getCleaningData());
 
     }
 

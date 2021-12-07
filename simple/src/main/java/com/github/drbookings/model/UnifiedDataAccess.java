@@ -20,11 +20,13 @@
 
 package com.github.drbookings.model;
 
+import com.github.drbookings.BookingEntryPair;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DrBookingsDataImpl;
+import com.github.drbookings.RoomEntry;
+
 import java.time.LocalDate;
 import java.util.List;
-
-import com.github.drbookings.model.data.DrBookingsDataImpl;
-import com.github.drbookings.ui.CleaningEntry;
 
 public class UnifiedDataAccess extends DataAccess {
 

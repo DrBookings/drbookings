@@ -20,42 +20,13 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.NavigableSet;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.CleaningDateFilter;
-import com.github.drbookings.FXUtils;
-import com.github.drbookings.LocalDates;
-import com.github.drbookings.PaymentDateFilter2;
-import com.github.drbookings.TemporalQueries;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingEntries;
-import com.github.drbookings.model.data.BookingOrigin;
-import com.github.drbookings.model.data.Guest;
+import com.github.drbookings.*;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.CurrencyCellValueFactory;
 import com.github.drbookings.ui.IntegerCellValueFactory;
-import com.github.drbookings.ui.beans.StatisticsTableBean;
+import com.github.drbookings.ui.StatisticsTableBean;
 import com.github.drbookings.ui.selection.BookingSelectionManager;
 import com.google.common.collect.Range;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -63,6 +34,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class StatsViewController implements Initializable {
 

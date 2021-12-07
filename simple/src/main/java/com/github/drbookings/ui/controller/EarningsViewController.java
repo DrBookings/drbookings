@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingEntries;
+import com.github.drbookings.BookingEntry;
 import com.github.drbookings.BookingEntryBin;
 import com.github.drbookings.CleaningDateFilter;
 import com.github.drbookings.PaymentDateFilter2;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingEntries;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
 import com.google.common.collect.Range;
 
 import javafx.event.EventHandler;
@@ -220,7 +220,7 @@ public class EarningsViewController implements Initializable {
 	    // BookingEntries.getNetEarningsBooking(bookingsFilteredByPaymentDate);
 	    // double earningsAirbnb =
 	    // BookingEntries.getNetEarningsAirbnb(bookingsFilteredByPaymentDate);
-	    final double cleaningCosts = BookingEntries.getCleaningCosts(bookingsFilteredByCleaningDate);
+	    final double cleaningCosts = 0;// BookingEntries.getCleaningCosts(bookingsFilteredByCleaningDate);
 	    final double totalNetProfit = totalEarnings - totalAdditionalCosts - cleaningCosts;
 
 	    numbers.add(totalNetProfit);

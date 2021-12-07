@@ -34,7 +34,7 @@ import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.controller.MainController;
 
-@Category(IntegrationTest.class)
+@Category(IntegrationTests.class)
 public class IntegrationTest01 {
 
     private MainController mainController;

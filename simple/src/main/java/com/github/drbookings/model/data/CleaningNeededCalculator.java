@@ -20,12 +20,13 @@
 
 package com.github.drbookings.model.data;
 
+import com.github.drbookings.BookingEntryPair;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DrBookingsDataImpl;
+
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-
-import com.github.drbookings.model.BookingEntryPair;
-import com.github.drbookings.ui.CleaningEntry;
 
 public class CleaningNeededCalculator implements Callable<Boolean> {
 
@@ -68,12 +69,8 @@ public class CleaningNeededCalculator implements Callable<Boolean> {
 		if (beo2.isPresent()) {
 		    // booking found
 		    // consider only check-outs
-		    if (beo2.get().hasCheckOut()) {
-			return true;
-		    } else {
-			// a non-check-out booking entry
-			return false;
-		    }
+            // a non-check-out booking entry
+            return beo2.get().hasCheckOut();
 		}
 	    }
 	    // last date reached

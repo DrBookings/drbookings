@@ -20,32 +20,20 @@
 
 package com.github.drbookings.ser;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.github.drbookings.*;
+import com.github.drbookings.model.data.manager.MainManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.PaymentImpl;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingBeanFactory;
-import com.github.drbookings.model.data.Cleaning;
-import com.github.drbookings.model.data.Room;
-import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.data.ser.PaymentSer;
-import com.github.drbookings.model.exception.AlreadyBusyException;
-import com.github.drbookings.model.ser.BookingBeanSer;
-import com.github.drbookings.model.ser.CleaningBeanSer;
-import com.github.drbookings.ui.CleaningEntry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @XmlRootElement
-public class DataStore extends DataStoreCore {
+public class DataStore extends DataStoreCoreSer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
 
@@ -63,7 +51,7 @@ public class DataStore extends DataStoreCore {
 	result.welcomeMailSend = bb.isWelcomeMailSend();
 	result.serviceFee = bb.getServiceFee();
 	result.serviceFeePercent = bb.getServiceFeesPercent();
-	result.cleaningFees = bb.getCleaningFees();
+	result.cleaningFees = Float.toString(bb.getCleaningFees());
 	result.checkInNote = bb.getCheckInNote();
 	result.paymentDone = bb.isPaymentDone();
 	result.specialRequestNote = bb.getSpecialRequestNote();
@@ -71,45 +59,50 @@ public class DataStore extends DataStoreCore {
 	result.calendarIds = bb.getCalendarIds();
 	result.dateOfPayment = bb.getDateOfPayment();
 	result.splitBooking = bb.isSplitBooking();
-	result.paymentsSoFar = PaymentSer.build(bb.getPayments());
+	result.paymentsSoFar = PaymentSerFactory.build(bb.getPayments());
 	return result;
     }
 
-    public static CleaningBeanSer transform(final CleaningEntry c) {
-	final CleaningBeanSer b = new CleaningBeanSer();
-	b.date = c.getDate();
-	b.name = c.getElement().getName();
-	b.room = c.getRoom().getName();
-	b.calendarIds = c.getCalendarIds();
-	b.cleaningCosts = c.getCleaningCosts();
-	b.id = c.getId();
-	// if (c.getBooking() != null) {
-	// b.bookingId = c.getBooking().getId();
-	// }
-	// System.err.println("Removed cleaning");
-	return b;
-    }
+    // public static CleaningBeanSer transform(final CleaningEntry c) {
+    // final CleaningBeanSer b = new CleaningBeanSer();
+    // b.date = c.getDate();
+    // b.name = c.getElement().getName();
+    // b.bookingId = c.getBooking().getId();
+    // b.calendarIds = c.getCalendarIds();
+    // b.cleaningCosts = c.getCleaningCosts();
+    // b.id = c.getId();
+    // b.black = c.isBlack();
+    // // if (c.getBooking() != null) {
+    // // b.bookingId = c.getBooking().getId();
+    // // }
+    // // System.err.println("Removed cleaning");
+    // return b;
+    // }
 
-    public static List<CleaningEntry> transformCleanings(final Collection<? extends CleaningBeanSer> sers) {
-	final List<CleaningEntry> result = new ArrayList<>();
-	for (final CleaningBeanSer cb : sers) {
-	    result.add(transformCleaning(cb));
-	}
-	return result;
-    }
+    // public static List<CleaningEntry> transformCleanings(final Collection<?
+    // extends CleaningBeanSer> sers,
+    // final Collection<? extends BookingBean> bookings) {
+    // final List<CleaningEntry> result = new ArrayList<>();
+    // for (final CleaningBeanSer cb : sers) {
+    // result.add(transformCleaning(cb, bookings));
+    // }
+    // return result;
+    // }
 
-    public static CleaningEntry transformCleaning(final CleaningBeanSer cb) {
-
-	final Cleaning cleaning = new Cleaning(cb.name);
-	final LocalDate date = cb.date;
-	final Room room = new Room(cb.room);
-	final CleaningEntry ce = new CleaningEntry(date, room, cleaning);
-	ce.setCalendarIds(cb.calendarIds);
-	ce.setCleaningCosts(cb.cleaningCosts);
-
-	return ce;
-
-    }
+    // public static CleaningEntry transformCleaning(final CleaningBeanSer cb,
+    // final Collection<? extends BookingBean> bookings) {
+    //
+    // final Cleaning cleaning = new Cleaning(cb.name);
+    // final LocalDate date = cb.date;
+    // final BookingBean booking = Bookings.getBookingById(cb.bookingId, bookings);
+    // final CleaningEntry ce = new CleaningEntry(date, booking, cleaning,
+    // cb.black);
+    // ce.setCalendarIds(cb.calendarIds);
+    // ce.setCleaningCosts(cb.cleaningCosts);
+    //
+    // return ce;
+    //
+    // }
 
     public static List<BookingBean> transform(final Collection<? extends BookingBeanSer> sers) {
 	final List<BookingBean> bookingsToAdd = new ArrayList<>();
@@ -126,7 +119,7 @@ public class DataStore extends DataStoreCore {
 		b.setCheckOutNote(bb.checkOutNote);
 		b.setExternalId(bb.externalId);
 		b.setCalendarIds(bb.calendarIds);
-		b.setCleaningFees(bb.cleaningFees);
+		b.setCleaningFees(Payments.createMondary(bb.cleaningFees).getNumber().floatValue());
 		b.setServiceFeesPercent(bb.serviceFeePercent);
 		b.setDateOfPayment(bb.dateOfPayment);
 		b.setSplitBooking(bb.splitBooking);
@@ -175,11 +168,13 @@ public class DataStore extends DataStoreCore {
 		b.setCheckOutNote(bb.checkOutNote);
 		b.setExternalId(bb.externalId);
 		b.setCalendarIds(bb.calendarIds);
-		b.setCleaningFees(bb.cleaningFees);
+		b.setCleaningFees(Payments.createMondary(bb.cleaningFees).getNumber().floatValue());
 		b.setServiceFeesPercent(bb.serviceFeePercent);
 		b.setDateOfPayment(bb.dateOfPayment);
 		b.setSplitBooking(bb.splitBooking);
 		b.setPayments(PaymentImpl.build(bb.paymentsSoFar));
+
+		bookingsToAdd.add(b);
 
 	    } catch (final Exception e) {
 		if (logger.isErrorEnabled()) {
@@ -194,11 +189,14 @@ public class DataStore extends DataStoreCore {
 
 	for (final CleaningBeanSer cb : getCleaningsSer()) {
 	    try {
-		final CleaningEntry ce = manager.createAndAddCleaning(cb.id, cb.name, cb.date, cb.room);
+		final CleaningEntry ce = manager.createAndAddCleaning(cb.id, cb.name, cb.date,
+			Bookings.getBookingById(cb.bookingId, bookingsToAdd), cb.black);
 		ce.setCalendarIds(cb.calendarIds);
-		ce.setCleaningCosts(cb.cleaningCosts);
-	    } catch (final AlreadyBusyException e) {
-		e.printStackTrace();
+		// ce.setCleaningCosts(cb.cleaningCosts);
+	    } catch (final Exception e) {
+		if (logger.isErrorEnabled()) {
+		    logger.error("Failed to import cleaning", e);
+		}
 	    }
 
 	    // if (b.isPresent()) {

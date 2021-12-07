@@ -20,11 +20,12 @@
 
 package com.github.drbookings.model.data;
 
-import java.util.Collection;
-
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+import java.util.Collection;
 
 public class BookingMapFactory {
 

@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.github.drbookings.model.data.BookingOrigin;
-import com.github.drbookings.model.settings.SettingsManager;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingOrigin;
+import com.github.drbookings.SettingsManager;
 
 public class NightlyRateView {
 

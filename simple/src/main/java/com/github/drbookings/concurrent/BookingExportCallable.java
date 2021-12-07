@@ -20,15 +20,14 @@
 
 package com.github.drbookings.concurrent;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.ser.XMLStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ser.XMLStorage;
+import java.io.File;
+import java.util.Collection;
+import java.util.concurrent.Callable;
 
 public class BookingExportCallable implements Callable<Void> {
 

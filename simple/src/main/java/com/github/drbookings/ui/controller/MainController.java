@@ -29,6 +29,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -39,34 +40,41 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.BookingEntries;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.BookingsByOrigin;
+import com.github.drbookings.DataStoreCore;
+import com.github.drbookings.DateBean;
 import com.github.drbookings.DrBookingsApplication;
 import com.github.drbookings.LocalDates;
+import com.github.drbookings.Room;
+import com.github.drbookings.RoomBean;
+import com.github.drbookings.SettingsManager;
+import com.github.drbookings.SimpleUIData;
+import com.github.drbookings.UIData;
 import com.github.drbookings.google.GoogleCalendarSync;
 import com.github.drbookings.ical.AirbnbICalParser;
 import com.github.drbookings.ical.ICalBookingFactory;
 import com.github.drbookings.ical.XlsxBookingFactory;
-import com.github.drbookings.model.BookingEntry;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingEntries;
-import com.github.drbookings.model.data.Room;
+import com.github.drbookings.io.FromXMLReader;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ser.DataStore;
+import com.github.drbookings.ser.DataStoreCoreSer;
+import com.github.drbookings.ser.DataStoreFactory;
 import com.github.drbookings.ser.UnmarshallListener;
 import com.github.drbookings.ser.XMLStorage;
 import com.github.drbookings.ui.AbstractDrBookingsService;
 import com.github.drbookings.ui.BookingReaderService;
-import com.github.drbookings.ui.BookingsByOrigin;
 import com.github.drbookings.ui.EarningsViewFactory;
+import com.github.drbookings.ui.FXUIUtils;
 import com.github.drbookings.ui.OccupancyCellFactory;
 import com.github.drbookings.ui.OccupancyCellValueFactory;
 import com.github.drbookings.ui.StatusLabelStringFactory;
 import com.github.drbookings.ui.StudioCellFactory;
-import com.github.drbookings.ui.beans.DateBean;
-import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.concurrent.BookingExportService;
 import com.github.drbookings.ui.dialogs.BookingDetailsDialogFactory;
 import com.github.drbookings.ui.dialogs.CleaningPlanDialogFactory;
@@ -115,6 +123,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -150,6 +159,7 @@ public class MainController implements Initializable {
 	}
     }
 
+    @Deprecated
     private abstract class DrBookingService<T> extends AbstractDrBookingsService<T> {
 	public DrBookingService() {
 	    super(progressLabel);
@@ -169,7 +179,11 @@ public class MainController implements Initializable {
 	}
     }
 
-    private class OpenFileService extends DrBookingService<DataStore> {
+    private DataStoreCore data;
+
+    private final UIData uiData;
+
+    private class OpenFileService extends DrBookingService<DataStoreCoreSer> {
 
 	private final File file;
 
@@ -189,7 +203,10 @@ public class MainController implements Initializable {
 	    setOnSucceeded(e -> {
 		progressLabel.setText("Rendering..");
 		try {
-		    getValue().load(getManager());
+
+		    data = DataStoreFactory.build(getValue());
+		    uiData.loadFrom(data);
+
 		    scrollToToday();
 		} catch (final Exception e1) {
 		    logger.error(e1.getLocalizedMessage(), e1);
@@ -209,14 +226,14 @@ public class MainController implements Initializable {
 	}
 
 	@Override
-	protected Task<DataStore> createTask() {
-	    return new Task<DataStore>() {
+	protected Task<DataStoreCoreSer> createTask() {
+	    return new Task<DataStoreCoreSer>() {
 
 		@Override
-		protected DataStore call() throws Exception {
+		protected DataStoreCoreSer call() throws Exception {
 		    SettingsManager.getInstance().setDataFile(file);
-		    final DataStore ds = new XMLStorage().setListener(l).load(file);
-		    return ds;
+		    final DataStoreCoreSer result = new FromXMLReader().setListener(l).readFromFile(file);
+		    return result;
 		}
 
 	    };
@@ -282,6 +299,11 @@ public class MainController implements Initializable {
     private static final short DEFAULT_THREAD_WAIT_SECONDS = 30;
     public static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private final static Logger logger = LoggerFactory.getLogger(MainController.class);
+
+    private static final double cleaningDialogWidth = 300;
+
+    private static final double cleaningDialogHeight = 400;
+
     private BookingDetailsDialogFactory bookingDetailsDialogFactory;
     @FXML
     private Button buttonAddBooking;
@@ -339,11 +361,29 @@ public class MainController implements Initializable {
 
     public MainController() {
 	manager = MainManager.getInstance();
+	uiData = new SimpleUIData();
     }
 
     private void addBooking() {
-	final List<RoomBean> dates = RoomBeanSelectionManager.getInstance().selectionProperty();
-	Platform.runLater(() -> showAddBookingDialog(dates.get(0).getDate(), dates.get(0).getName()));
+	final Optional<RoomBean> room = RoomBeanSelectionManager.getInstance().getFirstSelected();
+
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Adding booking  " + (room.isPresent() ? "for " + room.get() : ""));
+	}
+	Platform.runLater(() -> showAddBookingDialog((room.isPresent() ? room.get().getDate() : null),
+		(room.isPresent() ? room.get().getName() : null)));
+
+    }
+
+    private void addCleaning() {
+	final Optional<RoomBean> room = RoomBeanSelectionManager.getInstance().getFirstSelected();
+
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Adding cleaning  " + (room.isPresent() ? "for " + room.get() : ""));
+	}
+	Platform.runLater(() -> showAddCleaningDialog((room.isPresent() ? room.get().getDate() : null),
+		(room.isPresent() ? room.get().getName() : null)));
+
     }
 
     private void addDateColumn() {
@@ -354,7 +394,7 @@ public class MainController implements Initializable {
 		@Override
 		protected void updateItem(final LocalDate item, final boolean empty) {
 		    super.updateItem(item, empty);
-		    if (item == null || empty) {
+		    if ((item == null) || empty) {
 			setText(null);
 			setStyle("");
 		    } else {
@@ -377,7 +417,7 @@ public class MainController implements Initializable {
 		@Override
 		protected void updateItem(final Number item, final boolean empty) {
 		    super.updateItem(item, empty);
-		    if (item == null || empty) {
+		    if ((item == null) || empty) {
 			setText(null);
 		    } else {
 			setText(decimalFormat.format(item));
@@ -482,9 +522,8 @@ public class MainController implements Initializable {
 		result.add(index);
 	    }
 	}
-	if (result.isEmpty()) {
+	if (result.isEmpty())
 	    return new int[0];
-	}
 	return ArrayUtils.toPrimitive(result.toArray(new Integer[] { result.size() }));
 
     }
@@ -521,17 +560,15 @@ public class MainController implements Initializable {
 		protected void updateItem(final DateBean item, final boolean empty) {
 		    super.updateItem(item, empty);
 		    getStyleClass().removeAll("now", "end-of-month");
-		    if (empty || item == null) {
+		    if (empty || (item == null)) {
 
+		    } else if (item.getDate().isEqual(LocalDate.now())) {
+			getStyleClass().add("now");
+		    } else if (item.getDate()
+			    .equals(item.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
+			getStyleClass().add("end-of-month");
 		    } else {
-			if (item.getDate().isEqual(LocalDate.now())) {
-			    getStyleClass().add("now");
-			} else if (item.getDate()
-				.equals(item.getDate().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth()))) {
-			    getStyleClass().add("end-of-month");
-			} else {
 
-			}
 		    }
 		}
 	    };
@@ -556,7 +593,7 @@ public class MainController implements Initializable {
 	    logger.debug("Selected date: " + selectedDate);
 	}
 	LocalDate selectedDate2;
-	if (selectedDate == null || selectedDate.isEmpty()) {
+	if ((selectedDate == null) || selectedDate.isEmpty()) {
 	    selectedDate2 = LocalDate.now();
 	} else {
 	    selectedDate2 = selectedDate.get(0).getDate();
@@ -655,7 +692,6 @@ public class MainController implements Initializable {
 	fileChooser.setTitle("Open Airbnb iCal");
 	final File file = fileChooser.showOpenDialog(node.getScene().getWindow());
 	if (file != null) {
-
 	    try {
 		final BookingReaderService reader = new BookingReaderService(getManager(), new ICalBookingFactory(file,
 			new AirbnbICalParser(SettingsManager.getInstance().getRoomNameMappings())));
@@ -762,7 +798,7 @@ public class MainController implements Initializable {
 
 	tableView.getSelectionModel().getSelectedCells().addListener(getCellSelectionListener());
 	tableView.setOnMousePressed(event -> {
-	    if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+	    if (event.isPrimaryButtonDown() && (event.getClickCount() == 2)) {
 		handleTableSelectEvent(event);
 	    }
 	});
@@ -801,8 +837,8 @@ public class MainController implements Initializable {
 
 	setTableColumns();
 
-	tableView.getSelectionModel().getSelectedCells()
-		.addListener((final ListChangeListener.Change<? extends TablePosition> c) -> {
+	tableView.getSelectionModel().getSelectedCells().addListener(
+		(@SuppressWarnings("rawtypes") final ListChangeListener.Change<? extends TablePosition> c) -> {
 		    rowsWithSelectedCells.clear();
 		    final Set<Integer> rows = tableView.getSelectionModel().getSelectedCells().stream()
 			    .map(pos -> pos.getRow()).collect(Collectors.toSet());
@@ -810,28 +846,36 @@ public class MainController implements Initializable {
 		});
 
 	// tableView.setItems(dataModel.getData());
-	tableView.setItems(manager.getUIData());
+	tableView.setItems(uiData.datesProperty());
 	tableView.getSelectionModel().setCellSelectionEnabled(true);
 	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
 	initTableViewContextMenus();
 
     }
 
     private void initTableViewContextMenus() {
 	final ContextMenu menu = new ContextMenu();
-	final MenuItem mi1 = new MenuItem("Delete");
-	final MenuItem mi2 = new MenuItem("Add");
+	final MenuItem deleteItem = new MenuItem("Delete");
+	deleteItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
+	final MenuItem addBookingEvent = new MenuItem("Add Booking");
+	addBookingEvent.setAccelerator(KeyCombination.keyCombination("Shortcut+A"));
+	final MenuItem addCleaningEvent = new MenuItem("Add Cleaning");
+	addCleaningEvent.setAccelerator(KeyCombination.keyCombination("Shortcut+C"));
 	final MenuItem mi3 = new MenuItem("Modify");
-	mi1.setOnAction(event -> {
+	deleteItem.setOnAction(event -> {
 	    Platform.runLater(() -> deleteSelected());
 	});
-	mi2.setOnAction(event -> {
+	addBookingEvent.setOnAction(event -> {
 	    Platform.runLater(() -> addBooking());
+	});
+	addCleaningEvent.setOnAction(event -> {
+	    Platform.runLater(() -> addCleaning());
 	});
 	mi3.setOnAction(event -> {
 	    Platform.runLater(() -> showModifyBookingDialog());
 	});
-	menu.getItems().addAll(mi2, mi1, mi3);
+	menu.getItems().addAll(addBookingEvent, addCleaningEvent, deleteItem, mi3);
 
 	tableView.setContextMenu(menu);
 	tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
@@ -856,10 +900,10 @@ public class MainController implements Initializable {
 	final File file2 = fileChooser.showOpenDialog(node.getScene().getWindow());
 	if (file2 != null) {
 	    readDataFile(file2);
-
 	}
     }
 
+    @Deprecated
     public void readDataFile(final File file) {
 	new OpenFileService(file).start();
     }
@@ -869,20 +913,15 @@ public class MainController implements Initializable {
     }
 
     void scrollToToday() {
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("Trying to scroll to today");
-	// }
-	final int index = getManager().getUIData().indexOf(new DateBean(LocalDate.now(), getManager()));
+	final int index = uiData.getDates().indexOf(new DateBean(LocalDate.now()));
 	if (index >= 0) {
 	    if (logger.isDebugEnabled()) {
 		logger.debug("Scrolling to index " + index);
 	    }
 	    tableView.scrollTo(index);
 
-	} else {
-	    if (logger.isDebugEnabled()) {
-		logger.debug("no entry for today");
-	    }
+	} else if (logger.isDebugEnabled()) {
+	    logger.debug("no entry for today");
 	}
     }
 
@@ -1020,16 +1059,32 @@ public class MainController implements Initializable {
 	showAddBookingDialog(null, null);
     }
 
+    public UIData getUIData() {
+	return uiData;
+    }
+
+    private void showAddCleaningDialog(final LocalDate date, final String roomName) {
+	try {
+	    final Stage stage = FXUIUtils.buildStageFromFxml(getClass().getResource("/fxml/AddCleaningView.fxml"),
+		    "Add cleaning", cleaningDialogWidth, cleaningDialogHeight);
+	    final Stage windowStage = (Stage) node.getScene().getWindow();
+	    stage.initOwner(windowStage);
+	    stage.initModality(Modality.WINDOW_MODAL);
+	    FXUIUtils.centerStageOnScreen(stage, node);
+	    stage.show();
+	} catch (final IOException e) {
+	    if (logger.isErrorEnabled()) {
+		logger.error(e.getLocalizedMessage(), e);
+	    }
+	}
+    }
+
     private void showAddBookingDialog(final LocalDate date, final String roomName) {
 	try {
-	    final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AddBookingView.fxml"));
-	    final Parent root = loader.load();
-	    final Stage stage = new Stage();
-	    stage.setWidth(300);
-	    stage.setHeight(600);
-	    final Scene scene = new Scene(root);
-	    stage.setTitle("Add BookingBean");
-	    stage.setScene(scene);
+	    final Pair<Stage, FXMLLoader> stageAndLoader = FXUIUtils
+		    .buildStageFromFxml2(getClass().getResource("/fxml/AddBookingView.fxml"), "Add Booking", 300, 600);
+	    final Stage stage = stageAndLoader.getLeft();
+	    final FXMLLoader loader = stageAndLoader.getRight();
 	    final AddBookingController c = loader.getController();
 	    c.setManager(manager);
 	    c.datePickerCheckIn.setValue(date);
@@ -1037,11 +1092,12 @@ public class MainController implements Initializable {
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
 	    stage.initOwner(windowStage);
 	    stage.initModality(Modality.WINDOW_MODAL);
-	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
-	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
+	    FXUIUtils.centerStageOnScreen(stage, node);
 	    stage.show();
 	} catch (final IOException e) {
-	    logger.error(e.getLocalizedMessage(), e);
+	    if (logger.isErrorEnabled()) {
+		logger.error(e.getLocalizedMessage(), e);
+	    }
 	}
     }
 
@@ -1154,8 +1210,8 @@ public class MainController implements Initializable {
 	    stage.setWidth(600);
 	    stage.setHeight(400);
 	    final Stage windowStage = (Stage) node.getScene().getWindow();
-	    stage.setX(windowStage.getX() + windowStage.getWidth() / 2 - stage.getWidth() / 2);
-	    stage.setY((windowStage.getY() + windowStage.getHeight()) / 2 - stage.getHeight() / 2);
+	    stage.setX((windowStage.getX() + (windowStage.getWidth() / 2)) - (stage.getWidth() / 2));
+	    stage.setY(((windowStage.getY() + windowStage.getHeight()) / 2) - (stage.getHeight() / 2));
 	    final UpcomingController c = loader.getController();
 	    c.setManager(getManager());
 	    stage.show();

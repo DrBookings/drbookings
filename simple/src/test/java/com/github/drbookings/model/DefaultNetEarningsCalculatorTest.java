@@ -20,18 +20,13 @@
 
 package com.github.drbookings.model;
 
-import java.time.LocalDate;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DefaultNetIncomeSupplier;
 import com.github.drbookings.TestUtils;
-import com.github.drbookings.data.numbers.earnings.DefaultNetEarningsCalculator;
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.ui.CleaningEntry;
+import org.junit.*;
+
+import java.time.LocalDate;
 
 public class DefaultNetEarningsCalculatorTest {
 
@@ -53,17 +48,17 @@ public class DefaultNetEarningsCalculatorTest {
 
     @Test
     public void test() {
-	final DefaultNetEarningsCalculator c = new DefaultNetEarningsCalculator();
+	final DefaultNetIncomeSupplier c = new DefaultNetIncomeSupplier();
 	final BookingBean b = TestUtils.getTestBooking(LocalDate.now(), LocalDate.now().plusDays(4));
 	b.setGrossEarningsExpression("360");
 	b.setServiceFee(0);
 	b.setServiceFeesPercent(12f);
 	b.setCleaningFees(60);
-	final CleaningEntry ce = TestUtils.getTestCleaningEntry();
+	final CleaningEntry ce = TestUtils.getTestCleaningEntry(null);
 	ce.setCleaningCosts(40);
 	// b.setCleaning(ce);
 	// assertEquals(360 - ((360 - 60) * 0.12), c.apply(b).doubleValue(), 0.001);
-	System.err.println("Removed cleaning");
+	// System.err.println("Removed cleaning");
 
     }
 

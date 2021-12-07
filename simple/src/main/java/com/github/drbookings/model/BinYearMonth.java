@@ -20,20 +20,15 @@
 
 package com.github.drbookings.model;
 
-import java.time.YearMonth;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import com.github.drbookings.ui.beans.DateBean;
-
+import com.github.drbookings.DateBean;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+
+import java.time.YearMonth;
+import java.util.*;
 
 public class BinYearMonth {
 

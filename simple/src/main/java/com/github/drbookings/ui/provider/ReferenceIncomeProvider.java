@@ -20,14 +20,13 @@
 
 package com.github.drbookings.ui.provider;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
-
-import com.github.drbookings.model.settings.SettingsManager;
-
+import com.github.drbookings.SettingsManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
+
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public class ReferenceIncomeProvider implements Supplier<Number> {
 

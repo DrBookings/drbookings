@@ -20,13 +20,13 @@
 
 package com.github.drbookings;
 
+import com.google.common.collect.Range;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.function.Predicate;
 
-import com.github.drbookings.model.data.BookingBean;
-import com.google.common.collect.Range;
-
+@Deprecated
 public class PaymentDateFilter implements Predicate<BookingBean> {
 
     private final Range<LocalDate> dates;
@@ -36,15 +36,15 @@ public class PaymentDateFilter implements Predicate<BookingBean> {
     }
 
     public PaymentDateFilter(final YearMonth of) {
-	this.dates = Range.closed(of.atDay(01), of.atEndOfMonth());
+	dates = Range.closed(of.atDay(01), of.atEndOfMonth());
     }
 
     @Override
     public boolean test(final BookingBean be) {
 	final BookingBean t = be;
 	return t.isSplitBooking()
-		|| t.getDateOfPayment() != null && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
-			&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1));
+		|| ((t.getDateOfPayment() != null) && t.getDateOfPayment().isAfter(dates.lowerEndpoint().minusDays(1))
+			&& t.getDateOfPayment().isBefore(dates.upperEndpoint().plusDays(1)));
     }
 
 }

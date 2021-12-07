@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ DrBookings
+  ~
+  ~ Copyright (C) 2016 - 2018 Alexander Kerner
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as
+  ~ published by the Free Software Foundation, either version 2 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public
+  ~ License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses/gpl-2.0.html>.
+  -->
+
+<dataStoreCoreSer>
+    <bookings>
+        <booking bookingId="455c6575-47a5-49f5-ae3e-705c7fb47b53" calendarIds="potc1nkq7tprk8ek29rafcua1g f9o3vc0i1520dl6m6766fotbmk l646bigvr4295gc9i01d5hert8 9p64tfs12nqkj7kcdh0vjv92co l2ld2aakl3prnebot6fps7pa8s 8rmj08qo9ut97i1o2o61fvq0qk k6dn6punrtfm1d1vg27bq7bpso ontof5jk1pl3438a32uqbfvvno" checkInDate="2018-06-24" checkInNote="18-19" checkOutDate="2018-07-06" cleaningFees="60.0" dateOfPayment="2018-06-26" grossEarningsExpression="575.87" guestName="Lucile" paymentDone="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="78a3684a-c5de-4f9a-a06e-060a0b3b8166" calendarIds="8vce73i3hkumfvubepll5b79ug ql8vm5skod6nk2umhtovatg9ok hs67q6ec0q8hhnqk8324lm2p2c o6felh0ii78cuvq49iiq3nnogo" checkInDate="2018-07-06" checkOutDate="2018-07-08" cleaningFees="60.0" dateOfPayment="2018-07-23" grossEarningsExpression="148.55" guestName="Gregor" paymentDone="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="2048f862-94cb-4af2-b2b2-d9c7a283a77c" calendarIds="blsocgikj41nibibcam0qq6jnc 7ogjg1n6htg99uq9ogslus1sak imufa0tqeqra2io2hfkkekbkf4 gkv113vl9vbi40vnr87if0npq8 qe6f3vuoj1c3cjokh5mmpti7o8 ag5ui713q44629ctrfnubl5vfs te7u7kpf6304l4a7as0g7d5neo t6jrekiq0odr0b44gjrqf50fb4" checkInDate="2018-07-08" checkInNote="8pm" checkOutDate="2018-07-13" cleaningFees="60.0" dateOfPayment="2018-07-23" grossEarningsExpression="308.67" guestName="Elisa" paymentDone="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="7dd02fe9-4540-4016-8248-a66e1615db8f" calendarIds="ndcipphou0me4knfjcn5uq1pl0 ekbmps2vcbm4hmqh3e2j1c2bdk tqft5jpk10lhr0bmma1upbneu0" checkInDate="2018-07-13" checkInNote="23h, Schlüsselbox" checkOutDate="2018-07-17" cleaningFees="60.0" dateOfPayment="2018-07-23" grossEarningsExpression="239.22" guestName="Susan" paymentDone="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b8705494-c323-4bf1-b8ea-cdeee317be1d" calendarIds="tjchpmpnf0l1r7gukm11jtk4ao rt58uj4rema35f2s9s2l0r5ks4" checkInDate="2018-07-19" checkOutDate="2018-07-22" cleaningFees="60.0" dateOfPayment="2018-07-23" grossEarningsExpression="187.13" guestName="Jan" paymentDone="true" roomName="2" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="49a88b1c-b744-4f8b-af93-e35c6f3260a9" calendarIds="hddfmgaq3j2gb4se7v4f1rtn7s cud4pcttt4os4db1t9ch34r7dk" checkInDate="2018-07-19" checkInNote="1930" checkOutDate="2018-07-22" cleaningFees="60.0" dateOfPayment="2018-07-23" grossEarningsExpression="199.67" guestName="Frank" paymentDone="true" roomName="3" serviceFee="0.0" serviceFeePercent="0.0" source="Airbnb" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="6b6e61f9-cf5d-402a-968c-1f1979d5460f" calendarIds="mmdv5uidv6nfsga6t1bc4ul7tk vbhbnal8903pgfnc59rp3q51kc 6tb0hh736r6pjmmer3re9nquc0 f18dmous8h0flq9bqgtc4n28g8" checkInDate="2018-06-24" checkOutDate="2018-07-01" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="463.2" guestName="Pascale Worré" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="ab45e463-1767-4751-9774-6f6641a70f47" calendarIds="jb7e50t3jd0f9d1v468jrnjv8k j5rai4fmfqd6u1cakifvitnkrg nj5oc6u58jcj1i67v0g4rh1eek bvt2bsmgkbv3tltbs23gp8soj0 s6l5isa99ov0oikkn9g22bnvk4 djdl894hgmpmjo4uto2s46h4ms coq51oc84083t5np6a677o6e64" checkInDate="2018-07-04" checkOutDate="2018-07-07" checkOutNote="1300" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="216.6" guestName="Jennifer Ablain" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="0d39f908-022a-4f5f-9878-440e0f0ea9f8" calendarIds="hp354dq5352e23ute7s1j2ag34 pd8o4gvt5mv4400ou95vo10c5g ml9fuvhioa2tcub1qr3j9tqulc 776khns2mdbgkg3e2o9aq1mnpc ilknf695jtk5n4vatuuh405g7s od56r0jj3c88ejp1i33pnar53c" checkInDate="2018-07-07" checkInNote="1600" checkOutDate="2018-07-09" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="172.0" guestName="Michael Hendler" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="52936db3-b5a1-4e01-aedb-3794e2fadcae" calendarIds="ai7ovrsaaj4f36o777l6dalijs 69r3juamv73c9oo3c00l6n2ov4 0dp5f8i4g9gt5dnat0crtr39vg guredpooe9f8bmpdecajek65pk vpftne6n77s1lj2ums2nub3ap0 0ri2gp1idrk8s37h80ma5fjbcc" checkInDate="2018-07-11" checkOutDate="2018-07-16" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="380.0" guestName="Ivano Stermieri" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="35d37552-8ce2-43b7-9e0c-c7951d5ab8d0" calendarIds="2a4a6vf5vquc0rfmmetr32cetk 143h9c568tedp6lubh20dtkikc" checkInDate="2018-07-16" checkOutDate="2018-07-19" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="219.3" guestName="Bodo Bartikowski" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="3a48e324-f10f-4a47-9a7d-c513bb8de82d" calendarIds="c7ciesvlmmqs4oqjbn59p4jts8 gdu5aniko1uraejhp517s61k1s" checkInDate="2018-07-19" checkOutDate="2018-07-22" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="254.4" guestName="Willem Bout" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="e802a653-dab9-4300-bbdf-14deb302ad36" calendarIds="2ln6v7717q45el2qb06hn2qt9k 14cqm6q5uuemc7qlutknv0qa64 5b7pt83q863mnb0b4ogfr0lvs0" checkInDate="2018-07-24" checkOutDate="2018-07-28" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="304.0" guestName="Jürgen Schnieders" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="49c027d8-7b29-474f-89dc-823e0613d558" calendarIds="qmko2p7f3cbl6t6ls9cc0lrtvc mu1k3c4o2458unn6aipdhospbs 5moc34qjhpmbfe8oem8ciolcik 763e0gr0if56ucojk2j27j9of4" checkInDate="2018-07-28" checkInNote="1600 -1700" checkOutDate="2018-07-31" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="228.0" guestName="Ecaterina Violeta Damaschin" paymentDone="true" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="2d811e21-1f63-496d-b341-4983f77d910f" calendarIds="8pvmlgbsdqqpjv0lqkem58cjvg 7uocqm5jba5ffeg9crjnl6a7gk hmjh9gg87d64ik6u3a3fue420o qhobkrqg99854jh5k2pv72olhc onqmnqbloh1o94f3l98sd3bvdo qfmf126p51olf7tkihfhgrik2o" checkInDate="2018-07-31" checkOutDate="2018-08-02" cleaningFees="60.0" grossEarningsExpression="178.0" guestName="NINAKO SATO" paymentDone="false" roomName="1" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="2666c81d-1d4e-4fcb-a777-2d2b54988a43" calendarIds="gfj1fm2gq7iaks64256c0pbpi4 jlimsl1icgi2ev543nphmt8fik 8i5ihl6a3fhbl3ja1q0ani3qi8" checkInDate="2018-07-22" checkOutDate="2018-08-19" cleaningFees="60.0" grossEarningsExpression="1712.0" guestName="Rodrigo Boos" paymentDone="false" roomName="2" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="cc5d5137-85ae-4244-9886-f038feb61f29" calendarIds="tdbej2urrkn3lcmgslrkki7d2s p28tn21bivcr2ralapav1c3dhk b9u7b36ildeu5orfpfdenfr4j4 uteiv5hc7bcp2jkq95ak3mqjsc j2dplaivvh7u5nf0s0blbtavkc cd7gdljhrf0f649viv087mn7tg 62peq2153c1v04g5kdqo6os5vc lflp6psfak0lh6tm03f4aoj18o 60g0a9tfudf63801gad00uggo4" checkInDate="2018-07-02" checkOutDate="2018-07-07" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="298.5" guestName="Markus Nötzold" paymentDone="true" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b89bfd61-8cd6-4362-8e33-bb8835cb4b4b" calendarIds="ol6gp3nln3s9g0q130oaf5j67g ad03533liql4pf72dah8jnbtpc ki3atlbck52odu5nks3huemil0 6hhpalkhnb54039c1mits4026c mm694c06m3ajehve88hfnme140 4us3ck2j9p29qbkhmb4qa5po4k" checkInDate="2018-07-08" checkOutDate="2018-07-19" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="634.2" guestName="Svetlana Iakovleva" paymentDone="true" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="d47c4d80-c5c1-45d0-969a-30e9ed0827ea" calendarIds="o0efp89n5n17vr2tja20uh88q4 e2o8pq5q30lc1p3a4p1ammj9cg" checkInDate="2018-07-23" checkOutDate="2018-07-25" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="164.4" guestName="Antonio Martinez" paymentDone="true" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b9853a2b-ad0d-4491-b35b-3c6fa3f8a178" calendarIds="nrg3ch52ah2jukvso9ag8n5j0s s3ttspqbadu8gvcqil6t8e73jc q648muv87532jdpofd3himud7o" checkInDate="2018-07-25" checkOutDate="2018-07-30" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="321.0" guestName="Marina Kizima" paymentDone="true" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b77518db-c30e-4ad3-95d9-f03519bcc4db" calendarIds="apafeep2ltjdlh87re8m8o0l1g b4p7j6vj8dqkdp5v6th5jsbndg cmrt3h5n3ml7r13duvj2crg63c tp428bup0ajmkjg501tvthi6vc" checkInDate="2018-07-30" checkOutDate="2018-08-02" cleaningFees="60.0" grossEarningsExpression="203.1" guestName="Euro-System Marcin Gasztyk" paymentDone="false" roomName="3" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="f02a0d8a-3f7f-453e-8148-29be740f5abd" calendarIds="g37nst58ipjk46o3473h64g3bc p1kvr0htta2oiojraqo4rk90pg ds6g0nlkjnqjoavdeqi57bhpp8 ouooggeb4arrqprt9nnacedh30 r0paa8oih8acsk2cd59r33kg7s fhrue234j7ghnav66dqb3al96c" checkInDate="2018-06-28" checkOutDate="2018-07-02" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="264.0" guestName="Lorenzo Tesi" paymentDone="true" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="8434301e-70b6-4ac0-b312-951d531c3a99" calendarIds="ev7uk4joq9elpv0c4cifboh0c0 q60ij8153gcidmle3s4uqadb5k qqj8sgn2a7s4ijrk4d6a3io1is 0staep3p8vslvk0op7dqdm3ejo 3l3ku1iea1vmg473mdu716t5j4 vi1qsrnm8q7g2jof3iems986gg k9atae6qdevukohmcv9r4pv9mo" checkInDate="2018-07-02" checkOutDate="2018-07-04" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="151.8" guestName="Xinjie Zhuang, Chen Yijing" paymentDone="true" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b768e716-0ae7-41fd-9ba4-0ecef99464f4" calendarIds="0rgjn078794bhd72b64pjecak0 tn5i91pkqc4hp2g45kdbe6ufak 6qjvfu5ultv40s00k2vjm0ke5c u88rtan6namni5ol9tg9go475g oiaau3aa32o95vvjsq9rco82ss 40r7qajjedc7fb7r4u008oigqk d542gsg89d4f1o5bhngcff6kvc pm8hcvbru1epq6o1onec9p9rmo ocsje4irdvalp07q58rsnm85mk" checkInDate="2018-07-04" checkInNote="1600" checkOutDate="2018-07-09" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="355.0" guestName="Svitlana Tsukanova" paymentDone="true" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="8111230e-d7af-479b-b1d8-c44d103f482c" calendarIds="on4sprhdg707ecsuukulph69i8 ctj6rrn50cd756l7sa9hqd36ps t9jtccnr2upjjv6tncute7pji0 atv83osk5u1d3nt8at3nogq35g ubnqo8uogdb3i1pdf6eqos5vgg f9gaa4rgdopnlkaabsij5sk2ls" checkInDate="2018-07-10" checkOutDate="2018-07-19" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="586.5" guestName="PEDRO AMANSO DE SOUZA FILHO" paymentDone="true" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="b25d71d0-41be-407b-8338-5e790e4e2f62" calendarIds="r4899hg8u89o8jhmlvs4l0vblc defbtlnp5ch81ltqcckbrimqd8" checkInDate="2018-07-19" checkOutDate="2018-07-22" cleaningFees="60.0" dateOfPayment="2018-07-31" grossEarningsExpression="267.0" guestName="Christoph Schulze" paymentDone="true" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+        <booking bookingId="53cdc773-132e-42f2-b39c-7645a3979cbd" calendarIds="r3v63r0rsjvq5n4tbbl2hjbrcg 7j6fra29h0u6igqig0310ag84k 1fbms7e2t23fdju5npqsbhhg74 k91bkc691ibttqvao90of4nudc vkiqu7k22pgk0b07jclfo4k828 ad5v2qjsmj0q4td7gad9mqbjrg" checkInDate="2018-07-22" checkOutDate="2018-08-05" cleaningFees="60.0" grossEarningsExpression="929.4" guestName="Andrea Carbone" paymentDone="false" roomName="4" serviceFee="0.0" serviceFeePercent="12.0" source="Booking" splitBooking="false" welcomeMailSend="true">
+            <Payments/>
+        </booking>
+    </bookings>
+    <cleanings>
+        <cleaning black="false" bookingId="6b6e61f9-cf5d-402a-968c-1f1979d5460f" calendarIds="8nd5era1ko2remgir3b7s0250c kdsssc4iarh4e5r7gjl96rgi00" cleaningCosts="50.0" date="2018-07-01" id="ab3a3983-1a34-4bff-abc3-c429ddd65ddd" name="Hanife" room="1"/>
+        <cleaning black="true" bookingId="f02a0d8a-3f7f-453e-8148-29be740f5abd" calendarIds="8ra7511ck1347clf8m4di1e62g q0uklab2l62dp2afbr7obu4rcs ilap08iopfh70e0ae4edv6kli8" cleaningCosts="25.0" date="2018-07-02" id="a08bf946-fcee-432a-b115-ad23ad1c4eba" name="Alona" room="4"/>
+        <cleaning black="false" bookingId="8434301e-70b6-4ac0-b312-951d531c3a99" calendarIds="firmd52a6tfajifgvvh22c7f34 lidmtj5vp44v7cat4tdvnmosc4 j10n56tjgre9rsdnnprq77fe1k 4jocvnhn7k1qsn997ksk98gamo" cleaningCosts="50.0" date="2018-07-04" id="b7abf27e-6ade-459b-ad01-7d125686dbbc" name="Hanife" room="4"/>
+        <cleaning black="false" bookingId="455c6575-47a5-49f5-ae3e-705c7fb47b53" calendarIds="ib2e61olvjlqpiek3v1ejee1to q9to9rml6ojs3jed0v1ji3ve9k g423mrd77dghe5dci48obtnjtg di0rcc996te6aosmf36jl7st3s p9kepfc33hkbjptjrog6q4ffhk" cleaningCosts="38.08" date="2018-07-06" id="09a66250-5263-40aa-8459-4429996af0d1" name="Florentina" room="2"/>
+        <cleaning black="true" bookingId="cc5d5137-85ae-4244-9886-f038feb61f29" calendarIds="0ibqh5a76vh944503l46k10o50 ciboutsgt6s57umplkt8kf9dug c11jsvt5s3trlk92316g6s4i1o loiu4m57voig98ntsgevj75ouo tl0hof8m7fq4bun2pb1e687nfk" cleaningCosts="25.0" date="2018-07-07" id="ae281b32-4ea7-49ca-be27-70c006e13c4b" name="Alona" room="3"/>
+        <cleaning black="true" bookingId="ab45e463-1767-4751-9774-6f6641a70f47" calendarIds="fg3ojcmnlhq1gmn4oit8evr428 o62688m3hm6qbn2padcp96vqc4 8qvlejcri3ulgiuvp3ahc00kkc" cleaningCosts="25.0" date="2018-07-07" id="0e5a3d6e-52d0-4a07-b954-220f5ee42b2c" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="78a3684a-c5de-4f9a-a06e-060a0b3b8166" calendarIds="gdu5gmkak9t082d6hnlnmqcvp4 nel25vi8go1dgvaqg5psb3cd90" cleaningCosts="25.0" date="2018-07-08" id="de844251-673c-4360-a1c1-7081433a1452" name="Alona" room="2"/>
+        <cleaning black="true" bookingId="b768e716-0ae7-41fd-9ba4-0ecef99464f4" calendarIds="24j6k8k52ch5v41stvh207rd78 4urgd1g9m572g7vcnr3kr3jc3o h93et8i7dttum8c97vvc76764k qo26uv8r4mbh6d1atovkdomikc mlbd3nd3r2rlb2h6ra61req4m0" cleaningCosts="25.0" date="2018-07-09" id="693bb6fc-8179-4ac0-8383-03a84c62d19f" name="Alona" room="4"/>
+        <cleaning black="true" bookingId="0d39f908-022a-4f5f-9878-440e0f0ea9f8" calendarIds="ql58lpghtn48l8fded43a2vnv4" cleaningCosts="25.0" date="2018-07-10" id="ae3b1acc-40f3-4109-a45e-2d1bb5a1063c" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="2048f862-94cb-4af2-b2b2-d9c7a283a77c" calendarIds="k2go1dhtq0tuoi295flr3apvuk tu1jhjh4ek2111rdjv5p9k5lc8 r9e5phd9vpe9d7thi6supigl58" cleaningCosts="25.0" date="2018-07-13" id="b14cfce8-110a-41d3-b71a-2718cff7bcc5" name="Alona" room="2"/>
+        <cleaning black="true" bookingId="52936db3-b5a1-4e01-aedb-3794e2fadcae" calendarIds="315krqetpvmmd53tnqmjpvc2q4 2tdnttkn821qbkvfbbkc1s2dgk" cleaningCosts="25.0" date="2018-07-16" id="c32913ea-6331-4d74-963b-1f04058fffcd" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="7dd02fe9-4540-4016-8248-a66e1615db8f" calendarIds="4rcbqclnuhff7q4499bthh57ok tc9p76jd5aob34rbr9ora96fjg" cleaningCosts="25.0" date="2018-07-17" id="15db2138-5de4-458b-b99a-6ad498eff534" name="Alona" room="2"/>
+        <cleaning black="true" bookingId="b89bfd61-8cd6-4362-8e33-bb8835cb4b4b" calendarIds="k8dkntuohr5l5s9id0bousb7d0" cleaningCosts="25.0" date="2018-07-19" id="a37a6a30-c004-4bf3-8b22-9077fedac427" name="Alona" room="3"/>
+        <cleaning black="true" bookingId="8111230e-d7af-479b-b1d8-c44d103f482c" calendarIds="fb7kbb8iqu6ijhi4alufeoqr7o" cleaningCosts="25.0" date="2018-07-19" id="23608f18-07e9-4c1a-8cac-d792a9f22519" name="Alona" room="4"/>
+        <cleaning black="true" bookingId="35d37552-8ce2-43b7-9e0c-c7951d5ab8d0" calendarIds="47ob60enrnf2tkt9kj1hpl19k0" cleaningCosts="25.0" date="2018-07-19" id="3f3fddc6-b742-4b12-84ac-755961cb8fea" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="b8705494-c323-4bf1-b8ea-cdeee317be1d" calendarIds="cn827mvt4q94rfu276t2db0gck" cleaningCosts="25.0" date="2018-07-22" id="11b5b1a2-d9be-4103-bb1e-21679a71463c" name="Alona" room="2"/>
+        <cleaning black="true" bookingId="b25d71d0-41be-407b-8338-5e790e4e2f62" calendarIds="0nbokp3vgqb3o2oc95e8pqhoik" cleaningCosts="25.0" date="2018-07-22" id="957f8c22-5b67-4b24-ab5b-50483657c86c" name="Alona" room="4"/>
+        <cleaning black="true" bookingId="3a48e324-f10f-4a47-9a7d-c513bb8de82d" calendarIds="290fhh5as64mckkq99d79ncj50" cleaningCosts="25.0" date="2018-07-22" id="f809b36c-440d-4bf8-bee4-4e9f88a416d6" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="49a88b1c-b744-4f8b-af93-e35c6f3260a9" calendarIds="14muu5iilfqu02uri5des136jk" cleaningCosts="25.0" date="2018-07-22" id="64cc1c44-9d62-4907-af3c-e9bfdd861886" name="Alona" room="3"/>
+        <cleaning black="true" bookingId="d47c4d80-c5c1-45d0-969a-30e9ed0827ea" calendarIds="qcm859e5qjo6j6tqukd58gjq9c" cleaningCosts="25.0" date="2018-07-25" id="aaba25c6-a2ed-49d6-b273-95dcb3a99cf9" name="Alona" room="3"/>
+        <cleaning black="true" bookingId="e802a653-dab9-4300-bbdf-14deb302ad36" calendarIds="57f71lp6tj2eeq3vb287fv9ir0 2evh44ai6a7um24lao9f3lh3lo" cleaningCosts="25.0" date="2018-07-28" id="64efeee6-42a2-47ca-939d-5d85c0075bca" name="Alona" room="1"/>
+        <cleaning black="true" bookingId="b9853a2b-ad0d-4491-b35b-3c6fa3f8a178" calendarIds="j0qo260dt09uk4l1cbm268i4qs 7j8dop2kf9s0cjqam7j7m4lq4k" cleaningCosts="25.0" date="2018-07-30" id="effe5f1a-6875-4e27-8210-c67ef85907b9" name="Alona" room="3"/>
+        <cleaning black="true" bookingId="49c027d8-7b29-474f-89dc-823e0613d558" calendarIds="enar0h40rlcq346sp1ltv11st0 lbncp30n80626tcoihda6ehd98" cleaningCosts="25.0" date="2018-07-31" id="82c2a359-bd44-4837-9a00-22bba531566d" name="Alona" room="1"/>
+    </cleanings>
+    <expenses>
+        <expense amount="1.08" date="2018-07-31" name="Kontoführung"/>
+        <expense amount="42.57" date="2018-07-31" name="UNITYMEDIA BW GMBH"/>
+        <expense amount="154.35" date="2018-07-31" name="UNITYMEDIA BW GMBH"/>
+        <expense amount="13.95" date="2018-07-27" name="Auslage Amazon"/>
+        <expense amount="38.82" date="2018-07-27" name="Auslage Amazon"/>
+        <expense amount="39.89" date="2018-07-27" name="Auslage Amazon"/>
+        <expense amount="16.94" date="2018-07-27" name="Auslage Amazon"/>
+        <expense amount="20.0" date="2018-07-27" name="Auslage Amazon"/>
+        <expense amount="1500.0" date="2018-07-10" name="WEG Bergheimer Str. 36/1"/>
+        <expense amount="33.9" date="2018-07-09" name="Auslage Bauhaus"/>
+        <expense amount="10.28" date="2018-07-09" name="Auslage Bauhaus"/>
+        <expense amount="180.0" date="2018-07-05" name="STADWERKE HEIDELBERG"/>
+        <expense amount="31.29" date="2018-07-02" name="KNAPPSCHAFT-BAHN-SEE"/>
+    </expenses>
+</dataStoreCoreSer>

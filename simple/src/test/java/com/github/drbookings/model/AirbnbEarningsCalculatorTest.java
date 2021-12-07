@@ -20,19 +20,16 @@
 
 package com.github.drbookings.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import com.github.drbookings.AirbnbEarningsCalculator;
+import com.github.drbookings.BookingBean;
+import com.github.drbookings.PaymentImpl;
+import com.github.drbookings.model.data.BookingBeanTest;
+import org.junit.*;
 
 import java.time.LocalDate;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.github.drbookings.model.data.BookingBean;
-import com.github.drbookings.model.data.BookingBeanTest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class AirbnbEarningsCalculatorTest {
 

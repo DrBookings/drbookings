@@ -20,22 +20,9 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.CleaningEntry;
-
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,6 +34,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * @author Alexander Kerner
@@ -77,7 +75,7 @@ public class CleaningPlanController implements Initializable {
 	    sb.append(CleaningPlanController.DATE_FORMATTER.format(ce.getDate()));
 	    sb.append("\t");
 	    sb.append(roomNamePrefix);
-	    sb.append(ce.getRoom().getName());
+	    sb.append(ce.getBooking().getRoom().getName());
 	    // if (CleaningEntry.ShortTerm.YES.equals(ce.isShortTime())) {
 	    // sb.append("\t");
 	    // sb.append("bis 1600");
@@ -93,10 +91,10 @@ public class CleaningPlanController implements Initializable {
 	Clipboard.getSystemClipboard().setContent(content);
 	final Tooltip t = new Tooltip("Content copied.");
 	t.setAutoHide(true);
-	t.setX((this.content.getScene().getWindow().getX() + this.content.getScene().getWindow().getWidth())
-		- (this.content.getScene().getWindow().getWidth() / 2));
-	t.setY((this.content.getScene().getWindow().getY() + this.content.getScene().getWindow().getHeight())
-		- (this.content.getScene().getWindow().getHeight() / 2));
+	t.setX(this.content.getScene().getWindow().getX() + this.content.getScene().getWindow().getWidth()
+		- this.content.getScene().getWindow().getWidth() / 2);
+	t.setY(this.content.getScene().getWindow().getY() + this.content.getScene().getWindow().getHeight()
+		- this.content.getScene().getWindow().getHeight() / 2);
 	t.show(this.content.getScene().getWindow());
 
     }

@@ -20,15 +20,15 @@
 
 package com.github.drbookings.tools;
 
-import java.io.File;
-import java.util.Iterator;
-
-import com.github.drbookings.model.ser.BookingBeanSer;
-import com.github.drbookings.model.ser.CleaningBeanSer;
+import com.github.drbookings.ser.BookingBeanSer;
+import com.github.drbookings.ser.CleaningBeanSer;
 import com.github.drbookings.ser.DataStore;
 import com.github.drbookings.ser.XMLStorage;
 import com.github.ktools1000.RandomString;
 import com.github.ktools1000.io.BackupCreator;
+
+import java.io.File;
+import java.util.Iterator;
 
 public class Anonymiser {
 

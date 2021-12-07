@@ -23,7 +23,7 @@ package com.github.drbookings.ui;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.BookingEntry;
 
 public class GuestNameAndBookingOriginView extends BookingEntryView {
 

@@ -20,25 +20,11 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.BookingEntry;
+import com.github.drbookings.CleaningEntry;
+import com.github.drbookings.DateBean;
+import com.github.drbookings.SettingsManager;
 import com.github.drbookings.model.data.manager.MainManager;
-import com.github.drbookings.model.settings.SettingsManager;
-import com.github.drbookings.ui.CleaningEntry;
-import com.github.drbookings.ui.beans.DateBean;
-
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -46,6 +32,14 @@ import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UpcomingController implements Initializable, ListChangeListener<DateBean> {
 
@@ -168,7 +162,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 
 	for (final CleaningEntry c : upcomingBookings) {
 	    final TextFlow tf = new TextFlow();
-	    final Text t0 = new Text("Room " + c.getRoom() + ": ");
+	    final Text t0 = new Text("Room " + c.getBooking().getRoom() + ": ");
 	    t0.getStyleClass().add("emphasis");
 	    final Text t1 = new Text(c.getName());
 	    tf.getChildren().addAll(t0, t1);
@@ -207,13 +201,13 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 
     private static String getDateString(final LocalDate date) {
 	if (LocalDate.now().equals(date)) {
-	    return "Today (" + date.toString() + ")";
+	    return "Today (" + date + ")";
 	} else if (LocalDate.now().plusDays(1).equals(date)) {
-	    return "Tomorrow (" + date.toString() + ")";
+	    return "Tomorrow (" + date + ")";
 	} else if (LocalDate.now().plusDays(2).equals(date) || LocalDate.now().plusDays(3).equals(date)
 		|| LocalDate.now().plusDays(4).equals(date)) {
 	    return "on " + date.getDayOfWeek().toString().charAt(0)
-		    + date.getDayOfWeek().toString().substring(1).toLowerCase() + " (" + date.toString() + ")";
+		    + date.getDayOfWeek().toString().substring(1).toLowerCase() + " (" + date + ")";
 	} else {
 	    return "on " + date;
 	}
@@ -307,7 +301,7 @@ public class UpcomingController implements Initializable, ListChangeListener<Dat
 	    final List<CleaningEntry> upcomingCleanings = manager.getCleaningEntries().stream()
 		    .filter(c -> c.getDate().equals(date)).collect(Collectors.toList());
 	    addEvents(date, upcomingBookings, upcomingCleanings);
-	    if (i != (lookAheadDays - 1)) {
+	    if (i != lookAheadDays - 1) {
 		this.box.getChildren().add(new Separator());
 	    }
 	}

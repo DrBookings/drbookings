@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.drbookings.BookingFactory;
 import com.github.drbookings.io.BookingParser;
-import com.github.drbookings.model.ser.BookingBeanSer;
+import com.github.drbookings.ser.BookingBeanSer;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -77,9 +77,8 @@ public class ICalBookingFactory implements BookingFactory {
 	final String guestName = iCalParser.getGuestName(e);
 	final String id = iCalParser.getExternalID(e);
 	final String roomName = iCalParser.getRoomName(e);
-	if ((checkIn == null) || (checkOut == null) || (guestName == null) || (roomName == null)) {
+	if ((checkIn == null) || (checkOut == null) || (guestName == null) || (roomName == null))
 	    throw new NullPointerException();
-	}
 	final BookingBeanSer b = new BookingBeanSer();
 	b.externalId = id;
 	b.checkInDate = checkIn;

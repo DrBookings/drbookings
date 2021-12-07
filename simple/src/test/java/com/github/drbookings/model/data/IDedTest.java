@@ -32,6 +32,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.drbookings.IDed;
+import com.github.drbookings.IDedImpl;
+
 public class IDedTest {
 
     @BeforeClass

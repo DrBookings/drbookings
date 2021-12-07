@@ -23,8 +23,6 @@ package com.github.drbookings;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.github.drbookings.model.BookingEntry;
-
 public class BookingEntryBin<T> {
 
     private final T label;

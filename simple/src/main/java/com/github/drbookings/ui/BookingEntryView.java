@@ -20,9 +20,9 @@
 
 package com.github.drbookings.ui;
 
-import java.util.Collection;
+import com.github.drbookings.BookingEntry;
 
-import com.github.drbookings.model.BookingEntry;
+import java.util.Collection;
 
 public class BookingEntryView {
 

@@ -25,9 +25,9 @@
  * <p>
  * The UI is structured roughly as follows:
  * <ol>
- * <li>{@link com.github.drbookings.ui.beans.DateBean}</li>
- * <li>{@link com.github.drbookings.ui.beans.RoomBean}</li>
- * <li>{@link com.github.drbookings.model.BookingEntry}</li>
+ * <li>{@link com.github.drbookings.DateBean}</li>
+ * <li>{@link com.github.drbookings.RoomBean}</li>
+ * <li>{@link com.github.drbookings.BookingEntry}</li>
  * </ol>
  * </p>
  */

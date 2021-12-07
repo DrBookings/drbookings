@@ -20,16 +20,15 @@
 
 package com.github.drbookings.ui.provider;
 
-import java.util.concurrent.Callable;
-
-import com.github.drbookings.model.OccupancyRateCalculator;
-import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.OccupancyRateCalculator;
+import com.github.drbookings.RoomBean;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.collections.ObservableList;
+
+import java.util.concurrent.Callable;
 
 public class OccupancyRateProvider {
 

@@ -20,15 +20,14 @@
 
 package com.github.drbookings.ui;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.drbookings.ui.controller.MainController;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.scene.control.Labeled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Deprecated
 public abstract class AbstractDrBookingsService<T> extends Service<T> {
 
     private final static Logger logger = LoggerFactory.getLogger(AbstractDrBookingsService.class);
@@ -40,9 +39,8 @@ public abstract class AbstractDrBookingsService<T> extends Service<T> {
 
 	addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
 	    final Throwable e = getException();
-	    if (logger.isErrorEnabled()) {
+	    if (logger.isErrorEnabled())
 		logger.error(e.toString());
-	    }
 	    labeled.setText("Error: " + e.getLocalizedMessage());
 	});
 

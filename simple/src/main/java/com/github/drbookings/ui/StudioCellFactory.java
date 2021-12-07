@@ -20,21 +20,19 @@
 
 package com.github.drbookings.ui;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.drbookings.ui.beans.DateBean;
-import com.github.drbookings.ui.beans.RoomBean;
+import com.github.drbookings.DateBean;
+import com.github.drbookings.RoomBean;
 import com.github.drbookings.ui.controller.CellContentController;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class StudioCellFactory implements Callback<TableColumn<DateBean, DateBean>, TableCell<DateBean, DateBean>> {
 

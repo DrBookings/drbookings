@@ -20,23 +20,11 @@
 
 package com.github.drbookings.ui.controller;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.github.drbookings.BookingEntry;
 import com.github.drbookings.LocalDates;
-import com.github.drbookings.model.BookingEntry;
+import com.github.drbookings.RoomBean;
 import com.github.drbookings.ui.GuestNameAndBookingOriginView;
-import com.github.drbookings.ui.beans.RoomBean;
 import com.github.drbookings.ui.selection.RoomBeanSelectionManager;
-
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -48,6 +36,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class RoomDetailsController implements Initializable {
 
@@ -100,9 +98,9 @@ public class RoomDetailsController implements Initializable {
 	    final BookingEntry e = it.next();
 	    sb.append(e.getElement().getBookingOrigin().getName());
 	    sb.append("\n");
-	    sb.append(LocalDates.getDateString(e.getElement().getCheckIn()));
+	    sb.append(LocalDates.getWeekDayString(e.getElement().getCheckIn()));
 	    sb.append("\n");
-	    sb.append(LocalDates.getDateString(e.getElement().getCheckOut()));
+	    sb.append(LocalDates.getWeekDayString(e.getElement().getCheckOut()));
 	    sb.append("\n");
 	    sb.append(e.getElement().getNumberOfNights() + " nights");
 	    if (it.hasNext()) {
@@ -168,8 +166,8 @@ public class RoomDetailsController implements Initializable {
     }
 
     private void updateModelCleaning() {
-	if ((cleaningName.getText() != null) && (cleaningName.getText().trim().length() > 0)) {
-	    room.getData().setCleaning(cleaningName.getText().trim(), getDate(), getRoom().getName());
+	if (cleaningName.getText() != null && cleaningName.getText().trim().length() > 0) {
+	    room.getData().setCleaning(cleaningName.getText().trim(), getDate(), null, false);
 	} else {
 	    room.getData().removeCleaning(getDate(), getRoom().getName());
 	}
